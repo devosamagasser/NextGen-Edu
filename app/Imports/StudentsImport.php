@@ -2,11 +2,10 @@
 
 namespace App\Imports;
 
-use App\Models\Department;
-use App\Models\Semester;
-use App\Models\Student;
 use App\Models\User;
-use App\Services\Dashboard\StudentsServices;
+use App\Modules\Departments\Department;
+use App\Modules\Students\Student;
+use App\Modules\Students\StudentsServices;
 use Exception;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\DB;
@@ -21,7 +20,7 @@ use Maatwebsite\Excel\Validators\ValidationException;
 class StudentsImport implements ToModel,WithHeadingRow,PersistRelations,WithValidation
 {
 
-    private $raw = 0;
+    private $row = 0;
     /**
      * @param array $row
      *
@@ -29,11 +28,10 @@ class StudentsImport implements ToModel,WithHeadingRow,PersistRelations,WithVali
      */
     public function model(array $row)
     {
-        $this->raw++;
+        $this->row++;
         try {
             return DB::transaction(function () use ($row) {
                 $department = Department::where('name', 'like', "%{$row['department']}%")->firstOrFail();
-                $semester = Semester::where('levels', $row['semester'])->firstOrFail();
 
                 $code = StudentsServices::generateCode();
                 $email = $code . '@zu.edu.eg';
@@ -41,7 +39,8 @@ class StudentsImport implements ToModel,WithHeadingRow,PersistRelations,WithVali
                 $user = User::create([
                     'name' => $row['name'],
                     'email' => $email,
-                    'password' => Hash::make($email)
+                    'password' => Hash::make($email),
+                    'type' => "Student"
                 ]);
 
                 Student::create([
@@ -50,15 +49,15 @@ class StudentsImport implements ToModel,WithHeadingRow,PersistRelations,WithVali
                     'uni_code' => $code,
                     'personal_id' => $row['id'],
                     'department_id' => $department->id,
-                    'semester_id' => $semester->id,
-                    'group' => $row['group'] ?? null,
+                    'semester_id' => $row['semester'],
+                    'group' => $row['group'] ?? StudentsServices::generateGroupe( $department->id, $row['semester']),
                 ]);
             });
 
         } catch (ModelNotFoundException $e) {
-            throw new ModelNotFoundException("Department or Semester not found for: " . json_encode($row));
+            throw new ModelNotFoundException("Department or Semester not found for row: " . $this->row);
         } catch (Exception $e) {
-            throw new Exception("Failed to import student: " . $e->getMessage());
+            throw new Exception("Failed to import student: ".$e->getMessage());
         }
     }
 
@@ -73,7 +72,7 @@ class StudentsImport implements ToModel,WithHeadingRow,PersistRelations,WithVali
             'id' => 'integer|unique:students,personal_id',
             'department' => 'string',
             'semester' => 'integer',
-            'group' => 'integer|max:30',
+            'group' => 'nullable|integer|max:30',
         ];
     }
 

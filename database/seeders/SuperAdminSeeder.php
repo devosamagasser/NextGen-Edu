@@ -17,7 +17,7 @@ class SuperAdminSeeder extends Seeder
     {
         User::create([
             'name' => 'super admin',
-            'email' => 'admin@gmail.com',
+            'email' => 'superadmin@gmail.com',
             'type' => 'Super admin',
             'password' => Hash::make('admin123'),
             'remember_token' => Str::random(10),

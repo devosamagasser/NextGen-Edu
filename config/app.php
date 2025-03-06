@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Facade;
+use L5Swagger\L5SwaggerServiceProvider;
 
 return [
 

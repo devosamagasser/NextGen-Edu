@@ -20,11 +20,11 @@ class DatabaseSeeder extends Seeder
         //     'email' => 'test@example.com',
         // ]);
 
-//        $this->call(RoleSeeder::class);
-//        $this->call(SuperAdminSeeder::class);
-//        $this->call(AdminSeeder::class);
-//        $this->call(StudentSeeder::class);
-//        $this->call(TeacherSeeder::class);
-        $this->call(SemesterSeeder::class);
+       $this->call(RoleSeeder::class);
+       $this->call(SuperAdminSeeder::class);
+       $this->call(AdminSeeder::class);
+       $this->call(StudentSeeder::class);
+       $this->call(TeacherSeeder::class);
+        $this->call(SemesterSeeder::class); 
     }
 }

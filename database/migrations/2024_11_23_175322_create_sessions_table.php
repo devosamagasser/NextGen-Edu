@@ -17,11 +17,12 @@ return new class extends Migration
             $table->foreignId('course_detail_id')->constrained('course_details');
             $table->foreignId('hall_id')->constrained('halls');
             $table->enum('attendance',['online','offline'])->default('offline');
-            $table->date('day');
+            $table->enum('day',['saturday','sunday','monday','tuesday','wednesday','thursday']);
+            
             $table->time('from');
             $table->time('to');
-            $table->enum('status',['started','finished','postponed']);
-            $table->tinyInteger('week');
+            $table->enum('status',['in time','started','finished','postponed'])->default('in time');
+            $table->tinyInteger('week')->default(1);
             $table->timestamps();
         });
     }

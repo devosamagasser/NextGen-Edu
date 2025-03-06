@@ -2,7 +2,10 @@
 
 namespace App\Providers;
 
-use App\Http\Controllers\ApiResponse;
+use App\Facades\ApiResponse;
+use App\Facades\FacadesLogic\ApiResponseLogic;
+use App\Facades\FacadesLogic\FileHandlerLogic;
+use App\Facades\FileHandler;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -13,8 +16,12 @@ class AppServiceProvider extends ServiceProvider
     public function register(): void
     {
         $this->app->bind(
-            'apiResponse',
             ApiResponse::class,
+            ApiResponseLogic::class
+        );
+        $this->app->bind(
+            FileHandler::class,
+            FileHandlerLogic::class
         );
     }
 
@@ -23,6 +30,5 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
     }
 }
