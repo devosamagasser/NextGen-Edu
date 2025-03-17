@@ -23,6 +23,7 @@ return new class extends Migration
             $table->timestamp('time_to_post')->default(now()->toDateString());
             $table->time('time')->nullble();
             $table->timestamps();
+            
         });
     }
 
