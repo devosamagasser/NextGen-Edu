@@ -2,6 +2,7 @@
 
 
 use App\Modules\Admins\AdminsController;
+use App\Modules\Announcments\AnnouncementController;
 use App\Modules\Auth\AuthController;
 use App\Modules\Buildings\BuildingsController;
 use App\Modules\Courses\CoursesController;
@@ -25,12 +26,27 @@ Route::group(['middleware'=>['auth','role:Super admin']],function (){
     Route::apiResource('/courses',CoursesController::class);
 });
 
-Route::group(['middleware'=>['auth','role:Admin']],function (){
-    Route::get('/students/export',[StudentsController::class,'export']);
-    Route::post('/students/import',[StudentsController::class,'import']);
-    Route::apiResource('/students',StudentsController::class);
-    Route::apiResource('/table',TableController::class);
-    Route::post('/table/{table}',[TableController::class,'update']);
+Route::group(['middleware' => 'auth' ], function () {
+    Route::group(['middleware' => 'role:Admin' ], function () {
+        Route::controller(StudentsController::class)->group(function () {
+            Route::get('/students/export', 'export');
+            Route::post('/students/import', 'import');
+            Route::apiResource('/students', StudentsController::class);
+        });
+
+        Route::controller(TableController::class)->group(function () {
+            Route::apiResource('/table', TableController::class);
+            Route::post('/table/{table}', 'update');
+        });
+    });
+    Route::group(['middleware' => 'role:Admin|Teacher' ], function () {
+        Route::apiResource('/announcements', AnnouncementController::class)->except('show');
+    });
 });
+
+
+
+
+
 
 

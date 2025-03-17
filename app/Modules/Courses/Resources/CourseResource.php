@@ -52,7 +52,7 @@ class CourseResource extends JsonResource
             }
 
         });
-        return $details;
+        return array_values($details);
     }
 
 }

@@ -14,12 +14,12 @@ class RoleMiddleware extends BaseRoleMiddleware
      *
      * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
      */
-    public function handle($request, Closure $next, $role, $guard = null)
+    public function handle($request, Closure $next, $roles, $guard = null)
     {
-        if (!auth()->user()->hasRole($role)) {
+        $rolesArray = explode('|', $roles); // تحويل الأدوار إلى مصفوفة
+        if (!auth()->user()->hasAnyRole($rolesArray)) {
             return ApiResponse::unauthorized();
         }
-
         return $next($request);
 
     }

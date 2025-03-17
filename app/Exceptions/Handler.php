@@ -2,14 +2,15 @@
 
 namespace App\Exceptions;
 
-use App\Facades\ApiResponse;
-use Illuminate\Auth\AuthenticationException;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
-use Illuminate\Database\QueryException;
-use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
-use Illuminate\Http\Exceptions\HttpResponseException;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Throwable;
+use App\Facades\ApiResponse;
+use Illuminate\Database\QueryException;
+use Illuminate\Auth\AuthenticationException;
+use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Http\Exceptions\HttpResponseException;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class Handler extends ExceptionHandler
 {
@@ -48,7 +49,7 @@ class Handler extends ExceptionHandler
     public function register(): void
     {
         $this->renderable(function (AuthenticationException $e, $request) {
-                return ApiResponse::unauthorized();
+                return ApiResponse::unauthorized('unauthenticated process');
         });
 
         $this->renderable(function (ModelNotFoundException $e, $request) {
@@ -62,8 +63,9 @@ class Handler extends ExceptionHandler
         $this->renderable(function (HttpResponseException $e, $request) {
             return ApiResponse::notFound();
         });
+
         $this->renderable(function (\Exception $e, $request) {
-            return ApiResponse::serverError($e->getMessage());
+            return ApiResponse::serverError();
         });
 
     }

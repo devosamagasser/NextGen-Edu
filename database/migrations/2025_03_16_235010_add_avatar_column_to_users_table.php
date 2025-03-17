@@ -11,8 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('sessions', function (Blueprint $table) {
-            $table->date('date')->nullable();
+        Schema::table('users', function (Blueprint $table) {
+            $table->string('avatar')->default('avatar.png');
         });
     }
 
@@ -21,8 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('sessions', function (Blueprint $table) {
-            $table->dropColumn('date');
+        Schema::table('users', function (Blueprint $table) {
+            //
         });
     }
 };
