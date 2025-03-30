@@ -18,9 +18,10 @@ return new class extends Migration
             $table->string('title');
             $table->text('description');
             $table->tinyInteger('total_degree');
-            $table->dateTime('start_at');
-            $table->tinyInteger('end_at');
-            $table->enum('status',['finished','scheduled'])->default('scheduled');
+            $table->date('date'); 
+            $table->time('start_time'); 
+            $table->integer('duration');
+            $table->enum('status', ['finished', 'scheduled'])->default('scheduled');
             $table->timestamps();
         });
     }

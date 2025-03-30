@@ -2,9 +2,9 @@
 
 namespace App\Modules\Announcments;
 
-use App\Models\User;
 use App\Services\Service;
-use Illuminate\Auth\AuthenticationException;
+use App\Modules\Teachers\Teacher;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
 class AnnouncementsServices extends Service
 {
@@ -14,13 +14,13 @@ class AnnouncementsServices extends Service
      */
     public function getAllAnnouncements()
     {
-        $user = User::with(['teachers', 'students'])->find(request()->user()->id);
+        $user = request()->user()->load(['teachers', 'students']);
     
         $query = Announcement::with([
             'department',
             'semester',
-            'course:id,name', // تحديد الأعمدة المطلوبة فقط
-            'user',     // تحديد الأعمدة المطلوبة فقط
+            'course:id,name',
+            'user', 
         ]);
     
         if ($user->type === 'Student') {
@@ -34,23 +34,39 @@ class AnnouncementsServices extends Service
         }
     
         if ($user->type === 'Teacher') {
-            $teacherCourseDepartments = $user->teachers->courses->pluck('id')->unique()->toArray();
-            $query->whereHas('course', function ($q) use ($user, $teacherCourseDepartments) {
-                $q->whereIn('course_id', $user->teachers->courses->pluck('id')->unique())
-                  ->where(function ($q) use ($teacherCourseDepartments) {
-                      $q->whereIn('department_id', $teacherCourseDepartments)
-                        ->orWhereNull('department_id');
-                  });
-            });
-            $data = [];
-
+            $teacher = Teacher::with(['departments','semesters','courses'])->find($user->id);
+            $semesterIds = $teacher->semesters->pluck('id')->toArray();
+            $departmentsIds = $teacher->departments->pluck('id')->toArray();
+            $query->whereIn('semester_id', $semesterIds)
+                  ->whereIn('department_id', $departmentsIds)
+                  ->orWhereNull('department_id');
         }
-    
+        
         return $query->paginate();
     }
     
     
+    public function myAnnouncements()
+    {
+        $user = request()->user();
     
+        $query = Announcement::with([
+            'department',
+            'semester',
+            'course:id,name',
+            'user', 
+        ])->where('user_id',$user->id);
+    
+        return $query->paginate();
+    }
+    
+    public function announcement(string $id)
+    {
+        $user = request()->user();
+        $announcement = Announcement::findOrFail($id);    
+        $this->checkAuthrization($announcement->user_id);
+        return $announcement;
+    }
 
     /**
      * Store a newly created resource in storage.
@@ -109,7 +125,7 @@ class AnnouncementsServices extends Service
     {
         $userId = request()->user()->id;
         if($id != $userId){
-            throw new AuthenticationException;
+            throw new AccessDeniedHttpException();
         }
     }
 }

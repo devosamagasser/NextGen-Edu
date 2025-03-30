@@ -57,4 +57,13 @@ class TeachersController extends Controller
         $teacher = $this->teachersServices->deleteTeacher($id);
         return ApiResponse::deleted($teacher);
     }
+
+
+    public function myCourses()
+    {
+        $courses = $this->teachersServices->myCourses();
+        return ApiResponse::success(CourseResource::collection($courses));
+    }
+
+
 }

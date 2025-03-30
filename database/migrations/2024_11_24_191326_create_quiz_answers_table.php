@@ -13,10 +13,10 @@ return new class extends Migration
     {
         Schema::create('quiz_answers', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('quiz_question_id')->constrained('quiz_questions');
+            $table->foreignId('quiz_id')->constrained('quizzes');
+            $table->foreignId('question_id')->constrained('questions');
             $table->foreignId('student_id')->constrained('students');
-            $table->string('answer');
-            $table->boolean('is_correct')->default(false);
+            $table->foreignId('answer_id')->constrained('answers');
         });
     }
 

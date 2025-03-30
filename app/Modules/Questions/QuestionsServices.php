@@ -1,15 +1,15 @@
 <?php
 
-namespace App\Modules\Teachers;
+namespace App\Modules\Questions;
 
+use Carbon\Carbon;
 use App\Models\User;
 use App\Services\Service;
-use Carbon\Carbon;
-use Exception;
+use App\Modules\Teachers\Teacher;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Hash;
+use App\Modules\Questions\Models\Question;
 
-class TeachersServices extends Service
+class QuestionsServices extends Service
 {
 
     /**
@@ -33,30 +33,27 @@ class TeachersServices extends Service
     /**
      * Store a newly created resource in storage.
      */
-    public function addNewTeacher($request)
+    public static function addNewQuestion($request)
     {
-        $teacher = null ;
-        DB::transaction(function () use($request, &$teacher){
-            $code = $this->generateCode();
-            $email = "$code@zu.edu.eg";
-            $user = User::create([
-                'name' => $request->name,
-                'email' => $email,
-                'password' => Hash::make($email),
-                'type' => "Teacher"
-            ]);
-            $user->assignRole('Teacher');
+        return DB::transaction(function () use($request) {
 
-            $teacher = Teacher::create([
-                'user_id' => $user->id,
-                'uni_code' => $code,
-                'department_id' => $request->department_id,
-                'description' => $request->description,
+            $question =  Question::create([
+                'course_id' => $request['course_id'],
+                'question' => $request['question'], 
             ]);
 
+            $data = [];
+            foreach ($request['answers'] as $answer) {
+                $data[] = [
+                    'answer' => $answer['answer'],
+                    'is_correct' => $answer['is_correct'],
+                ];
+            }
+
+            $question->answers()->createMany($data);
+            return $question;
         });
 
-        return $teacher;
     }
 
     /**

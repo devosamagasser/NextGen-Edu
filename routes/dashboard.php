@@ -40,7 +40,8 @@ Route::group(['middleware' => 'auth' ], function () {
         });
     });
     Route::group(['middleware' => 'role:Admin|Teacher' ], function () {
-        Route::apiResource('/announcements', AnnouncementController::class)->except('show');
+        Route::apiResource('/announcements', AnnouncementController::class);
+        Route::get('/my-announcements', [AnnouncementController::class,'showMine']);
     });
 });
 

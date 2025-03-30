@@ -3,6 +3,7 @@
 namespace App\Modules\Announcments\Validation;
 
 use App\Http\Requests\AbstractApiRequest;
+use App\Modules\Teachers\Rules\InTeacherRelationRule;
 
 class AnnouncementStoreRequest extends AbstractApiRequest
 {
@@ -22,9 +23,9 @@ class AnnouncementStoreRequest extends AbstractApiRequest
     public function rules(): array
     {
         return [
-            'department_id'  => ['required', 'integer', 'exists:departments,id'],
-            'semester_id'    => ['required', 'integer', 'exists:semesters,id'],
-            'course_id'      => ['required', 'integer', 'exists:courses,id'],
+            'department_id'  => ['required', 'integer', 'exists:departments,id', new InTeacherRelationRule('departments')],
+            'semester_id'    => ['required', 'integer', 'exists:semesters,id', new InTeacherRelationRule('semesters')],
+            'course_id'      => ['required', 'integer', 'exists:courses,id', new InTeacherRelationRule('courses')],
             'title'          => ['nullable', 'string', 'max:255'], 
             'body'           => ['required', 'string'],
             'time_to_post'   => ['nullable', 'date', 'after_or_equal:today'], 

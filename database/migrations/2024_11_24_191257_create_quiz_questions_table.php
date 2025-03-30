@@ -13,8 +13,9 @@ return new class extends Migration
     {
         Schema::create('quiz_questions', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('quiz_id')->constrained('quizzes');
-            $table->foreignId('question_id')->constrained('questions');
+            $table->foreignId('quiz_id')->constrained('quizzes')->cascadeOnDelete();
+            $table->foreignId('question_id')->constrained('questions')->cascadeOnDelete();
+            $table->float('degree');
         });
     }
 

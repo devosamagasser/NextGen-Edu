@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Modules\Courses\Resources;
+namespace App\Modules\Questions\Reaources;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class SemesterResource extends JsonResource
+class AnswerResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -16,8 +16,8 @@ class SemesterResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'level' => $this->id,
-            'name' => $this->name,
+            'answer' => $this->answer,
+            'correct' => $this->is_correct
         ];
     }
 }

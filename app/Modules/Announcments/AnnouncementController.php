@@ -6,7 +6,7 @@ use App\Facades\ApiResponse;
 use App\Http\Controllers\Controller;
 use App\Modules\Announcments\Validation\AnnouncementStoreRequest;
 use App\Modules\Announcments\Validation\AnnouncementUpdateRequest;
-
+use App\Modules\Announcments\AnnounecmentResource;
 
 class AnnouncementController extends Controller
 {
@@ -20,16 +20,30 @@ class AnnouncementController extends Controller
     public function index()
     {
         $announcements =  $this->announcemetsServices->getAllAnnouncements();
-        return ApiResponse::success($announcements);
+        return ApiResponse::success(AnnounecmentResource::collection($announcements)->resource);
     }
+
+    
 
     /**
      * Store a newly created resource in storage.
      */
     public function store(AnnouncementStoreRequest $request)
     {
-        $building = $this->announcemetsServices->addNewAnnouncement($request);
-        return ApiResponse::created($building);
+        $announcement = $this->announcemetsServices->addNewAnnouncement($request);
+        return ApiResponse::created(new AnnounecmentResource($announcement));
+    }
+
+    public function showMine()
+    {
+        $announcements = $this->announcemetsServices->myAnnouncements();
+        return ApiResponse::success(AnnounecmentResource::collection($announcements)->resource);
+    }
+
+    public function show(string $id)
+    {
+        $announcement = $this->announcemetsServices->announcement($id);
+        return ApiResponse::success(new AnnounecmentResource($announcement));
     }
 
     /**

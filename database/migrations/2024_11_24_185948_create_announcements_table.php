@@ -21,7 +21,7 @@ return new class extends Migration
             $table->string('title')->nullable();
             $table->text('body');
             $table->timestamp('time_to_post')->default(now()->toDateString());
-            $table->time('time')->nullble();
+            $table->time('time')->nullable();
             $table->timestamps();
         });
     }

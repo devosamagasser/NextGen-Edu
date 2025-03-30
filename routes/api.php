@@ -4,11 +4,13 @@
 use App\Modules\Auth\AuthController;
 use App\Modules\Users\UserController;
 use Illuminate\Support\Facades\Route;
+use App\Modules\Quizzes\QuizzesController;
 
 Route::post('/login',[AuthController::class,'login']);
 
-Route::delete('/logout',[AuthController::class,'logout']);
 
-Route::get('/node/user', [UserController::class, 'getUser']);
-
-
+Route::group(['middleware'=>['auth','role:Student']],function (){
+    Route::delete('/logout',[AuthController::class,'logout']);
+    Route::get('/node/user', [UserController::class, 'getUser']);
+    Route::get('/quizzes',[QuizzesController::class,'index']);
+});

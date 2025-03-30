@@ -11,10 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('group_members', function (Blueprint $table) {
+        Schema::create('answers', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('chat_id')->constrained('chats');
-            $table->foreignId('user_id')->constrained('users');
+            $table->foreignId('question_id')->constrained('questions');
+            $table->text('answer');
+            $table->boolean('is_correct')->default(false);
             $table->timestamps();
         });
     }
@@ -24,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('group_students');
+        Schema::dropIfExists('question_answers');
     }
 };
