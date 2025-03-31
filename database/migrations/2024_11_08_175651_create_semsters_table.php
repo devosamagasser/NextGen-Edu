@@ -14,7 +14,6 @@ return new class extends Migration
         Schema::create('semesters', function (Blueprint $table) {
             $table->id();
             $table->tinyInteger('levels');
-            $table->string('name');
             $table->timestamps();
         });
     }
