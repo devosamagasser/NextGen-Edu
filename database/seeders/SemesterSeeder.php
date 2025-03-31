@@ -14,8 +14,48 @@ class SemesterSeeder extends Seeder
      */
     public function run(): void
     {
-        for ($i = 0; $i <= 10; $i++) {
-            Semester::create(['levels' => $i]);
-        }
+        $data = [
+            [
+                'levels' => 1,
+                'name' => 'فرقة اغدادية',
+            ],
+            [
+                'levels' => 2,
+                'name' => 'فرقة اغدادية',
+            ],
+            [
+                'levels' => 3,
+                'name' => 'فرقة اولى',
+            ],
+            [
+                'levels' => 4,
+                'name' => 'فرقة اولى',
+            ],
+            [
+                'levels' => 5,
+                'name' => 'فرقة ثانية',
+            ],
+            [
+                'levels' => 6,
+                'name' => 'فرقة ثانية',
+            ],
+            [
+                'levels' => 7,
+                'name' => 'فرقة ثالثة',
+            ],
+            [
+                'levels' => 8,
+                'name' => 'فرقة ثالثة',
+            ],
+            [
+                'levels' => 9,
+                'name' => 'فرقة رابعة',
+            ],
+            [
+                'levels' => 10,
+                'name' => 'فرقة رابعة',
+            ],
+        ];
+        Semester::insert($data);
     }
 }
