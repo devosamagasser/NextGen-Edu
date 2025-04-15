@@ -3,6 +3,7 @@
 namespace App\Modules\Quizzes;
 
 use App\Facades\ApiResponse;
+use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Modules\Quizzes\Validation\QuizeStoreRequest;
 
@@ -58,6 +59,26 @@ class QuizzesController extends Controller
         return ApiResponse::deleted();
     }
 
+
+    public function startStudentQuiz(string $id)
+    {
+        $quiz = $this->quizesServices->startStudentQuiz($id);
+        return ApiResponse::success(new QuizResource($quiz));
+    }
+    
+    public function submitAnswers(Request $request, string $id)
+    {
+        $request->validate([
+            'questions' => 'required|array',
+            'questions.*' => 'required|array',
+            'questions.*.question' => 'required|exists:questions,id',
+            'questions.*.answer' => 'required|exists:answers,id',
+        ]);
+    
+        $this->quizesServices->submitQuizAnswers($id, $request->questions);
+        return ApiResponse::success('Answers submitted successfully');
+    }
+    
     
 
 }

@@ -48,7 +48,7 @@ class Handler extends ExceptionHandler
     public function register(): void
     {
         $this->renderable(function (AccessDeniedHttpException $e, $request) {
-                return ApiResponse::unauthorized('unauthenticated process');
+                return ApiResponse::unauthorized($e->getMessage());
         });
 
         $this->renderable(function (ModelNotFoundException $e, $request) {
