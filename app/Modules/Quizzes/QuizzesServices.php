@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\DB;
 use App\Modules\Quizzes\Models\Quiz;
 use App\Modules\Quizzes\Models\QuizAnswer;
 use App\Modules\Questions\QuestionsServices;
+use App\Modules\Teachers\Teacher;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
 class QuizzesServices extends Service
@@ -99,7 +100,7 @@ class QuizzesServices extends Service
         return DB::transaction(function () use($request) {
             $user = request()->user();
             $quiz = Quiz::create([
-                'teacher_id' => $user->id,
+                'teacher_id' => $user->teachers->id,
                 'course_detail_id'  => $request->course_id,
                 'title' => $request->title,
                 'description' => $request->description,
@@ -126,7 +127,7 @@ class QuizzesServices extends Service
         return DB::transaction(function () use($request,$id) {
             $user = request()->user();
 
-            $quiz = Quiz::where('teacher_id',$user->id)->findOrFail($id);
+            $quiz = Quiz::where('teacher_id',$user->teachers->id)->findOrFail($id);
             $quiz->update([
                 'course_detail_id'  => $request->course_id,
                 'title' => $request->title,
@@ -152,7 +153,7 @@ class QuizzesServices extends Service
     public function deleteQuiz(string $id)
     {
         $user = request()->user();
-        $quiz = Quiz::where('teacher_id',$user->id)->findOrFail($id);
+        $quiz = Quiz::where('teacher_id',$user->teachers->id)->findOrFail($id);
         return $quiz->delete();
     }
 

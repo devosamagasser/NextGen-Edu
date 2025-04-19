@@ -67,7 +67,7 @@ class AssignmentServices extends Service
                 $request->file->getClientOriginalExtension(),
             );
             $assignment = Assignment::create([
-                'teacher_id' => $user->id,
+                'teacher_id' => $user->teachers->id,
                 'course_detail_id'  => $request->course_id,
                 'title' => $request->title,
                 'file' => $file,
@@ -90,7 +90,7 @@ class AssignmentServices extends Service
         return DB::transaction(function () use($request,$id) {
             $user = request()->user();
 
-            $assignment = Assignment::where('teacher_id',$user->id)->findOrFail($id);
+            $assignment = Assignment::where('teacher_id',$user->teachers->id)->findOrFail($id);
             
             $data = [
                 'course_detail_id'  => $request->course_id,
@@ -120,7 +120,7 @@ class AssignmentServices extends Service
     public function deleteAssignment(string $id)
     {
         $user = request()->user();
-        $assignment = Assignment::where('teacher_id',$user->id)->findOrFail($id);
+        $assignment = Assignment::where('teacher_id',$user->teachers->id)->findOrFail($id);
         FileHandler::deleteFile($assignment->file);
         return $assignment->delete();
     }

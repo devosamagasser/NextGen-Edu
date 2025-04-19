@@ -4,6 +4,7 @@ namespace App\Modules\Assignments\Models;
 
 use App\Models\User;
 use App\Models\CourseDetail;
+use App\Modules\Teachers\Teacher;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
@@ -34,7 +35,7 @@ class Assignment extends Model
 
     public function teacher()
     {
-        return $this->belongsTo(User::class,'teacher_id');
+        return $this->belongsTo(Teacher::class);
     }
 
 

@@ -6,6 +6,7 @@ namespace App\Modules\Quizzes\Models;
 use App\Models\User;
 use App\Models\CourseDetail;
 use Illuminate\Support\Carbon;
+use App\Modules\Teachers\Teacher;
 use Illuminate\Database\Eloquent\Model;
 use App\Modules\Questions\Models\Question;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -40,7 +41,7 @@ class Quiz extends Model
 
     public function teacher()
     {
-        return $this->belongsTo(User::class,'teacher_id');
+        return $this->belongsTo(Teacher::class);
     }
 
 
