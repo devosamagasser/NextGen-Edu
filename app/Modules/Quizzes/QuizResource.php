@@ -26,7 +26,7 @@ class QuizResource extends JsonResource
             'duration' => $this->duration,
             'status' => $this->status,
             'course' => $this->courseDetail->course->name,
-            'teacher' => $this->teacher->name,
+            'teacher' => $this->teacher->user->name,
             'questions' => $this->whenLoaded('questions', function (){
                 return QuestionResource::collection($this->questions);
             }),
