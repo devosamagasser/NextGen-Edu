@@ -16,6 +16,7 @@ return [
     'default' => env('FILESYSTEM_DISK', 'local'),
     
     'images_url' => env('APP_IMAGES_URL', 'https://nextgenedu-database.azurewebsites.net/images/'),
+    // 'images_url' => env('APP_IMAGES_URL', 'https://nextgenedu-database.azurewebsites.net/images/'),
 
     /*
     |--------------------------------------------------------------------------

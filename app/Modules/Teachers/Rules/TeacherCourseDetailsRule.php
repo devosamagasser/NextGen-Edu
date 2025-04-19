@@ -16,7 +16,7 @@ class TeacherCourseDetailsRule implements ValidationRule
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
         $user = request()->user();
-        $teacher = Teacher::with('courses')->find($user->id);
+        $teacher = Teacher::with('courses')->where('user_id',$user->id)->first();
 
         if (!$teacher) {
             $fail('Teacher not found.');
