@@ -24,7 +24,7 @@ class InTeacherRelationRule implements ValidationRule
     {
         $user = request()->user();
         if($user->type == 'Teacher'){
-            $teacher = Teacher::with($this->relation)->find('user_id',$user->id);
+            $teacher = Teacher::with($this->relation)->where('user_id',$user->id)->first();
             $ids = $teacher->{$this->relation}->pluck('id')->toArray();
             if (!in_array($value, $ids)) {
                 $fail(ucfirst($this->relation) . ' is not valid.');
