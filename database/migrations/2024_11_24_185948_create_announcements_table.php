@@ -20,7 +20,7 @@ return new class extends Migration
             $table->foreignId('course_id')->nullable()->constrained('courses')->nullOnDelete();
             $table->string('title')->nullable();
             $table->text('body');
-            $table->timestamps('post_in');
+            $table->timestamp('post_in');
             $table->timestamps();
         });
     }
