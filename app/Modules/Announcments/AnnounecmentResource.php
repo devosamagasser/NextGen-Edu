@@ -20,8 +20,9 @@ class AnnounecmentResource extends JsonResource
             "id" => $this->id,
             "title" => $this->title,
             "body" => $this->body,
-            "date" => $this->time_to_post,
-            "time" => $this->time,
+            "date" => $this->post_in->format('Y-m-d'),
+            "time" => $this->post_in->format('H:i'),
+            "from" => $this->post_in->diffForHumans(), 
             "department" => [
                 "id" => $this->department->id,
                 "name" => $this->department->name,
@@ -40,7 +41,6 @@ class AnnounecmentResource extends JsonResource
                 "type" => $this->user->type,
                 "avatar" => $this->user->avatar_url,
             ]
-
         ];
     }
 }

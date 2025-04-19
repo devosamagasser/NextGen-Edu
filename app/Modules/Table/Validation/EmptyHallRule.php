@@ -2,7 +2,7 @@
 
 namespace App\Modules\Table\Validation;
 
-use App\Modules\Table\Session;
+use App\Modules\Table\Models\Session;
 use Closure;
 use Illuminate\Contracts\Validation\ValidationRule;
 

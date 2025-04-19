@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Modules\Quizzes\Validation;
+namespace App\Modules\Assignments\Validation;
 
 use App\Rules\TimeRule;
 use App\Http\Requests\AbstractApiRequest;
 use App\Modules\Teachers\Rules\TeacherCourseDetailsRule;
 
-class QuizeStoreRequest extends AbstractApiRequest
+class AssignmentUpdateRequest extends AbstractApiRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -29,18 +29,8 @@ class QuizeStoreRequest extends AbstractApiRequest
             'description' => 'required|string',
             'total_degree' => 'required|integer',
             'date' => 'required|date|after_or_equal:today', 
-            'start_time' => ['required','date_format:H:i:s', new TimeRule()],
-            'duration' => 'required|integer|min:1',
-            'question_degree' => 'required|integer|min:1',
-
-            'new_questions' => 'nullable|array',
-            'new_questions.*.question' => 'nullable|string',
-            'new_questions.*.answers' => 'nullable|array|min:2',
-            'new_questions.*.answers.*.answer' => 'nullable|string',
-            'new_questions.*.answers.*.is_correct' => 'nullable|boolean',
-
-            'old_questions' => 'nullable|array',
-            'old_questions.*' => 'nullable|exists:questions,id',
+            'time' => ['required','date_format:H:i:s',new TimeRule()],
+            'file' => 'nullable|file|mimes:pdf,doc,docx,csv,jpg,png',
         ];
     }
 }

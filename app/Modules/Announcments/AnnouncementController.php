@@ -60,7 +60,7 @@ class AnnouncementController extends Controller
      */
     public function destroy(string $id)
     {
-        $this->announcemetsServices->deleteBuilding($id);
+        $this->announcemetsServices->deleteAnnouncement($id);
         return ApiResponse::deleted();
     }
 }

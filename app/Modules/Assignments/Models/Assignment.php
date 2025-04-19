@@ -1,37 +1,31 @@
 <?php
 
-namespace App\Modules\Quizzes\Models;
-
+namespace App\Modules\Assignments\Models;
 
 use App\Models\User;
 use App\Models\CourseDetail;
-use Illuminate\Support\Carbon;
 use Illuminate\Database\Eloquent\Model;
-use App\Modules\Questions\Models\Question;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
-class Quiz extends Model
+class Assignment extends Model
 {
     use HasFactory;
 
-    protected $fillable = [        
+    protected $fillable = [
         'teacher_id',
         'course_detail_id',
         'title',
         'description',
+        'file',
         'total_degree',
-        'date', 
-        'start_time', 
-        'duration',
+        'deadline',
         'status'
     ];
 
-    public function questions()
-    {
-        return $this->belongsToMany(Question::class, 'quiz_questions', 'quiz_id', 'question_id')
-        ->with('answers')
-        ->withPivot('degree');
-    }
+    protected $casts = [
+        'deadline' => 'datetime',
+    ];
+
 
     public function courseDetail()
     {
@@ -43,6 +37,11 @@ class Quiz extends Model
         return $this->belongsTo(User::class,'teacher_id');
     }
 
+
+    public function getFileUrlAttribute()
+    {
+        return config('filesystems.images_url') . $this->file ;
+    }
 
     public function scopeFilter($query)
     {
@@ -57,4 +56,7 @@ class Quiz extends Model
             $q->where('date', '>=', $fromDate);
         });
     }
+
+
+    
 }

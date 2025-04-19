@@ -21,8 +21,11 @@ class Announcement extends Model
         'title',
         'body',
         'cover',
-        'time_to_post',
-        'time'
+        'post_in',
+    ];
+
+    protected $casts = [
+        'post_in' => 'datetime',
     ];
 
     public function semester()
@@ -43,6 +46,11 @@ class Announcement extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function scopeFilter()
+    {
+
     }
 
 }

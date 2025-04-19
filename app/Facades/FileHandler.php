@@ -14,6 +14,6 @@ class FileHandler extends Facade
 {
     protected static function getFacadeAccessor()
     {
-        return ApiResponse::class;
+        return FileHandler::class;
     }
 }

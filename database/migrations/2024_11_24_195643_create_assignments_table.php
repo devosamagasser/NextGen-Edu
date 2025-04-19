@@ -16,7 +16,7 @@ return new class extends Migration
             $table->foreignId('teacher_id')->constrained('teachers');
             $table->foreignId('course_detail_id')->constrained('course_details');
             $table->string('title');
-            $table->text('description');
+            $table->text('description')->nullable();
             $table->string('file');
             $table->tinyInteger('total_degree');
             $table->dateTime('deadline');

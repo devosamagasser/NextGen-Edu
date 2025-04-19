@@ -6,8 +6,8 @@ use App\Modules\Students\Student;
 use App\Modules\Teachers\Teacher;
 use Laravel\Sanctum\HasApiTokens;
 use App\Modules\Quizzes\Models\Quiz;
+use App\Modules\Assignments\Models\Assignment;
 use Spatie\Permission\Traits\HasRoles;
-use Tymon\JWTAuth\Contracts\JWTSubject;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -63,10 +63,14 @@ class User extends Authenticatable
         return $this->hasOne(Student::class);
     }
 
-    
     public function quizzes()
     {
         return $this->hasMany(Quiz::class, 'teacher_id')->with('courseDetail.course','questions.answers');
+    }
+
+    public function assignments()
+    {
+        return $this->hasMany(Assignment::class, 'teacher_id')->with('courseDetail.course');
     }
 
 }

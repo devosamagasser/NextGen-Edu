@@ -14,15 +14,17 @@ class AnnouncementsServices extends Service
      */
     public function getAllAnnouncements()
     {
-        $user = request()->user()->load(['teachers', 'students']);
+        $user = request()->user();
     
         $query = Announcement::with([
             'department',
             'semester',
             'course:id,name',
             'user', 
-        ]);
-    
+        ])->where("post_in", '<=', now())
+        ->orderBy('id', 'desc')
+        ->filter();
+
         if ($user->type === 'Student') {
             $query->where(function ($q) use ($user) {
                 $q->where('department_id', $user->students->department_id)
@@ -34,7 +36,7 @@ class AnnouncementsServices extends Service
         }
     
         if ($user->type === 'Teacher') {
-            $teacher = Teacher::with(['departments','semesters','courses'])->find($user->id);
+            $teacher = Teacher::with(['departments','semesters','courses'])->where('user_id',$user->id)->first();
             $semesterIds = $teacher->semesters->pluck('id')->toArray();
             $departmentsIds = $teacher->departments->pluck('id')->toArray();
             $query->whereIn('semester_id', $semesterIds)
@@ -80,9 +82,12 @@ class AnnouncementsServices extends Service
             'course_id' => $request->course_id ?? null,
             'title' => $request->title ?? null,
             'body' => $request->body,
-            'time_to_post' => $request->time_to_post ?? now()->format('Y-m-d'),
-            'time' => $request->time ?? now()->format('H:i:s')
         ];
+        if($request->filled('date')){
+            $data['post_in'] = $request->date .' '.  $request->time;
+        }else{
+            $data['post_in'] = now();
+        }
         return Announcement::create($data);
     }
 
@@ -99,9 +104,12 @@ class AnnouncementsServices extends Service
             'course_id' => $request->course_id ?? $announcement->course_id,
             'title' => $request->title ?? $announcement->title,
             'body' => $request->body ?? $announcement->body,
-            'time_to_post' => $request->time_to_post ??  $announcement->time_to_post,
-            'time' => $request->time ??  $announcement->time
         ];
+
+        if($request->filled('date')){
+            $data['post_in'] = $request->date .' '.  $request->time;
+        }
+
         $announcement->fill($data);
         if($announcement->isDirty()){
             $announcement->save();
@@ -113,7 +121,7 @@ class AnnouncementsServices extends Service
     /**
      * Remove the specified resource from storage.
      */
-    public function deleteBuilding(string $id)
+    public function deleteAnnouncement(string $id)
     {
         $announcement = Announcement::findOrFail($id);
         $this->checkAuthrization($announcement->user_id);
@@ -125,7 +133,7 @@ class AnnouncementsServices extends Service
     {
         $userId = request()->user()->id;
         if($id != $userId){
-            throw new AccessDeniedHttpException();
+            throw new AccessDeniedHttpException('forbidden');
         }
     }
 }

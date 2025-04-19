@@ -22,7 +22,12 @@ class QuizzesServices extends Service
     {
         $user = request()->user();
         if ($user->hasRole('Teacher')){
-            $quizez = $user->quizzes->load('courseDetail.course');
+            $quizez = Quiz::with('courseDetail.course','teacher')
+            ->whereHas('courseDetail',function($q) use($user){
+                $q->where('teacher_id', $user->teachers->id);
+            })->orderBy('id','desc')
+            ->filter()
+            ->get();
         }else if ($user->hasRole('Student')){
             $quizez = Quiz::with('courseDetail.course','teacher')
             ->whereHas('courseDetail',function($q) use($user){
@@ -31,33 +36,50 @@ class QuizzesServices extends Service
             })->orderBy('id','desc')
             ->filter()
             ->get();
-            
         }
 
+
+        // foreach ($quizez as $quize) {
+        //     $quizStart = Carbon::parse($quize->date . ' ' . $quize->start_time);
+        //     $quizEnd = $quizStart->copy()->addMinutes($quize->duration);
+        //     $now = now();
+        
+        //     if ($now->greaterThanOrEqualTo($quizEnd)) {
+        //         if ($quize->status !== 'finished') {
+        //             $quize->status = 'finished';
+        //             $quize->save();
+        //         }
+        //     } elseif ($now->greaterThanOrEqualTo($quizStart) && $now->lessThan($quizEnd)) {
+        //         if ($quize->status !== 'started') {
+        //             $quize->status = 'started';
+        //             $quize->save();
+        //         }
+        //     } elseif ($now->lessThan($quizStart)) {
+        //         if ($quize->status !== 'scheduled') {
+        //             $quize->status = 'scheduled';
+        //             $quize->save();
+        //         }
+        //     }
+        // }
+        
+        $now = now();
 
         foreach ($quizez as $quize) {
             $quizStart = Carbon::parse($quize->date . ' ' . $quize->start_time);
             $quizEnd = $quizStart->copy()->addMinutes($quize->duration);
-            $now = now();
-        
-            if ($now->greaterThanOrEqualTo($quizEnd)) {
-                if ($quize->status !== 'finished') {
-                    $quize->status = 'finished';
-                    $quize->save();
-                }
-            } elseif ($now->greaterThanOrEqualTo($quizStart) && $now->lessThan($quizEnd)) {
-                if ($quize->status !== 'started') {
-                    $quize->status = 'started';
-                    $quize->save();
-                }
-            } elseif ($now->lessThan($quizStart)) {
-                if ($quize->status !== 'scheduled') {
-                    $quize->status = 'scheduled';
-                    $quize->save();
-                }
+
+            if ($now->greaterThanOrEqualTo($quizEnd) && $quize->status !== 'finished') {
+                $quize->status = 'finished';
+                $quize->save();
+            } elseif ($now->between($quizStart, $quizEnd) && $quize->status !== 'started') {
+                $quize->status = 'started';
+                $quize->save();
+            } elseif ($now->lessThan($quizStart) && $quize->status !== 'scheduled') {
+                $quize->status = 'scheduled';
+                $quize->save();
             }
         }
-        
+
         return $quizez;
     }
 

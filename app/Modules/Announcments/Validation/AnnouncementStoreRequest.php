@@ -2,6 +2,7 @@
 
 namespace App\Modules\Announcments\Validation;
 
+use App\Rules\TimeRule;
 use App\Http\Requests\AbstractApiRequest;
 use App\Modules\Teachers\Rules\InTeacherRelationRule;
 
@@ -28,8 +29,8 @@ class AnnouncementStoreRequest extends AbstractApiRequest
             'course_id'      => ['required', 'integer', 'exists:courses,id', new InTeacherRelationRule('courses')],
             'title'          => ['nullable', 'string', 'max:255'], 
             'body'           => ['required', 'string'],
-            'time_to_post'   => ['nullable', 'date', 'after_or_equal:today'], 
-            'time'           => ['nullable', 'date_format:H:i'] 
+            'date'           => ['nullable', 'date', 'after_or_equal:today'], 
+            'time'           => ['nullable', 'date_format:H:i', new TimeRule()] 
         ];
     }
 }

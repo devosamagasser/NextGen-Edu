@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Modules\Table;
+namespace App\Modules\Table\Models;
 
 use App\Modules\Halls\Hall;
 use App\Models\CourseDetail;

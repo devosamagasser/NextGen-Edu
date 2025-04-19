@@ -2,6 +2,7 @@
 
 namespace App\Modules\Announcments\Validation;
 
+use App\Rules\TimeRule;
 use App\Http\Requests\AbstractApiRequest;
 use App\Modules\Teachers\Rules\InTeacherRelationRule;
 
@@ -20,7 +21,7 @@ class AnnouncementUpdateRequest extends AbstractApiRequest
      *
      * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
      */
-    public function rules(): array
+    public function rules(): array 
     {
         return [
             'department_id'  => ['required', 'integer', 'exists:departments,id', new InTeacherRelationRule('departments')],
@@ -28,8 +29,8 @@ class AnnouncementUpdateRequest extends AbstractApiRequest
             'course_id'      => ['required', 'integer', 'exists:courses,id', new InTeacherRelationRule('courses')],
             'title'          => ['nullable', 'string', 'max:255'], // إضافة حد أقصى للطول
             'body'           => ['required', 'string'],
-            'time_to_post'   => ['nullable', 'date', 'after_or_equal:today'], // التأكد من أن التاريخ في المستقبل أو اليوم
-            'time'           => ['nullable', 'date_format:H:i'] 
+            'date'           => ['nullable', 'date', 'after_or_equal:today'], // التأكد من أن التاريخ في المستقبل أو اليوم
+            'time'           => ['nullable', 'date_format:H:i',new TimeRule()] 
         ];
     }
 }

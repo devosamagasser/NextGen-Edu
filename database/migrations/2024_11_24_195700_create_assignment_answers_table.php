@@ -17,6 +17,7 @@ return new class extends Migration
             $table->foreignId('student_id')->constrained('students');
             $table->string('file');
             $table->tinyInteger('degree')->default(0);
+            $table->enum('status',['corrected','submitted'])->default('submitted');
             $table->timestamps();
         });
     }

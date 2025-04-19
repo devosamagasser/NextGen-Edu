@@ -4,6 +4,8 @@ namespace App\Modules\Table;
 
 use App\Services\Service;
 use App\Models\CourseDetail;
+use App\Modules\Table\Models\Session;
+
 
 class TableServices extends Service
 {
