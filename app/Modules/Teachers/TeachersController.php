@@ -4,8 +4,8 @@ namespace App\Modules\Teachers;
 
 use App\Facades\ApiResponse;
 use App\Http\Controllers\Controller;
+use App\Modules\Departments\DepartmentResource;
 use App\Modules\Courses\Resources\SemesterResource;
-use App\Modules\Courses\Resources\DepartmentResource;
 use App\Modules\Teachers\Validation\TeacherStoreRequest;
 use App\Modules\Teachers\Validation\TeacherUpdateRequest;
 
