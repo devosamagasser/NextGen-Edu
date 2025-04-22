@@ -109,4 +109,14 @@ class TeachersServices extends Service
     {
         return request()->user()->teachers->courses;
     }
+
+    public function mySemesters()
+    {
+        return request()->user()->teachers->semesters;
+    }
+
+    public function myDepartments()
+    {
+        return request()->user()->teachers->departments;
+    }
 }

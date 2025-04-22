@@ -4,6 +4,8 @@ namespace App\Modules\Teachers;
 
 use App\Facades\ApiResponse;
 use App\Http\Controllers\Controller;
+use App\Modules\Courses\Resources\SemesterResource;
+use App\Modules\Courses\Resources\DepartmentResource;
 use App\Modules\Teachers\Validation\TeacherStoreRequest;
 use App\Modules\Teachers\Validation\TeacherUpdateRequest;
 
@@ -63,6 +65,18 @@ class TeachersController extends Controller
     {
         $courses = $this->teachersServices->myCourses();
         return ApiResponse::success(CourseResource::collection($courses));
+    }
+
+    public function myDepartments()
+    {
+        $departments = $this->teachersServices->myDepartments();
+        return ApiResponse::success(DepartmentResource::collection($departments));
+    }
+
+    public function mySemesters()
+    {
+        $semesters = $this->teachersServices->mySemesters();
+        return ApiResponse::success(SemesterResource::collection($semesters));
     }
 
 

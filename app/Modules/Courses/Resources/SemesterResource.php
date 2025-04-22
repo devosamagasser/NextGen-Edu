@@ -16,7 +16,6 @@ class SemesterResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'level' => $this->id,
             'name' => $this->name,
         ];
     }
