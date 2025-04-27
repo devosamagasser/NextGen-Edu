@@ -55,7 +55,7 @@ class User extends Authenticatable
 
     public function teachers()
     {
-        return $this->hasOne(Teacher::class);
+        return $this->hasOne(Teacher::class)->with(['departments','courses','semesters']);
     }
 
     public function students()

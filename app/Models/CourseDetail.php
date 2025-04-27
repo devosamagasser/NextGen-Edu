@@ -28,6 +28,7 @@ class CourseDetail extends Model
     {
        return $this->belongsTo(Course::class);
     }
+    
     public function teacher()
     {
        return $this->belongsTo(Teacher::class);

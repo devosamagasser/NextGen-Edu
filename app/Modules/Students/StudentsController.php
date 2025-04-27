@@ -5,6 +5,7 @@ namespace App\Modules\Students;
 use App\Facades\ApiResponse;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Modules\Students\CourseResource;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use App\Modules\Students\Validations\StudentStoreRequest;
 use App\Modules\Students\Validations\StudentUpdateRequest;
@@ -58,6 +59,12 @@ class StudentsController extends Controller
     {
         $this->studentsServices->deleteStudent($id);
         return ApiResponse::deleted();
+    }
+
+    public function myCourses()
+    {
+        $courses = $this->studentsServices->myCourses();
+        return ApiResponse::success(CourseResource::collection($courses));
     }
 
     public function export()

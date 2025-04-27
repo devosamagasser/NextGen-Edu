@@ -2,11 +2,11 @@
 
 namespace App\Modules\Courses;
 
-use App\Models\CourseDetail;
 use App\Services\Service;
-use http\Exception\UnexpectedValueException;
-use Illuminate\Database\UniqueConstraintViolationException;
+use App\Models\CourseDetail;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Database\UniqueConstraintViolationException;
+use Symfony\Component\HttpFoundation\Exception\UnexpectedValueException;
 
 class CoursesServices extends Service
 {
@@ -53,10 +53,11 @@ class CoursesServices extends Service
         }
     }
 
-    private function storeCourseDetails($request,$courseId)
+    public function storeCourseDetails($request,$courseId)
     {
         $details = [];
-        for ($i = 0; $i < count($request->departments); $i++) {
+        $count = count($request->departments);
+        for ($i = 0; $i < $count; $i++) {
             if (isset($request->teachers[$i])) {
                 foreach ($request->teachers[$i] as $teacherId){
                     $details[] = [

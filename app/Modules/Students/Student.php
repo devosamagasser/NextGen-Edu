@@ -29,7 +29,7 @@ class Student extends Model
     {
         return $this->belongsTo(Semester::class);
     }
-
+    
     public function scopeFilter(Builder $builder, $filterBy)
     {
         $builder->when($filterBy['department'] ?? null,function ($builder,$value){
@@ -40,6 +40,11 @@ class Student extends Model
         $builder->when($filterBy['semester'] ?? null,function ($builder,$value){
             $builder->whereHas('semester',function ($query) use($value){
                 $query->where('semester_id',$value);
+            });
+        });
+        $builder->when($filterBy['name'] ?? null,function ($builder,$value){
+            $builder->whereHas('user',function ($query) use($value){
+                $query->where('name','like',"%$value%");
             });
         });
     }

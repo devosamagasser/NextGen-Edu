@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('assignment_answers', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('assignment_id')->constrained('assignments');
-            $table->foreignId('student_id')->constrained('students');
+            $table->foreignId('assignment_id')->constrained('assignments')->cascadeOnDelete();
+            $table->foreignId('student_id')->constrained('students')->cascadeOnDelete();
             $table->string('file');
             $table->tinyInteger('degree')->default(0);
             $table->enum('status',['corrected','submitted'])->default('submitted');

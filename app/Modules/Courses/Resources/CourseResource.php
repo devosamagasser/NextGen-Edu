@@ -34,23 +34,22 @@ class CourseResource extends JsonResource
         $semesters = SemesterResource::collection($this->semesters);
         $teachers = TeacherResource::collection($this->teachers);
         $details = [];
-
         $teachers->each(function ($teacher,$index) use($semesters,$departments,&$details){
             $department = $departments->get($index);
             $departmentId = $department->id;
             $departmentName = $department->name;
-
+            
             if (!isset($details[$departmentName])) {
                 $details[$departmentName] = [
                     'department_id' => $departmentId,
                     'department_name' => $department->name,
                     'semester' => $semesters->get($index)->id,
+                    'semester_name' => $semesters->get($index)->name,
                     'teachers' => [$teacher]
                 ];
             }else{
-               $details[$departmentName]['teachers'][] = $teacher;
+                $details[$departmentName]['teachers'][] = $teacher;
             }
-
         });
         return array_values($details);
     }

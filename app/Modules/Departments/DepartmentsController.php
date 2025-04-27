@@ -60,4 +60,5 @@ class DepartmentsController extends Controller
         $this->departmentServices->deleteDepartment($id);
         return ApiResponse::deleted();
     }
+
 }

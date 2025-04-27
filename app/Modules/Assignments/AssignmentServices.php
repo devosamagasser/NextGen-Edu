@@ -4,6 +4,7 @@ namespace App\Modules\Assignments;
 
 use App\Services\Service;
 use App\Facades\FileHandler;
+use App\Models\CourseDetail;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Config;
@@ -21,18 +22,19 @@ class AssignmentServices extends Service
     {
         $user = request()->user();
         if ($user->hasRole('Teacher')){
-            $assignments = Assignment::with('courseDetail.course','teacher')
-            ->whereHas('courseDetail',function($q) use($user){
-                $q->where('teacher_id', $user->teachers->id);
-            })->orderBy('id','desc')
+            $courseDetails = CourseDetail::where('teacher_id',$user->teachers->id);
+            $assignments = Assignment::with('course', 'department', 'semester', 'teacher', 'teacher.user')
+            ->whereIn('course_id',$courseDetails->pluck('course_id'))
+            ->whereIn('department_id',$courseDetails->pluck('department_id'))
+            ->whereIn('semester_id',$courseDetails->pluck('semester_id'))
+            ->orderBy('id','desc')
             ->filter()
             ->get();
         }else if ($user->hasRole('Student')){
-            $assignments = Assignment::with('courseDetail.course','teacher')
-            ->whereHas('courseDetail',function($q) use($user){
-                $q->where('semester_id', $user->students->semester_id)
-                ->where('department_id', $user->students->department_id);
-            })->orderBy('id','desc')
+            $assignments = Assignment::with('course', 'department', 'semester', 'teacher', 'teacher.user')
+            ->where('semester_id', $user->students->semester_id)
+            ->where('department_id', $user->students->department_id)
+            ->orderBy('id','desc')
             ->filter()
             ->get();
         }
@@ -51,7 +53,13 @@ class AssignmentServices extends Service
      */
     public function getAssignmentById($id)
     {
-        return Assignment::with('courseDetail.course','teacher')->findOrFail($id);
+        return Assignment::with([
+            'course',
+            'department',
+            'semester',
+            'teacher',
+            'teacher.user'
+         ])->findOrFail($id);
     }
 
     /**
@@ -66,9 +74,13 @@ class AssignmentServices extends Service
                 'assignments',
                 $request->file->getClientOriginalExtension(),
             );
+            $CourseDetail = CourseDetail::findOrFail($request->course_id);
+
             $assignment = Assignment::create([
                 'teacher_id' => $user->teachers->id,
-                'course_detail_id'  => $request->course_id,
+                'department_id' => $CourseDetail->department_id,
+                'semester_id' => $CourseDetail->semester_id,
+                'course_id' => $CourseDetail->course_id,    
                 'title' => $request->title,
                 'file' => $file,
                 'description' => $request->description,
@@ -91,9 +103,12 @@ class AssignmentServices extends Service
             $user = request()->user();
 
             $assignment = Assignment::where('teacher_id',$user->teachers->id)->findOrFail($id);
-            
+            $CourseDetail = CourseDetail::findOrFail($request->course_id);
+
             $data = [
-                'course_detail_id'  => $request->course_id,
+                'department_id' => $CourseDetail->department_id,
+                'semester_id' => $CourseDetail->semester_id,
+                'course_id' => $CourseDetail->course_id,    
                 'title' => $request->title,
                 'description' => $request->description,
                 'total_degree' => $request->total_degree,

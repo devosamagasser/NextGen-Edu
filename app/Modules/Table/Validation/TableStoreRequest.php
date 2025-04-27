@@ -28,7 +28,7 @@ class TableStoreRequest extends AbstractApiRequest
             'department_id' => 'required|exists:departments,id',
             'attendance' => 'required|in:online,offline',
             'day' => 'required|in:saturday,sunday,monday,tuesday,wednesday,thursday',
-            'date' => 'required|date',
+            'date' => 'nullable|date',
             'from' => 'required|date_format:H:i',
             'to' => 'required|date_format:H:i',
         ];

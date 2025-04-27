@@ -13,8 +13,10 @@ return new class extends Migration
     {
         Schema::create('assignments', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('teacher_id')->constrained('teachers');
-            $table->foreignId('course_detail_id')->constrained('course_details');
+            $table->foreignId('teacher_id')->constrained('teachers')->nullOnDelete();
+            $table->foreignId('department_id')->nullable()->constrained('departments')->nullOnDelete();
+            $table->foreignId('semester_id')->nullable()->constrained('semesters')->nullOnDelete();
+            $table->foreignId('course_id')->nullable()->constrained('courses')->nullOnDelete();
             $table->string('title');
             $table->text('description')->nullable();
             $table->string('file');

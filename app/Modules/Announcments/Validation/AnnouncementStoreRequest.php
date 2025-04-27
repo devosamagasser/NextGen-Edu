@@ -5,6 +5,7 @@ namespace App\Modules\Announcments\Validation;
 use App\Rules\TimeRule;
 use App\Http\Requests\AbstractApiRequest;
 use App\Modules\Teachers\Rules\InTeacherRelationRule;
+use App\Modules\Teachers\Rules\TeacherCourseDetailsRule;
 
 class AnnouncementStoreRequest extends AbstractApiRequest
 {
@@ -24,13 +25,11 @@ class AnnouncementStoreRequest extends AbstractApiRequest
     public function rules(): array
     {
         return [
-            'department_id'  => ['required', 'integer', 'exists:departments,id', new InTeacherRelationRule('departments')],
-            'semester_id'    => ['required', 'integer', 'exists:semesters,id', new InTeacherRelationRule('semesters')],
-            'course_id'      => ['required', 'integer', 'exists:courses,id', new InTeacherRelationRule('courses')],
-            'title'          => ['nullable', 'string', 'max:255'], 
-            'body'           => ['required', 'string'],
-            'date'           => ['nullable', 'date', 'after_or_equal:today'], 
-            'time'           => ['nullable', 'date_format:H:i', new TimeRule()] 
+            'course_id' => ['required','exists:course_details,id',new TeacherCourseDetailsRule()],
+            'title'     => ['nullable', 'string', 'max:255'], 
+            'body'      => ['required', 'string'],
+            'date'      => ['nullable', 'date', 'after_or_equal:today'], 
+            'time'      => ['nullable', 'date_format:H:i', new TimeRule()] 
         ];
     }
 }

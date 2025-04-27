@@ -101,7 +101,7 @@ class TeachersServices extends Service
     private function generateCode()
     {
         $uniCode = "3081".Carbon::now()->year."000000";
-        $serial = (Teacher::select('uni_code')->latest()->first()->uni_code ?? $uniCode) + 1;
+        $serial = (Teacher::select('uni_code')->latest()->first()?->uni_code ?? $uniCode) + 1;
         return str_pad($serial , 6, '0', STR_PAD_LEFT);
     }
 

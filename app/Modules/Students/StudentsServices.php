@@ -8,6 +8,8 @@ use App\Services\Service;
 use App\Facades\ApiResponse;
 use App\Exports\StudentsExport;
 use App\Imports\StudentsImport;
+use App\Models\CourseDetail;
+use App\Modules\Courses\Course;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Maatwebsite\Excel\Facades\Excel;
@@ -137,5 +139,17 @@ class StudentsServices extends Service
         $group = $query->where('group', $maxGroup)->count() >= $groupMax ? $maxGroup + 1 : $maxGroup;
 
         return $group;
+    }
+
+    public function myCourses()
+    {
+        $semester_id = request()->user()->students->semester->id;
+        $department_id = request()->user()->students->department->id;
+
+        return Course::with('semesters','departments','courseDetails')
+            ->whereHas('courseDetails',function($q)use($semester_id, $department_id){
+                $q->where('semester_id', $semester_id);
+                $q->where('department_id', $department_id);
+            })->get();
     }
 }

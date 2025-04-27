@@ -3,17 +3,28 @@
 namespace App\Modules\Courses;
 
 use App\Models\Semester;
-use App\Modules\Departments\Department;
+use App\Models\CourseDetail;
 use App\Modules\Teachers\Teacher;
+use App\Modules\Departments\Department;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 
 class Course extends Model
 {
     use HasFactory;
 
-    protected $guarded = [];
+    protected $fillable = [
+        'name',
+        'code',
+        'description'
+    ];
+
+    public function coursedetails()
+    {
+        return $this->hasMany(CourseDetail::class);
+    }
+
     /**
      * Define relationship with Semester
      */

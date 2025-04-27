@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('postponed_sessions', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('session_id')->constrained('sessions');
-            $table->foreignId('hall_id')->nullable()->constrained('halls');
+            $table->foreignId('session_id')->constrained('sessions')->cascadeOnDelete();
+            $table->foreignId('hall_id')->nullable()->constrained('halls')->cascadeOnDelete();
             $table->enum('attendance',['online','offline'])->default('offline');
             $table->date('day');
             $table->time('from');

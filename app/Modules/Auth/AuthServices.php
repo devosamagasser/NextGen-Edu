@@ -4,6 +4,7 @@ namespace App\Modules\Auth;
 
 use App\Facades\ApiResponse;
 use App\Models\User;
+use App\Modules\Users\UserResource;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -104,11 +105,16 @@ class AuthServices
      */
     protected function respondWithToken($user,$token)
     {
+        if ($user->type == 'Student') {
+            $user->load('students.semester','students.department');
+        } elseif ($user->type == 'Teacher') {
+            $user->load('teachers.department');
+        }
         return ApiResponse::success([
             [
                 'access_token' => $token,
                 'token_type' => 'bearer',
-                'user' => $user
+                'user' => new UserResource($user)
             ]
         ],'logged in successfully');
     }

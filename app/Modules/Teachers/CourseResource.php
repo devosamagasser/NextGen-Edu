@@ -20,7 +20,8 @@ class CourseResource extends JsonResource
         $semester = new SemesterResource($this->semesters->find($this->pivot->semester_id));
 
         return [
-            'id' => $this->pivot->id,
+            'id' => $this->courseDetails->where('department_id', $department['id'])
+            ->where('semester_id', $semester['id'])->where('course_id',$this->id)->first()->id,
             'name' => $this->name,
             'code' => $this->code,
             'description' => $this->description,

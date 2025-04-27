@@ -15,10 +15,10 @@ return new class extends Migration
             $table->id();
             $table->enum('nationality',['National','International']);
             $table->string('personal_id');
-            $table->string('uni_code');
+            $table->string('uni_code')->unique();
             $table->tinyInteger('group')->default(1);
-            $table->foreignId('semester_id')->constrained('semesters');
-            $table->foreignId('department_id')->nullable()->constrained('departments');
+            $table->foreignId('semester_id')->constrained('semesters')->cascadeOnDelete();
+            $table->foreignId('department_id')->nullable()->constrained('departments')->cascadeOnDelete();
             $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
             $table->timestamps();
         });

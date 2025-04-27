@@ -4,9 +4,12 @@ namespace App\Modules\Quizzes\Models;
 
 
 use App\Models\User;
+use App\Models\Semester;
 use App\Models\CourseDetail;
 use Illuminate\Support\Carbon;
+use App\Modules\Courses\Course;
 use App\Modules\Teachers\Teacher;
+use App\Modules\Departments\Department;
 use Illuminate\Database\Eloquent\Model;
 use App\Modules\Questions\Models\Question;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -17,7 +20,9 @@ class Quiz extends Model
 
     protected $fillable = [        
         'teacher_id',
-        'course_detail_id',
+        'course_id',
+        'department_id',
+        'semester_id',
         'title',
         'description',
         'total_degree',
@@ -34,21 +39,37 @@ class Quiz extends Model
         ->withPivot('degree');
     }
 
-    public function courseDetail()
+    // public function courseDetail()
+    // {
+    //     return $this->belongsTo(CourseDetail::class)->with(['course','semester','department']);
+    // }
+
+    public function department()
     {
-        return $this->belongsTo(CourseDetail::class)->with(['course','semester','department']);
+        return $this->belongsTo(Department::class);
     }
+
+    public function semester()
+    {
+        return $this->belongsTo(Semester::class);
+    }
+
+    public function course()
+    {
+        return $this->belongsTo(Course::class);
+    }
+    
 
     public function teacher()
     {
         return $this->belongsTo(Teacher::class);
     }
 
-
     public function scopeFilter($query)
     {
         $query->when(request()->course,function($q, $value){
-            $q->where('course_detail_id',$value);
+            $courses = CourseDetail::where('teacher_id', auth()->user()->teachers->id)->where('course_id',$value)->pluck('course_id');
+            $q->whereIn('course_id',$courses);
         });
         $query->when(request()->status,function($q, $value){
             $q->where('status',$value);

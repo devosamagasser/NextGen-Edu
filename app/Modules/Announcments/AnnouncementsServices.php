@@ -2,6 +2,7 @@
 
 namespace App\Modules\Announcments;
 
+use App\Models\CourseDetail;
 use App\Services\Service;
 use App\Modules\Teachers\Teacher;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
@@ -75,11 +76,12 @@ class AnnouncementsServices extends Service
      */
     public function addNewAnnouncement($request)
     {
+        $CourseDetail = CourseDetail::findOrFail($request->course_id);
         $data = [
             'user_id' => $request->user()->id,
-            'department_id' => $request->department_id ?? null,
-            'semester_id' => $request->semester_id ?? null,
-            'course_id' => $request->course_id ?? null,
+            'department_id' => $CourseDetail->department_id,
+            'semester_id' => $CourseDetail->semester_id,
+            'course_id' => $CourseDetail->course_id,
             'title' => $request->title ?? null,
             'body' => $request->body,
         ];
@@ -97,10 +99,12 @@ class AnnouncementsServices extends Service
     public function updateAnnouncementInfo($request, string $id)
     {
         $announcement = Announcement::findOrFail($id);
+        $CourseDetail = CourseDetail::findOrFail($request->course_id);
+
         $this->checkAuthrization($announcement->user_id);
         $data = [
-            'department_id' => $request->department_id ?? $announcement->department_id,
-            'semester_id' => $request->semester_id ?? $announcement->semester_id,
+            'department_id' => $request->department_id ?? $CourseDetail->department_id,
+            'semester_id' => $request->semester_id ?? $CourseDetail->semester_id,
             'course_id' => $request->course_id ?? $announcement->course_id,
             'title' => $request->title ?? $announcement->title,
             'body' => $request->body ?? $announcement->body,

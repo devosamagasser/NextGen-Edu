@@ -37,22 +37,22 @@ class Session extends Model
     {
         return $this->belongsTo(Hall::class)->with('building');
     }
-    
-
 
     public function scopeStudent($query)
     {
         $user = auth()->user();
         $query->whereHas('details', function ($q) use ($user) {
             $q->where('semester_id', $user->students->semester_id);
+            $q->where('department_id', $user->students->department_id);
         });
     }
 
     public function scopeTeacher($query)
     {
-        $user = auth()->user();
+        $user = auth()->user()->load(['teachers','teachers.departments','teachers.semesters']);
         $query->whereHas('details', function ($q) use ($user) {
-            $q->where('teacher_id', $user->teachers->id);
+            $q->whereIn('department_id', $user->teachers->departments->pluck('id'));
+            $q->whereIn('semester_id', $user->teachers->semesters->pluck('id'));
         });
     }
 
@@ -68,11 +68,18 @@ class Session extends Model
                 $query->where('semester_id',$value);
             });
         });
-        $builder->when($filterBy['course'] ?? null,function ($builder,$value){
-            $builder->whereHas('details',function ($query) use($value){
-                $query->where('course_id',$value);
-            });
-        });
     }
+
+
+    public function scopeOrderByDepartmentAndSemester($query)
+    {
+        return $query->join('course_details', 'sessions.course_detail_id', '=', 'course_details.id')
+            ->join('departments', 'course_details.department_id', '=', 'departments.id')
+            ->join('semesters', 'course_details.semester_id', '=', 'semesters.id')
+            ->orderBy('departments.id')
+            ->orderBy('semesters.id')
+            ->select('sessions.*');
+    }
+    
 
 }

@@ -13,10 +13,12 @@ return new class extends Migration
     {
         Schema::create('quizzes', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('teacher_id')->constrained('teachers');
-            $table->foreignId('course_detail_id')->constrained('course_details');
+            $table->foreignId('teacher_id')->constrained('teachers')->nullOnDelete();
+            $table->foreignId('department_id')->nullable()->constrained('departments')->nullOnDelete();
+            $table->foreignId('semester_id')->nullable()->constrained('semesters')->nullOnDelete();
+            $table->foreignId('course_id')->nullable()->constrained('courses')->nullOnDelete();
             $table->string('title');
-            $table->text('description');
+            $table->text('description')->nullable();
             $table->tinyInteger('total_degree');
             $table->date('date'); 
             $table->time('start_time'); 

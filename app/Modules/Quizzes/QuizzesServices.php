@@ -4,18 +4,15 @@ namespace App\Modules\Quizzes;
 
 use Carbon\Carbon;
 use App\Services\Service;
-use App\Facades\ApiResponse;
-use Illuminate\Http\Response;
+use App\Models\CourseDetail;
 use Illuminate\Support\Facades\DB;
 use App\Modules\Quizzes\Models\Quiz;
 use App\Modules\Quizzes\Models\QuizAnswer;
 use App\Modules\Questions\QuestionsServices;
-use App\Modules\Teachers\Teacher;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
 class QuizzesServices extends Service
 {
-
     /**
      * Display a listing of the resource.
      */
@@ -23,18 +20,19 @@ class QuizzesServices extends Service
     {
         $user = request()->user();
         if ($user->hasRole('Teacher')){
-            $quizez = Quiz::with('courseDetail.course','teacher')
-            ->whereHas('courseDetail',function($q) use($user){
-                $q->where('teacher_id', $user->teachers->id);
-            })->orderBy('id','desc')
+            $courseDetails = CourseDetail::where('teacher_id',$user->teachers->id);
+            $quizez = Quiz::with('course', 'department', 'semester', 'teacher', 'teacher.user')
+            ->whereIn('course_id',$courseDetails->pluck('course_id'))
+            ->whereIn('department_id',$courseDetails->pluck('department_id'))
+            ->whereIn('semester_id',$courseDetails->pluck('semester_id'))
+            ->orderBy('id','desc')
             ->filter()
             ->get();
         }else if ($user->hasRole('Student')){
-            $quizez = Quiz::with('courseDetail.course','teacher')
-            ->whereHas('courseDetail',function($q) use($user){
-                $q->where('semester_id', $user->students->semester_id)
-                ->where('department_id', $user->students->department_id);
-            })->orderBy('id','desc')
+            $quizez = Quiz::with('course', 'department', 'semester', 'teacher', 'teacher.user')
+            ->where('semester_id', $user->students->semester_id)
+            ->where('department_id', $user->students->department_id)
+            ->orderBy('id','desc')
             ->filter()
             ->get();
         }
@@ -44,7 +42,6 @@ class QuizzesServices extends Service
         //     $quizStart = Carbon::parse($quize->date . ' ' . $quize->start_time);
         //     $quizEnd = $quizStart->copy()->addMinutes($quize->duration);
         //     $now = now();
-        
         //     if ($now->greaterThanOrEqualTo($quizEnd)) {
         //         if ($quize->status !== 'finished') {
         //             $quize->status = 'finished';
@@ -89,7 +86,7 @@ class QuizzesServices extends Service
      */
     public function getQuizeById($id)
     {
-        return Quiz::with('questions.answers','courseDetail.course','teacher')->findOrFail($id);
+        return Quiz::with('questions.answers','course', 'teacher', 'teacher.user')->findOrFail($id);
     }
 
     /**
@@ -99,9 +96,13 @@ class QuizzesServices extends Service
     {
         return DB::transaction(function () use($request) {
             $user = request()->user();
+            $CourseDetail = CourseDetail::findOrFail($request->course_id);
+
             $quiz = Quiz::create([
                 'teacher_id' => $user->teachers->id,
-                'course_detail_id'  => $request->course_id,
+                'department_id' => $CourseDetail->department_id,
+                'semester_id' => $CourseDetail->semester_id,
+                'course_id' => $CourseDetail->course_id,                
                 'title' => $request->title,
                 'description' => $request->description,
                 'total_degree' => $request->total_degree,
@@ -109,11 +110,9 @@ class QuizzesServices extends Service
                 'start_time' => $request->start_time,
                 'duration' => $request->duration,
             ]);
-    
             $questions = $this->questionHandler($request,$quiz);
-    
             $quiz->questions()->attach($questions);
-    
+
             return $quiz;
         });
     }
@@ -126,10 +125,12 @@ class QuizzesServices extends Service
     {
         return DB::transaction(function () use($request,$id) {
             $user = request()->user();
-
+            $CourseDetail = CourseDetail::findOrFail($request->course_id);
             $quiz = Quiz::where('teacher_id',$user->teachers->id)->findOrFail($id);
             $quiz->update([
-                'course_detail_id'  => $request->course_id,
+                'department_id' => $CourseDetail->department_id,
+                'semester_id' => $CourseDetail->semester_id,
+                'course_id' => $CourseDetail->course_id,
                 'title' => $request->title,
                 'description' => $request->description,
                 'total_degree' => $request->total_degree,
@@ -147,15 +148,14 @@ class QuizzesServices extends Service
         });
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
+
     public function deleteQuiz(string $id)
     {
         $user = request()->user();
         $quiz = Quiz::where('teacher_id',$user->teachers->id)->findOrFail($id);
         return $quiz->delete();
     }
+
 
     public function startStudentQuiz($quiz_id)
     {
@@ -222,11 +222,6 @@ class QuizzesServices extends Service
     }
     
 
-
-
-
-
-
     private function questionHandler($request,$quiz)
     {
         $questions = [];
@@ -240,7 +235,7 @@ class QuizzesServices extends Service
         }
 
         if ($request->filled('new_questions')) {
-            $course_id = $quiz->courseDetail->course_id;
+            $course_id = $quiz->course_id;
 
             foreach ($request->new_questions as $new_question) {
                 $new_question['course_id'] = $course_id;
@@ -253,7 +248,5 @@ class QuizzesServices extends Service
         }
         return $questions;
     }
-
-
 
 }

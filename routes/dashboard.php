@@ -24,10 +24,11 @@ Route::group(['middleware'=>['auth','role:Super admin']],function (){
         Route::apiResource('/halls',HallsController::class)->except('index');
     });
     Route::apiResource('/courses',CoursesController::class);
+    Route::post('/courses/{id}/details', [CoursesController::class,'storeDetails']);
 });
 
 Route::group(['middleware' => 'auth' ], function () {
-    Route::group(['middleware' => 'role:Admin' ], function () {
+    Route::group(['middleware' => 'role:Admin|Super admin' ], function () {
         Route::controller(StudentsController::class)->group(function () {
             Route::get('/students/export', 'export');
             Route::post('/students/import', 'import');

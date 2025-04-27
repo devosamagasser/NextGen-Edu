@@ -23,7 +23,7 @@ class AssignmentResource extends JsonResource
             'date' => $this->deadline->format('Y-m-d'), 
             'time' => $this->deadline->format('H:i'), 
             'status' => $this->status,
-            'course' => $this->courseDetail->course->name,
+            'course' => $this->course->name,
             'teacher' => $this->teacher->name,
             'file' => $this->file_url,
         ];

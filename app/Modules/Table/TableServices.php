@@ -22,7 +22,8 @@ class TableServices extends Service
             'details.department',
             'hall.building'
         )->filter(request()->query())
-            ->get();
+        ->orderByDepartmentAndSemester()
+        ->get();
     }
 
     /**
@@ -42,9 +43,6 @@ class TableServices extends Service
             ->get();
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function addNewSession($request)
     {
         return Session::create([
@@ -72,15 +70,6 @@ class TableServices extends Service
         $session->fill($data);
         return ($session->isDirty()) ? $session : false;
     }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    // public function deleteTeacher(string $id)
-    // {
-    //     $userId = Teacher::findOrfail($id)->user_id;
-    //     return User::findOrfail($userId)->delete();
-    // }
 
     public function getCourseDetailId($request, $session = null)
     {

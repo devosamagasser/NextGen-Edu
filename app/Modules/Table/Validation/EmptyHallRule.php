@@ -26,22 +26,24 @@ class EmptyHallRule implements ValidationRule
         $from = request()->input('from');
         $to = request()->input('to');
 
-        $exists = Session::where('hall_id', $value)
+        if ($date) {
+            $exists = Session::where('hall_id', $value)
             ->where('status', 'in time')
             ->where('date', $date)
             ->where(function ($query) use($date, $from, $to) {
                 $query->whereBetween('from', [$from, $to])
-                      ->orWhereBetween('to', [$from, $to])
-                      ->orWhere(function ($query) use($date, $from, $to) {
-                          $query->where('from', '<=', $from)
-                                ->where('to', '>=', $to);
-                      });
+                ->orWhereBetween('to', [$from, $to])
+                ->orWhere(function ($query) use($date, $from, $to) {
+                    $query->where('from', '<=', $from)
+                    ->where('to', '>=', $to);
+                });
             })
             ->when($this->id, fn($query) => $query->where('id', '!=', $this->id))
             ->exists();
-
-        if ($exists) {
-            $fail('The hall is not empty at this time.');
+            
+            if ($exists) {
+                $fail('The hall is not empty at this time.');
+            }
         }
     }
 }

@@ -3,8 +3,11 @@
 namespace App\Modules\Assignments\Models;
 
 use App\Models\User;
+use App\Models\Semester;
 use App\Models\CourseDetail;
+use App\Modules\Courses\Course;
 use App\Modules\Teachers\Teacher;
+use App\Modules\Departments\Department;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
@@ -14,7 +17,9 @@ class Assignment extends Model
 
     protected $fillable = [
         'teacher_id',
-        'course_detail_id',
+        'course_id',
+        'department_id',
+        'semester_id',
         'title',
         'description',
         'file',
@@ -28,9 +33,20 @@ class Assignment extends Model
     ];
 
 
-    public function courseDetail()
+
+    public function department()
     {
-        return $this->belongsTo(CourseDetail::class)->with(['course','semester','department']);
+        return $this->belongsTo(Department::class);
+    }
+
+    public function semester()
+    {
+        return $this->belongsTo(Semester::class);
+    }
+
+    public function course()
+    {
+        return $this->belongsTo(Course::class);
     }
 
     public function teacher()
@@ -47,7 +63,8 @@ class Assignment extends Model
     public function scopeFilter($query)
     {
         $query->when(request()->course,function($q, $value){
-            $q->where('course_detail_id',$value);
+            $courses = CourseDetail::where('teacher_id', auth()->user()->teachers->id)->where('course_id',$value)->pluck('course_id');
+            $q->whereIn('course_id',$courses);
         });
         $query->when(request()->status,function($q, $value){
             $q->where('status',$value);

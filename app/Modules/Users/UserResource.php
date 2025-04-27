@@ -22,11 +22,21 @@ class UserResource extends JsonResource
             'avatar' => asset($this->avatar)
         ];
         $this->whenLoaded('students',function() use(&$data){
-            $data['semester'] = $this->students->semester->id;
-            $data['semester_name'] = $this->students->semester->name;
-            $data['department_id'] = $this->students->department_id;
-            $data['department_name'] = $this->students->department->name;
+            $data['semester'] =[
+                'id' => $this->students->semester->id,
+                'name' => $this->students->semester->name
+            ];
+            $data['department'] = [
+                'id' => $this->students->department->id,
+                'name' => $this->students->department->name
+            ];
             $data['group'] = $this->students->group;
+        });
+        $this->whenLoaded('teachers',function() use(&$data){
+            $data['department'] = [ 
+                'id' => $this->teachers->department_id,
+                'name' => $this->teachers->department->name
+            ];
         });
         return $data;
     }
