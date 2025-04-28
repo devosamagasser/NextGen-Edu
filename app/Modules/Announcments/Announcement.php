@@ -18,6 +18,7 @@ class Announcement extends Model
         'department_id',
         'semester_id',
         'course_id',
+        'course_details_id',
         'title',
         'body',
         'cover',

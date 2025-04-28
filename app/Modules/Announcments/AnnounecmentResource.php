@@ -28,11 +28,11 @@ class AnnounecmentResource extends JsonResource
                 "name" => $this->department->name,
             ],
             "semester" => [
-                "id" => $this->semester->id,
+                "id" => $this->semester_id,
                 "name" => $this->semester->name
             ],
             "course" => [
-                "id" => $this->course->id,
+                "id" => $this->course_details_id,
                 "name" => $this->course->name
             ],
             "user" => [

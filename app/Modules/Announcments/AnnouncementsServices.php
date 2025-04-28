@@ -82,6 +82,7 @@ class AnnouncementsServices extends Service
             'department_id' => $CourseDetail->department_id,
             'semester_id' => $CourseDetail->semester_id,
             'course_id' => $CourseDetail->course_id,
+            'course_details_id' => $request->course_id,
             'title' => $request->title ?? null,
             'body' => $request->body,
         ];
@@ -106,6 +107,7 @@ class AnnouncementsServices extends Service
             'department_id' => $CourseDetail->department_id ?? $announcement->department_id,
             'semester_id' => $CourseDetail->semester_id ?? $announcement->semester_id,
             'course_id' => $CourseDetail->course_id ?? $announcement->course_id,
+            'course_details_id' => $request->course_id,
             'title' => $request->title ?? $announcement->title,
             'body' => $request->body ?? $announcement->body,
         ];
