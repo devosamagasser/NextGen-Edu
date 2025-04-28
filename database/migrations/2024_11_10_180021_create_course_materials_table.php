@@ -18,6 +18,7 @@ return new class extends Migration
             $table->foreignId('semester_id')->nullable()->constrained('semesters')->nullOnDelete();
             $table->foreignId('course_id')->nullable()->constrained('courses')->nullOnDelete();
             $table->string('material');
+            $table->unsignedBigInteger('course_details_id')->nullable();
             $table->enum('week', ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14']);
             $table->timestamps();
         });

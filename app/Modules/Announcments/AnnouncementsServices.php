@@ -123,6 +123,7 @@ class AnnouncementsServices extends Service
         }
         return false;
     }
+    
 
     /**
      * Remove the specified resource from storage.

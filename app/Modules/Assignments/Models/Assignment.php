@@ -20,6 +20,7 @@ class Assignment extends Model
         'course_id',
         'department_id',
         'semester_id',
+        'course_details_id',
         'title',
         'description',
         'file',
@@ -31,7 +32,6 @@ class Assignment extends Model
     protected $casts = [
         'deadline' => 'datetime',
     ];
-
 
 
     public function department()

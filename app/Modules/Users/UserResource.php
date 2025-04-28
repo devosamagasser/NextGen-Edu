@@ -19,7 +19,7 @@ class UserResource extends JsonResource
             'name' => $this->name,
             'email' => $this->email,
             'type' => $this->type,
-            'avatar' => asset($this->avatar)
+            'avatar' => config('filesystems.images_url').$this->avatar
         ];
         $this->whenLoaded('students',function() use(&$data){
             $data['semester'] =[

@@ -22,6 +22,7 @@ class Quiz extends Model
         'teacher_id',
         'course_id',
         'department_id',
+        'course_details_id',
         'semester_id',
         'title',
         'description',

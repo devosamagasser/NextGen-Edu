@@ -17,6 +17,7 @@ return new class extends Migration
             $table->foreignId('department_id')->nullable()->constrained('departments')->nullOnDelete();
             $table->foreignId('semester_id')->nullable()->constrained('semesters')->nullOnDelete();
             $table->foreignId('course_id')->nullable()->constrained('courses')->nullOnDelete();
+            $table->unsignedBigInteger('course_details_id')->nullable();
             $table->string('title');
             $table->text('description')->nullable();
             $table->string('file');
