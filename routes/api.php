@@ -9,6 +9,7 @@ use App\Modules\Quizzes\QuizzesController;
 use App\Modules\Students\StudentsController;
 use App\Modules\Assignments\AssignmentController;
 use App\Modules\Announcments\AnnouncementController;
+use App\Modules\CourseMaterials\CourseMaterialsController;
 
 Route::post('/login',[AuthController::class,'login']);
 
@@ -30,4 +31,6 @@ Route::group(['middleware'=>['auth','role:Student']],function (){
         Route::get('{id}', [AssignmentController::class, 'show']);
         Route::post('{id}/submit', [AssignmentController::class, 'submit']);
     });
+    Route::get('/course-materials/{id}', [CourseMaterialsController::class,'index']);
+    Route::get('/course-materials/{id}/show', [CourseMaterialsController::class,'show']);
 });
