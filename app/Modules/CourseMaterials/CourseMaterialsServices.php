@@ -28,8 +28,8 @@ class CourseMaterialsServices extends Service
                 ->get();
         } elseif ($user->hasRole('Student')) {
             return CourseMaterial::where('course_id', $courseDetails->course_id)
-                ->where('department_id', $$user->students->department_id)
-                ->where('semester_id', $$user->students->semester_id)
+                ->where('department_id', $user->students->department_id)
+                ->where('semester_id', $user->students->semester_id)
                 ->get();
         }
 
