@@ -13,9 +13,12 @@ return new class extends Migration
     {
         Schema::create('course_materials', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('course_detail_id')->constrained('course_details')->cascadeOnDelete();
-            $table->foreignId('course_material_type_id')->constrained('course_material_types')->cascadeOnDelete();
+            $table->string('title')->nullable();
+            $table->foreignId('department_id')->nullable()->constrained('departments')->nullOnDelete();
+            $table->foreignId('semester_id')->nullable()->constrained('semesters')->nullOnDelete();
+            $table->foreignId('course_id')->nullable()->constrained('courses')->nullOnDelete();
             $table->string('material');
+            $table->enum('week', ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14']);
             $table->timestamps();
         });
     }

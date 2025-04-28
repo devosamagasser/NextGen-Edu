@@ -103,9 +103,9 @@ class AnnouncementsServices extends Service
 
         $this->checkAuthrization($announcement->user_id);
         $data = [
-            'department_id' => $request->department_id ?? $CourseDetail->department_id,
-            'semester_id' => $request->semester_id ?? $CourseDetail->semester_id,
-            'course_id' => $request->course_id ?? $announcement->course_id,
+            'department_id' => $CourseDetail->department_id ?? $announcement->department_id,
+            'semester_id' => $CourseDetail->semester_id ?? $announcement->semester_id,
+            'course_id' => $CourseDetail->course_id ?? $announcement->course_id,
             'title' => $request->title ?? $announcement->title,
             'body' => $request->body ?? $announcement->body,
         ];
