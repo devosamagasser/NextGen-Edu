@@ -48,9 +48,9 @@ class CourseMaterial extends Model
         return config('filesystems.images_url') . $this->material;
     }
 
-    public function scopeFilter()
+    public function scopeFilter($query)
     {
-        return $this->when(request()->has('type'), function ($query,$type) {
+        $query->when(request()->has('type'), function ($query,$type) {
             return $query->where('type', $type);
         })->when(request()->has('week'), function ($query,$week) {
             return $query->where('week', $week);
