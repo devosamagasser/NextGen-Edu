@@ -21,18 +21,19 @@ class MaterialsResource extends JsonResource
             "week" => $this->week,
             "file" => $this->material_url,
             'created_at' => $this->created_at->diffForHumans(),
-            'department' => [
-                "id" => $this->department_id,
-                "name" => $this->department->name
-            ],
-            'semester' => [
-                "id" => $this->semester_id,
-                "name" => $this->semester->name
-            ],
-            "course" => [
-                "id" => $this->course_details_id,
-                "name" => $this->course->name
-            ],
+            'type' => 'lecture'
+            // 'department' => [
+            //     "id" => $this->department_id,
+            //     "name" => $this->department->name
+            // ],
+            // 'semester' => [
+            //     "id" => $this->semester_id,
+            //     "name" => $this->semester->name
+            // ],
+            // "course" => [
+            //     "id" => $this->course_details_id,
+            //     "name" => $this->course->name
+            // ],
         ];
     }
 }

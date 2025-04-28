@@ -8,6 +8,7 @@ use App\Modules\Teachers\Teacher;
 use App\Modules\Departments\Department;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
+use App\Modules\CourseMaterials\CourseMaterial;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Course extends Model
@@ -36,6 +37,11 @@ class Course extends Model
             'course_id',
             'semester_id'
         );
+    }
+
+    public function materials()
+    {
+        return $this->hasMany(CourseMaterial::class);
     }
 
     /**
