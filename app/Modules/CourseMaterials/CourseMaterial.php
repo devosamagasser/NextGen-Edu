@@ -19,7 +19,8 @@ class CourseMaterial extends Model
         'course_details_id',
         'title',
         'material',
-        'week'
+        'week',
+        'type'
     ];
 
     protected $casts = [
@@ -45,5 +46,14 @@ class CourseMaterial extends Model
     public function getMaterialUrlAttribute()
     {
         return config('filesystems.images_url') . $this->material;
+    }
+
+    public function scopeFilter()
+    {
+        return $this->when(request()->has('type'), function ($query,$type) {
+            return $query->where('type', $type);
+        })->when(request()->has('week'), function ($query,$week) {
+            return $query->where('week', $week);
+        });
     }
 }

@@ -21,14 +21,14 @@ class CourseMaterialsServices extends Service
         $user = auth()->user();
 
         $courseDetails = CourseDetail::findOrFail($id);
+        $materials = CourseMaterial::where('course_id', $courseDetails->course_id)->filter();
+
         if ($user->hasRole('Teacher')) {
-            return CourseMaterial::where('course_id', $courseDetails->course_id)
-                ->where('department_id', $courseDetails->department_id)
+            return $materials->where('department_id', $courseDetails->department_id)
                 ->where('semester_id', $courseDetails->semester_id)
                 ->get();
         } elseif ($user->hasRole('Student')) {
-            return CourseMaterial::where('course_id', $courseDetails->course_id)
-                ->where('department_id', $user->students->department_id)
+            return $materials->where('department_id', $user->students->department_id)
                 ->where('semester_id', $user->students->semester_id)
                 ->get();
         }
@@ -60,6 +60,7 @@ class CourseMaterialsServices extends Service
                 'course_details_id' => $id,
                 'material' => $materialPath,
                 'week' => $request->week,
+                'type' => $request->type,
             ]);
         });
     }
@@ -82,6 +83,7 @@ class CourseMaterialsServices extends Service
                 'title' => $request->title ?? $courseMaterial->title,
                 'material' => $materialPath ?? $courseMaterial->material,
                 'week' => $request->week ?? $courseMaterial->week,
+                'type' => $request->type ?? $courseMaterial->type,
             ]);
         });
     }
