@@ -4,6 +4,7 @@
 use App\Modules\Auth\AuthController;
 use App\Modules\Users\UserController;
 use Illuminate\Support\Facades\Route;
+use App\Modules\Table\TableController;
 use App\Modules\Courses\CoursesController;
 use App\Modules\Quizzes\QuizzesController;
 use App\Modules\Students\StudentsController;
@@ -25,6 +26,7 @@ Route::group(['middleware'=>['auth','role:Student']],function (){
         Route::post('{id}/submit', [QuizzesController::class, 'submitAnswers']);
     });
     Route::get('/announcements', [AnnouncementController::class, 'index']);
+    Route::get('/table', [TableController::class,'index']);
 
     Route::prefix('assignments')->group(function () {
         Route::get('', [AssignmentController::class, 'index']);

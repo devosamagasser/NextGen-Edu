@@ -2,9 +2,6 @@
 
 namespace App\Modules\Table\Resources;
 
-use App\Modules\Courses\Resources\DepartmentResource;
-use App\Modules\Courses\Resources\SemesterResource;
-use App\Modules\Courses\Resources\TeacherResource;
 use App\Modules\Halls\HallResource;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -25,10 +22,7 @@ class TableResource extends JsonResource
         return [
             'id' => $this->id,
             'type' => $this->type,
-            'course' => $this->details->course->name,
-            'teacher' => $this->details->teacher->user->name,
-            'department' => $this->details->department->name,
-            'semester' => $this->details->semester->id,
+            'course' => $this->course->name,
             'hall' => [
                 'hall_id' => $hall->id,
                 'hall_name' => $hall->name,
@@ -39,11 +33,10 @@ class TableResource extends JsonResource
             ],
             'attendance' => $this->attendance,
             'day' => $this->day,
-            'date' => $this->date,
             'from' => $this->from,
             'to' => $this->to,
-            'week' => $this->week ?? null,
             'status' => $this->status,
         ];
     }
+
 }

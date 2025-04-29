@@ -5,6 +5,7 @@ namespace App\Modules\Table;
 use App\Services\Service;
 use App\Models\CourseDetail;
 use App\Modules\Table\Models\Session;
+use App\Modules\Table\Resources\TableResource;
 
 
 class TableServices extends Service
@@ -15,17 +16,55 @@ class TableServices extends Service
      */
     public function getTable()
     {
-        return Session::with(
-            'details.course',
-            'details.teacher.user', 
-            'details.semester', 
-            'details.department',
+        $sessions = Session::with(
+            'course',
+            'semester',
+            'department',
             'hall.building'
-        )->filter(request()->query())
-        ->orderByDepartmentAndSemester()
+        )
+        ->filter(request()->query())
+        ->student()
+        ->teacher()
         ->get();
+
+        return $this->tableFormat($sessions);
+
     }
 
+    public function tableFormat($sessions)
+    {
+        $daysOrder = [
+            'saturday' => 1,
+            'sunday' => 2,
+            'monday' => 3,
+            'tuesday' => 4,
+            'wednesday' => 5,
+            'thursday' => 6,
+        ];
+    
+        return $sessions->groupBy(function ($session) {
+            return $session->department->name . '-' . $session->semester->id;
+        })->map(function ($group) use ($daysOrder) {
+            $first = $group->first();
+    
+            return [
+                'department' => $first->department->name,
+                'department_id' => $first->department_id,
+                'semester' => $first->semester->id,
+                'sessions' => $group->groupBy('day')
+                    ->sortBy(function ($_, $day) use ($daysOrder) {
+                        return $daysOrder[strtolower($day)] ?? 999; // لو اليوم مش موجود يتحط في الآخر
+                    })
+                    ->map(function ($daySessions) {
+                        return $daySessions->sortBy('from')->map(function ($session) {
+                            return new TableResource($session);
+                        })->values();
+                    }),
+            ];
+        })->values();
+    }
+    
+    
     /**
      * Display the specified resource.
      */
@@ -43,41 +82,55 @@ class TableServices extends Service
             ->get();
     }
 
-    public function addNewSession($request)
+    public function addNewSession($request, $department_id, $semester_id)
     {
-        return Session::create([
-            'type' => $request->type,
-            'course_detail_id' => $this->getCourseDetailId($request),
-            'hall_id' => $request->hall_id,
-            'attendance' => $request->attendance,
-            'day' => $request->day,
-            'date' => $request->date,
-            'from' => $request->from,
-            'to' => $request->to,
-            'week' => 0,
-        ]);
+
+        $count = count($request->course_id);
+        for ($i = 0; $i < $count; $i++) {
+            $data = [
+                'type' => $request->type[$i],
+                'course_id' => $request->course_id[$i],
+                'department_id' => $department_id,
+                'semester_id' => $semester_id,
+                'hall_id' => $request->hall_id[$i],
+                'attendance' => $request->attendance[$i],
+                'day' => $request->day[$i],
+                'from' => $request->from[$i],
+                'to' => $request->to[$i],
+            ];
+        }
+
+        return Session::insert($data);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function updateSessionInfo($request, $id)
+    public function updateSessionInfo($request, $department_id, $semester_id)
     {
-        $session = Session::findOrfail($id);
-        $data = $request->except('course_id', 'semester_id', 'department_id', 'teacher_id');
-        $data = array_merge($data, ['course_detail_id' => $this->getCourseDetailId($request, $session)]);
-        $data = $this->updatedDataFormated($request, $data);
-        $session->fill($data);
-        return ($session->isDirty()) ? $session : false;
+        $this->deleteTable($department_id, $semester_id);
+        $count = count($request->course_id);
+        for ($i = 0; $i < $count; $i++) {
+            $data = [
+                'type' => $request->type[$i],
+                'course_id' => $request->course_id[$i],
+                'department_id' => $department_id,
+                'semester_id' => $semester_id,
+                'hall_id' => $request->hall_id[$i],
+                'attendance' => $request->attendance[$i],
+                'day' => $request->day[$i],
+                'from' => $request->from[$i],
+                'to' => $request->to[$i],
+            ];
+        }
+
+        return Session::insert($data);
     }
 
-    public function getCourseDetailId($request, $session = null)
+    public function deleteTable($department_id, $semester_id)
     {
-        $course_id = $request->course_id ?? $session->details->course_id;
-        $department_id = $request->department_id ?? $session->details->department_id;
-
-        return CourseDetail::where('course_id', $course_id)
-            ->where('department_id', $department_id)
-            ->firstOrFail()->id;
+        return Session::where('department_id', $department_id)
+            ->where('semester_id', $semester_id)
+            ->delete();
     }
 }

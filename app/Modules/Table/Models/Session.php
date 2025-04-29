@@ -2,8 +2,10 @@
 
 namespace App\Modules\Table\Models;
 
+use App\Models\Semester;
 use App\Modules\Halls\Hall;
-use App\Models\CourseDetail;
+use App\Modules\Courses\Course;
+use App\Modules\Departments\Department;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -14,7 +16,9 @@ class Session extends Model
 
     protected $fillable = [
         'type',
-        'course_detail_id',
+        'department_id',
+        'semester_id',
+        'course_id',
         'hall_id',
         'attendance',
         'day',
@@ -24,13 +28,19 @@ class Session extends Model
         'week',
     ];
 
-
-    public function details()
+    public function course()
     {
-        return $this->belongsTo(
-            CourseDetail::class,
-            'course_detail_id'
-        )->with('course', 'teacher.user', 'semester','department');
+        return $this->belongsTo(Course::class);
+    }
+
+    public function department()
+    {
+        return $this->belongsTo(Department::class);
+    }
+
+    public function semester()
+    {
+        return $this->belongsTo(Semester::class);
     }
     
     public function hall()
@@ -41,41 +51,36 @@ class Session extends Model
     public function scopeStudent($query)
     {
         $user = auth()->user();
-        $query->whereHas('details', function ($q) use ($user) {
-            $q->where('semester_id', $user->students->semester_id);
-            $q->where('department_id', $user->students->department_id);
-        });
+        if ($user->type == 'Student') {
+            $query->where('semester_id', $user->students->semester_id)
+                ->where('department_id', $user->students->department_id);
+        }
     }
 
     public function scopeTeacher($query)
     {
-        $user = auth()->user()->load(['teachers','teachers.departments','teachers.semesters']);
-        $query->whereHas('details', function ($q) use ($user) {
-            $q->whereIn('department_id', $user->teachers->departments->pluck('id'));
-            $q->whereIn('semester_id', $user->teachers->semesters->pluck('id'));
-        });
+        $user = auth()->user();
+        if ($user->hasRole('Teacher')) {
+            $query->whereIn('department_id', $user->teachers->departments->pluck('id'))
+               ->whereIn('semester_id', $user->teachers->semesters->pluck('id'));
+        }
     }
 
     public function scopeFilter(Builder $builder, $filterBy)
     {
         $builder->when($filterBy['department'] ?? null,function ($builder,$value){
-            $builder->whereHas('details',function ($query) use($value){
-                $query->where('department_id',$value);
-            });
+            $builder->where('department_id',$value);
         });
         $builder->when($filterBy['semester'] ?? null,function ($builder,$value){
-            $builder->whereHas('details',function ($query) use($value){
-                $query->where('semester_id',$value);
-            });
+            $builder->where('semester_id',$value);
         });
     }
 
 
     public function scopeOrderByDepartmentAndSemester($query)
     {
-        return $query->join('course_details', 'sessions.course_detail_id', '=', 'course_details.id')
-            ->join('departments', 'course_details.department_id', '=', 'departments.id')
-            ->join('semesters', 'course_details.semester_id', '=', 'semesters.id')
+        return $query->join('departments', 'department_id', '=', 'departments.id')
+            ->join('semesters', 'semester_id', '=', 'semesters.id')
             ->orderBy('departments.id')
             ->orderBy('semesters.id')
             ->select('sessions.*');

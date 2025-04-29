@@ -6,6 +6,7 @@ use App\Modules\Teachers\TeachersController;
 use App\Modules\Assignments\AssignmentController;
 use App\Modules\Announcments\AnnouncementController;
 use App\Modules\CourseMaterials\CourseMaterialsController;
+use App\Modules\Table\TableController;
 
 Route::group(['middleware'=>['auth','role:Teacher']],function (){
     Route::get('/courses',[TeachersController::class,'myCourses']);
@@ -13,11 +14,16 @@ Route::group(['middleware'=>['auth','role:Teacher']],function (){
     Route::get('/semesters',[TeachersController::class,'mySemesters']);
     Route::apiResource('quizzes',QuizzesController::class);
     Route::apiResource('assignments',AssignmentController::class);
+    
     Route::apiResource('/announcements', AnnouncementController::class);
     Route::get('/my-announcements', [AnnouncementController::class,'showMine']);
-    Route::get('/course-materials/{id}', [CourseMaterialsController::class,'index']);
-    Route::post('/course-materials/{id}', [CourseMaterialsController::class,'store']);
-    Route::get('/course-materials/{id}/show', [CourseMaterialsController::class,'show']);
-    Route::put('/course-materials/{id}', [CourseMaterialsController::class,'update']);
-    Route::delete('/course-materials/{id}', [CourseMaterialsController::class,'destroy']);
+    Route::get('/table', [TableController::class,'index']);
+
+    Route::group(['prefix'=>'course-materials'],function (){
+        Route::get('/{id}', [CourseMaterialsController::class,'index']);
+        Route::post('/{id}', [CourseMaterialsController::class,'store']);
+        Route::get('/{id}/show', [CourseMaterialsController::class,'show']);
+        Route::put('/{id}', [CourseMaterialsController::class,'update']);
+        Route::delete('/{id}', [CourseMaterialsController::class,'destroy']);
+    });
 });

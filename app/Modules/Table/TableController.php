@@ -5,7 +5,7 @@ namespace App\Modules\Table;
 use App\Facades\ApiResponse;
 use App\Modules\Table\Resources\TableResource;
 use App\Http\Controllers\Controller;
-use App\Modules\Table\Validation\TableStoreRequest;
+use App\Modules\Table\Validation\TableManuallyStoreRequest;
 use App\Modules\Table\Validation\TableUpdateRequest;
 
 class TableController extends Controller
@@ -19,9 +19,10 @@ class TableController extends Controller
      */
     public function index()
     {
-        $table = $this->tableServices->getTable();
-        return ApiResponse::success(TableResource::collection($table));
+        $sessions = $this->tableServices->getTable();
+        return ApiResponse::success($sessions);
     }
+    
 
     public function studentTable()
     {
@@ -38,31 +39,27 @@ class TableController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(TableStoreRequest $request)
+    public function manually(TableManuallyStoreRequest $request, $department_id, $semester_id)
     {
-        $session = $this->tableServices->addNewSession($request);
+        $session = $this->tableServices->addNewSession($request, $department_id, $semester_id);
         return ApiResponse::created($session);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(TableUpdateRequest $request, string $id)
+    public function update(TableUpdateRequest $request, $department_id, $semester_id)
     {
-        $session = $this->tableServices->updateSessionInfo($request, $id);
-        if($session) {
-            $session->save();
-            return ApiResponse::updated($session);
-        }
-        return ApiResponse::message('no changes');
+        $session = $this->tableServices->updateSessionInfo($request, $department_id, $semester_id);
+        return ApiResponse::updated($session);
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    // public function destroy(string $id)
-    // {
-    //     $teacher = $this->tableServices->deleteTeacher($id);
-    //     return ApiResponse::deleted($teacher);
-    // }
+    public function destroy(string $department_id, string $semester_id,)
+    {
+        $this->tableServices->deleteTable($department_id, $semester_id);
+        return ApiResponse::deleted(); 
+    }
 }

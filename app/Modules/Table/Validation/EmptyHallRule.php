@@ -8,11 +8,13 @@ use Illuminate\Contracts\Validation\ValidationRule;
 
 class EmptyHallRule implements ValidationRule
 {
-    protected ?int $id;
+    protected ?int $department;
+    protected ?int $semester;
 
-    public function __construct($id = null)
+    public function __construct($department = null, $semester = null)
     {
-        $this->id = $id;
+        $this->semester = $semester;
+        $this->department = $department;
     }
 
     /**
@@ -22,28 +24,31 @@ class EmptyHallRule implements ValidationRule
      */
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
-        $date = request()->input('date');
+        $day = request()->input('day');
         $from = request()->input('from');
         $to = request()->input('to');
 
-        if ($date) {
-            $exists = Session::where('hall_id', $value)
-            ->where('status', 'in time')
-            ->where('date', $date)
-            ->where(function ($query) use($date, $from, $to) {
-                $query->whereBetween('from', [$from, $to])
-                ->orWhereBetween('to', [$from, $to])
-                ->orWhere(function ($query) use($date, $from, $to) {
-                    $query->where('from', '<=', $from)
-                    ->where('to', '>=', $to);
-                });
-            })
-            ->when($this->id, fn($query) => $query->where('id', '!=', $this->id))
-            ->exists();
-            
-            if ($exists) {
-                $fail('The hall is not empty at this time.');
-            }
+        $exists = Session::where('hall_id', $value)
+        ->when($this->department, function ($query) {
+            $query->where('department_id', '<>',$this->department);
+        })
+        ->when($this->semester, function ($query) {
+            $query->where('semester_id', '<>',$this->semester);
+        })
+        ->where('status', 'in time')
+        ->where('day', $day)
+        ->where(function ($query) use($from, $to) {
+            $query->whereBetween('from', [$from, $to])
+            ->orWhereBetween('to', [$from, $to])
+            ->orWhere(function ($query) use($from, $to) {
+                $query->where('from', '<=', $from)
+                ->where('to', '>=', $to);
+            });
+        })
+        ->exists();
+        
+        if ($exists) {
+            $fail('The hall is not empty at this time.');
         }
     }
 }

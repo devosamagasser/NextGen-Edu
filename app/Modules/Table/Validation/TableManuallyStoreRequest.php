@@ -3,9 +3,8 @@
 namespace App\Modules\Table\Validation;
 
 use App\Http\Requests\AbstractApiRequest;
-use App\Modules\Departments\Department;
 
-class TableUpdateRequest extends AbstractApiRequest
+class TableManuallyStoreRequest extends AbstractApiRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,17 +21,13 @@ class TableUpdateRequest extends AbstractApiRequest
      */
     public function rules(): array
     {
-
-        $department = request()->route('department');
-        $semester = request()->route('semeter');
-
         return [
             'type' => 'required|array|min:1',
             'type.*' => 'required|in:lecture,section,lab',
             'course_id' => 'required|array|min:1',
             'course_id.*' => ['required','exists:courses,id', new IsDepartmentSemesterCorses()],
             'hall_id' => ['required','array','min:1'],
-            'hall_id.*' => ['required','exists:halls,id', new EmptyHallRule($department, $semester)],
+            'hall_id.*' => ['required','exists:halls,id', new EmptyHallRule()],
             'attendance' => 'required|array|min:1',
             'attendance.*' => 'required|in:online,offline',
             'day' => 'required|array|min:1',

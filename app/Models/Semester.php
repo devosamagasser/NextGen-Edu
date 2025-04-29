@@ -8,4 +8,9 @@ use Illuminate\Database\Eloquent\Model;
 class Semester extends Model
 {
     use HasFactory;
+
+    public function scopeTerm($query, $term = 1)
+    {
+        return $query->where('term', $term);
+    }
 }
