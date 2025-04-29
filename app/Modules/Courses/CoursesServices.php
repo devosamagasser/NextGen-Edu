@@ -92,7 +92,7 @@ class CoursesServices extends Service
                     'description' => $request->description,
                 ]);
 
-                $details = $this->storeCourseDetails($request, $course);
+                $details = $this->storeCourseDetails($request, $course->id);
                 CourseDetail::where('course_id', $id)->delete();
                 CourseDetail::insert($details);
             });
