@@ -93,8 +93,8 @@ class CoursesServices extends Service
                 ]);
 
                 $details = $this->storeCourseDetails($request, $course);
-                $course->departments()->sync($details);
-
+                CourseDetail::where('course_id', $id)->delete();
+                CourseDetail::insert($details);
             });
             return $course;
         }  catch (UniqueConstraintViolationException $e){

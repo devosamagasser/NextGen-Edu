@@ -87,7 +87,7 @@ class TableServices extends Service
 
         $count = count($request->course_id);
         for ($i = 0; $i < $count; $i++) {
-            $data = [
+            $data[] = [
                 'type' => $request->type[$i],
                 'course_id' => $request->course_id[$i],
                 'department_id' => $department_id,
@@ -111,7 +111,7 @@ class TableServices extends Service
         $this->deleteTable($department_id, $semester_id);
         $count = count($request->course_id);
         for ($i = 0; $i < $count; $i++) {
-            $data = [
+            $data[] = [
                 'type' => $request->type[$i],
                 'course_id' => $request->course_id[$i],
                 'department_id' => $department_id,
