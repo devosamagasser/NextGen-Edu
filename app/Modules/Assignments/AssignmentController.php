@@ -28,8 +28,8 @@ class AssignmentController extends Controller
      */
     public function store(AssignmentStoreRequest $request)
     {
-        $assignment = $this->assignmentServices->addNewAssignment($request);
-        return ApiResponse::created(new AssignmentResource($assignment));
+        $this->assignmentServices->addNewAssignment($request);
+        return ApiResponse::message('created successfully');
     }
 
     /**

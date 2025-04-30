@@ -69,28 +69,35 @@ class AssignmentServices extends Service
     {
         return DB::transaction(function () use($request) {
             $user = request()->user();
-            $file = FileHandler::storeFile(
-                $request->file('file'), 
-                'assignments',
-                $request->file->getClientOriginalExtension(),
-            );
+            $count = count($request->file('file'));
             $CourseDetail = CourseDetail::findOrFail($request->course_id);
+            $data = [];
+            for ($i=0; $i < $count; $i++) { 
+                $file = FileHandler::storeFile(
+                    $request->file('file'), 
+                    'assignments',
+                    $request->file->getClientOriginalExtension(),
+                );
 
-            $assignment = Assignment::create([
-                'teacher_id' => $user->teachers->id,
-                'department_id' => $CourseDetail->department_id,
-                'semester_id' => $CourseDetail->semester_id,
-                'course_id' => $CourseDetail->course_id,  
-                'course_details_id' => $request->course_id,  
-                'title' => $request->title,
-                'file' => $file,
-                'description' => $request->description,
-                'total_degree' => $request->total_degree,
-                'deadline' => $request->date . ' ' . $request->time,
-                'status' => 'scheduled',
-            ]);
+                $data[] = [
+                    'teacher_id' => $user->teachers->id,
+                    'department_id' => $CourseDetail->department_id,
+                    'semester_id' => $CourseDetail->semester_id,
+                    'course_id' => $CourseDetail->course_id,  
+                    'course_details_id' => $request->course_id,  
+                    'title' => $request->title,
+                    'file' => $file,
+                    'description' => $request->description,
+                    'total_degree' => $request->total_degree,
+                    'deadline' => $request->date . ' ' . $request->time,
+                    'status' => 'scheduled',
+                ];
+
+            }
+
+            $assignment = Assignment::insert($data);
             
-            return $assignment;
+            return true;
         });
     }
     
