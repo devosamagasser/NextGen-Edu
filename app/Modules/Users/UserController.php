@@ -6,15 +6,21 @@ use App\Models\User;
 use App\Facades\ApiResponse;
 use App\Modules\Users\UserResource;
 use App\Http\Controllers\Controller;
+use Illuminate\Auth\AuthenticationException;
 
 class UserController extends Controller
 {
     public function getUser()
     {
-        $user = request()->user();
-        $user = User::when($user->type == 'Student', function($query){
-            $query->with('students');
-        })->findOrFail($user->id);
-        return ApiResponse::success(new UserResource($user));
+        try{
+
+            $user = request()->user();
+            $user = User::when($user->type == 'Student', function($query){
+                $query->with('students');
+            })->findOrFail($user->id);
+            return ApiResponse::success(new UserResource($user));
+        }catch (\Exception $e){
+            throw new AuthenticationException;
+        }
     }
 }
