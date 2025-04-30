@@ -28,8 +28,8 @@ class CourseMaterialsController extends Controller
      */
     public function store(MaterialStoreRequest $request, $id)
     {
-        $course = $this->courseMaterialsServices->addNewMaterial($request, $id);
-        return ApiResponse::created($course);
+        $this->courseMaterialsServices->addNewMaterial($request, $id);
+        return ApiResponse::message('created successfully');
     }
 
     /**

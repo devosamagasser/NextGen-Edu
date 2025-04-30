@@ -47,21 +47,26 @@ class CourseMaterialsServices extends Service
     {
         return DB::transaction(function () use ($request, $id) {
             $courseDetails = CourseDetail::findOrfail($id);
-            $materialPath = FileHandler::storeFile(
-                $request->file('material'),
-                'course_materials',
-                $request->file('material')->getClientOriginalExtension() 
-            );
-            return CourseMaterial::create([
-                'title' => $request->title,
-                'course_id' => $courseDetails->course_id,
-                'department_id' => $courseDetails->department_id,
-                'semester_id' => $courseDetails->semester_id,
-                'course_details_id' => $id,
-                'material' => $materialPath,
-                'week' => $request->week,
-                'type' => $request->type,
-            ]);
+            $data = [];
+            foreach ($request->file('material') as $file) {
+                $materialPath = FileHandler::storeFile(
+                    $file,
+                    'course_materials',
+                    $file->getClientOriginalExtension() 
+                );
+                $data[] = [                
+                    'title' => $request->title,
+                    'course_id' => $courseDetails->course_id,
+                    'department_id' => $courseDetails->department_id,
+                    'semester_id' => $courseDetails->semester_id,
+                    'course_details_id' => $id,
+                    'material' => $materialPath,
+                    'week' => $request->week,
+                    'type' => $request->type
+                ];
+
+            }
+            return CourseMaterial::insert($data);
         });
     }
 
