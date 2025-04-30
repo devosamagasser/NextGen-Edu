@@ -113,7 +113,7 @@ class TeachersServices extends Service
 
     public function mySemesters()
     {
-        return request()->user()->teacher->semesters()
+        return request()->user()->teachers->semesters()
         ->distinct()
         ->get();
     }

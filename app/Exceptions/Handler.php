@@ -84,7 +84,7 @@ class Handler extends ExceptionHandler
         });
 
         $this->renderable(function (Throwable $e, $request) {
-            return ApiResponse::serverError('Internal Server Error.');
+            return ApiResponse::serverError($e->getMessage());
         });
 
     }
