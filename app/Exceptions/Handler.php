@@ -56,11 +56,11 @@ class Handler extends ExceptionHandler
         });
 
         $this->renderable(function (AuthorizationException $e, $request) {
-            return ApiResponse::unauthorized($e->getMessage() ?: 'Unauthorized.');
+            return ApiResponse::unauthorized('Unauthorized.');
         });
 
         $this->renderable(function (AccessDeniedHttpException $e, $request) {
-            return ApiResponse::forbidden($e->getMessage() ?: 'Access Denied.');
+            return ApiResponse::forbidden('Access Denied.');
         });
 
         $this->renderable(function (ModelNotFoundException $e, $request) {
@@ -84,7 +84,7 @@ class Handler extends ExceptionHandler
         });
 
         $this->renderable(function (Throwable $e, $request) {
-            return ApiResponse::serverError($e->getMessage() ?: 'Internal Server Error.');
+            return ApiResponse::serverError('Internal Server Error.');
         });
 
     }
