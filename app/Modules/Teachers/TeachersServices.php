@@ -2,6 +2,7 @@
 
 namespace App\Modules\Teachers;
 
+use App\Models\Semester;
 use App\Models\User;
 use App\Services\Service;
 use Carbon\Carbon;
@@ -112,11 +113,15 @@ class TeachersServices extends Service
 
     public function mySemesters()
     {
-        return request()->user()->teachers->semesters;
+        return request()->user()->teacher->semesters()
+        ->distinct()
+        ->get();
     }
 
     public function myDepartments()
     {
-        return request()->user()->teachers->departments;
+        return request()->user()->teachers->departments()
+            ->distinct()
+            ->get();
     }
 }

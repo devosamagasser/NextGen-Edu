@@ -95,7 +95,7 @@ class AssignmentServices extends Service
 
             }
 
-            $assignment = Assignment::insert($data);
+            Assignment::insert($data);
             
             return true;
         });
