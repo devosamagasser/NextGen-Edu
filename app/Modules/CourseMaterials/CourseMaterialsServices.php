@@ -98,6 +98,11 @@ class CourseMaterialsServices extends Service
      */
     public function deleteMaterial(string $id)
     {
-        return CourseMaterial::findOrFail($id)->delete();
+        $material = CourseMaterial::findOrFail($id);
+        if ($material->material) {
+            FileHandler::deleteFile($material->material);
+        }
+        return $material->delete();
+         
     }
 }
