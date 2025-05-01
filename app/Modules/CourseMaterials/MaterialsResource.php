@@ -21,7 +21,6 @@ class MaterialsResource extends JsonResource
             "week" => $this->week,
             "file" => $this->material_url,
             'type' => $this->type,
-            'created_at' => $this->created_at->diffForHumans()
         ];
     }
 }
