@@ -54,7 +54,7 @@ class Announcement extends Model
     {
         $query->when(request()->course,function($q, $value){
             $course = CourseDetail::find($value);
-            $q->where('course_id',$course);
+            return $q->where('course_id',$course);
         });
     }
 
