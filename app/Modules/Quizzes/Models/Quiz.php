@@ -70,14 +70,14 @@ class Quiz extends Model
     {
         $query->when(request()->course,function($q, $value){
             $courses = CourseDetail::where('course_id',$value)->pluck('course_id');
-            $q->whereIn('course_id',$courses);
+            return $q->whereIn('course_id',$courses);
         });
         $query->when(request()->status,function($q, $value){
-            $q->where('status',$value);
+            return $q->where('status',$value);
         });
         $query->when(request()->from, function($q, $value){
             $fromDate = now()->subDays($value)->toDateString();
-            $q->where('date', '>=', $fromDate);
+            return $q->where('date', '>=', $fromDate);
         });
     }
 }
