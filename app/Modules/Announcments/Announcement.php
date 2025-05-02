@@ -53,8 +53,8 @@ class Announcement extends Model
     public function scopeFilter($query)
     {
         $query->when(request()->course,function($q, $value){
-            $courses = CourseDetail::where('course_id',$value)->pluck('course_id');
-            $q->whereIn('course_id',$courses);
+            $course = CourseDetail::find($value);
+            $q->whereIn('course_id',$course);
         });
     }
 
