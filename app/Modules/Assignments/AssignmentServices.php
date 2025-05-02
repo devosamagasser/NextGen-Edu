@@ -27,7 +27,7 @@ class AssignmentServices extends Service
             ->whereIn('course_id',$courseDetails->pluck('course_id'))
             ->whereIn('department_id',$courseDetails->pluck('department_id'))
             ->whereIn('semester_id',$courseDetails->pluck('semester_id'))
-            ->orderBy('id','desc')
+            ->orderBy('start_time','desc')
             ->filter()
             ->get();
         }else if ($user->hasRole('Student')){

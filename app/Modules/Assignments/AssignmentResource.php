@@ -27,7 +27,7 @@ class AssignmentResource extends JsonResource
                 'id' => $this->course_details_id,
                 'name' => $this->course->name,
             ],
-            'teacher' => $this->teacher->name,
+            'teacher' => $this->teacher->user->name,
             'file' => $this->file_url,
         ];
     }

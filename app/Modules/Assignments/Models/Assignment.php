@@ -51,7 +51,7 @@ class Assignment extends Model
 
     public function teacher()
     {
-        return $this->belongsTo(Teacher::class);
+        return $this->belongsTo(Teacher::class)>with('user');
     }
 
 
@@ -63,7 +63,7 @@ class Assignment extends Model
     public function scopeFilter($query)
     {
         $query->when(request()->course,function($q, $value){
-            $courses = CourseDetail::where('teacher_id', auth()->user()->teachers->id)->where('course_id',$value)->pluck('course_id');
+            $courses = CourseDetail::where('course_id',$value)->pluck('course_id');
             $q->whereIn('course_id',$courses);
         });
         $query->when(request()->status,function($q, $value){

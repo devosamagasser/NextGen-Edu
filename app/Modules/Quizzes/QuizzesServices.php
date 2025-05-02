@@ -176,7 +176,6 @@ class QuizzesServices extends Service
             throw new AccessDeniedHttpException('Quiz is already finished.');
         }
         
-        // تحقق إن الطالب ما بدأش قبل كده
         $alreadyStarted = QuizAnswer::where('quiz_id', $quiz_id)
         ->where('student_id', $user->id)
         ->exists();

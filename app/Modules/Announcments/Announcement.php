@@ -4,6 +4,7 @@ namespace App\Modules\Announcments;
 
 use App\Models\User;
 use App\Models\Semester;
+use App\Models\CourseDetail;
 use App\Modules\Courses\Course;
 use App\Modules\Departments\Department;
 use Illuminate\Database\Eloquent\Model;
@@ -49,9 +50,12 @@ class Announcement extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function scopeFilter()
+    public function scopeFilter($query)
     {
-
+        $query->when(request()->course,function($q, $value){
+            $courses = CourseDetail::where('course_id',$value)->pluck('course_id');
+            $q->whereIn('course_id',$courses);
+        });
     }
 
 }
