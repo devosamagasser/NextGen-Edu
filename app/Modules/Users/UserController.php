@@ -17,6 +17,9 @@ class UserController extends Controller
             $user = request()->user();
             $user = User::when($user->type == 'Student', function($query){
                 $query->with('students');
+            })
+            ->when($user->type == 'Teacher', function($query){
+                $query->with('Teacher');
             })->findOrFail($user->id);
             return ApiResponse::success(new UserResource($user));
         }catch (\Exception $e){
