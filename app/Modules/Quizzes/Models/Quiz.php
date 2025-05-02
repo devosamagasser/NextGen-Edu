@@ -69,8 +69,8 @@ class Quiz extends Model
     public function scopeFilter($query)
     {
         $query->when(request()->course,function($q, $value){
-            $course = CourseDetail::find($value);
-            return $q->where('course_id',$course);
+            $course = CourseDetail::where('id',$value);
+            $q->where('course_id',$course);
         });
         $query->when(request()->status,function($q, $value){
             return $q->where('status',$value);
