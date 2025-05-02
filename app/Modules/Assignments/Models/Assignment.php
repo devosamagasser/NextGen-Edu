@@ -64,7 +64,7 @@ class Assignment extends Model
     {
         $query->when(request()->course,function($q, $value){
             $course = CourseDetail::where('id',$value)->first();
-            $q->where('course_id',$course);
+            return $q->where('course_id',$course->course_id);
         });
         $query->when(request()->status,function($q, $value){
             $q->where('status',$value);
