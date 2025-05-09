@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('course_details', function (Blueprint $table) {
-            $table->unique(['course_id', 'department_id', 'semester_id', 'teacher_id'], 'unique_course_details');
+            $table->unique(['course_id', 'department_id'], 'unique_course_details');
         });
     }
 
@@ -22,7 +22,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('course_details', function (Blueprint $table) {
-            $table->dropUnique(['course_id', 'department_id', 'semester_id', 'teacher_id']);
+            $table->dropUnique(['course_id', 'department_id']);
         });
     }
 };

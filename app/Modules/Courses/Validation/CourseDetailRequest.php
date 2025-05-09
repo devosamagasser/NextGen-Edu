@@ -22,13 +22,12 @@ class CourseDetailRequest extends AbstractApiRequest
     public function rules(): array
     {
         return [
-            'departments' => 'required|array|min:1',
-            'departments.*' => 'required|integer|exists:departments,id',
-            'semesters' => 'required|array|min:1',
-            'semesters.*' => 'required|integer|exists:semesters,id',
-            'teachers' => 'nullable|array|min:1',
-            'teachers.*' => 'required|array|min:1',
-            'teachers.*.*' => 'required|integer|exists:teachers,id',
+            'details' => 'required|array|min:1',
+            'details.*' => 'required|array',
+            'details.*.department' => 'required|integer|exists:departments,id',
+            'details.*.semester' => 'required|integer|exists:semesters,id',
+            'details.*.teachers' => 'nullable|array',
+            'details.*.teachers.*' => 'required|integer|exists:teachers,id',
         ];
     }
 }

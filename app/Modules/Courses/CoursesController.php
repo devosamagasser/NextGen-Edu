@@ -30,15 +30,14 @@ class CoursesController extends Controller
      */
     public function store(CourseStoreRequest $request)
     {
-        $course = $this->courseServices->addNewCourse($request);
-        return ApiResponse::created($course);
+        $this->courseServices->addNewCourse($request);
+        return ApiResponse::message('created',201);
     }
 
     public function storeDetails(CourseDetailRequest $request, string $id)
     {
-        $data = $this->courseServices->storeCourseDetails($request, $id);
-        CourseDetail::insert($data);
-        return ApiResponse::created($data);
+        $this->courseServices->storeCourseDetails($request, $id);
+        return ApiResponse::message('created',201);
     }
 
     /**
@@ -47,7 +46,7 @@ class CoursesController extends Controller
     public function show(string $id)
     {
         $course = $this->courseServices->getCourseById($id);
-        return ApiResponse::success(new CourseResource($course));
+        return $course;
     }
 
     /**

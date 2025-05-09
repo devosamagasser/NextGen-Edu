@@ -15,9 +15,6 @@ return [
 
     'default' => env('FILESYSTEM_DISK', 'local'),
     
-    'images_url' => env('APP_IMAGES_URL', 'https://nextgenedu-database.azurewebsites.net/images/'),
-    // 'images_url' => env('APP_IMAGES_URL', 'https://nextgenedu-database.azurewebsites.net/images/'),
-
     /*
     |--------------------------------------------------------------------------
     | Filesystem Disks
@@ -43,14 +40,6 @@ return [
             'driver' => 'local',
             'root' => storage_path('app/public'),
             'url' => env('APP_URL').'/storage',
-            'visibility' => 'public',
-            'throw' => false,
-        ],
-
-        'images' => [
-            'driver' => 'local',
-            'root' => public_path('images'),
-            'url' => env('APP_URL').'/images',
             'visibility' => 'public',
             'throw' => false,
         ],

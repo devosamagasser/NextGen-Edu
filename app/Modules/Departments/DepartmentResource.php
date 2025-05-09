@@ -19,8 +19,9 @@ class DepartmentResource extends JsonResource
             'name' => $this->name,
             'description' => $this->description,
             'teachers' => $this->teachers_count,
-            'courses_count' => $this->courses_count,
-            'students_count' => $this->students_count,
+            'teachers' => $this->when(isset($this->teachers_count), $this->teachers_count),
+            'courses' => $this->when(isset($this->courses_count), $this->courses_count),
+            'students' => $this->when(isset($this->students_count), $this->students_count),
         ];
     }
 }

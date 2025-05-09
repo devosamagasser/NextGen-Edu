@@ -1,13 +1,11 @@
 <?php
 
-namespace App\Modules\Quizzes;
+namespace App\Modules\Assignments;
 
 use Illuminate\Http\Request;
-use App\Modules\Questions\Models\Question;
 use Illuminate\Http\Resources\Json\JsonResource;
-use App\Modules\Questions\Reaources\QuestionResource;
 
-class QuizResource extends JsonResource
+class AssignmentAnswersResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -21,18 +19,16 @@ class QuizResource extends JsonResource
             'title' => $this->title,
             'description' => $this->description,
             'total_degree' => $this->total_degree,
-            'date' => $this->date, 
-            'start_time' => $this->start_time, 
-            'duration' => $this->duration,
+            'date' => $this->deadline->format('Y-m-d'), 
+            'time' => $this->deadline->format('H:i'), 
             'status' => $this->status,
             'teacher' => $this->teacher->user->name,
+            'file' => $this->file_url,
             'course' => [
                 'id' => $this->course_detail_id,
                 'name' => $this->course->name,
             ],
-            'questions' => $this->whenLoaded('questions', function (){
-                return QuestionResource::collection($this->questions);
-            }),
         ];
     }
+    
 }

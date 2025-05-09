@@ -50,7 +50,6 @@ class Handler extends ExceptionHandler
      */
     public function register(): void
     {
-
         $this->renderable(function (AuthenticationException $e, $request) {
             return ApiResponse::unauthorized('Unauthenticated.');
         });
@@ -60,15 +59,15 @@ class Handler extends ExceptionHandler
         });
 
         $this->renderable(function (AccessDeniedHttpException $e, $request) {
-            return ApiResponse::forbidden('Access Denied.');
+            return ApiResponse::message($e->getMessage(), $e->getStatusCode());
         });
 
         $this->renderable(function (ModelNotFoundException $e, $request) {
-            return ApiResponse::notFound('Resource not found.');
+            return ApiResponse::notFound($e->getMessage());
         });
 
         $this->renderable(function (NotFoundHttpException $e, $request) {
-            return ApiResponse::notFound('Endpoint not found.');
+            return ApiResponse::notFound($e->getMessage());
         });
 
         $this->renderable(function (MethodNotAllowedHttpException $e, $request) {

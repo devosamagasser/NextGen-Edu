@@ -39,7 +39,7 @@ class StudentsController extends Controller
      */
     public function show(string $id)
     {
-        $student = $this->studentsServices->getStudentById( $id);
+        $student = $this->studentsServices->getStudentById($id);
         return ApiResponse::success(new StudentResource($student));
     }
 
@@ -65,6 +65,12 @@ class StudentsController extends Controller
     {
         $courses = $this->studentsServices->myCourses();
         return ApiResponse::success(CourseResource::collection($courses));
+    }
+
+    public function studentsCourse($course_id)
+    {
+        $students = $this->studentsServices->getStudentsByCourse($course_id);
+        return ApiResponse::success(StudentResource::collection($students));
     }
 
     public function export()

@@ -2,8 +2,10 @@
 
 namespace App\Modules\Assignments\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Modules\Students\Student;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class AssignmentAnswer extends Model
 {
@@ -16,6 +18,22 @@ class AssignmentAnswer extends Model
         'degree',
         'status'
     ];
+
+
+    public function assignment()
+    {
+        return $this->belongsTo(Assignment::class);
+    }
+
+    public function student()
+    {
+        return $this->belongsTo(Student::class, 'student_id');
+    }
+
+    public function getFileUrlAttribute()
+    {
+        return Storage::disk('public')->url($this->file) ;
+    }
 
 
 }

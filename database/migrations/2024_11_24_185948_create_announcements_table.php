@@ -15,10 +15,7 @@ return new class extends Migration
         Schema::create('announcements', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained('users');
-            $table->foreignId('department_id')->nullable()->constrained('departments')->nullOnDelete();
-            $table->foreignId('semester_id')->nullable()->constrained('semesters')->nullOnDelete();
-            $table->foreignId('course_id')->nullable()->constrained('courses')->nullOnDelete();
-            $table->unsignedBigInteger('course_details_id')->nullable();
+            $table->foreignId('course_detail_id')->nullable()->constrained('course_details')->cascadeOnDelete();
             $table->string('title')->nullable();
             $table->text('body');
             $table->timestamp('post_in');

@@ -14,7 +14,7 @@ class FileHandlerLogic
     {
         try{
             $newName = ($name ?? time()).".$extension";
-            $path = Storage::putFileAs($path, $file, $newName);
+            $path = Storage::disk('public')->putFileAs($path, $file, $newName);
             return $path;
         } catch (\Exception $e) {
             return throw new \Exception($e->getMessage());
@@ -43,7 +43,7 @@ class FileHandlerLogic
     public function deleteFile(string $name)
     {
         try {
-            return Storage::delete($name);
+            return Storage::disk('public')->delete($name);
         } catch (\Exception $e) {
             return throw new \Exception($e->getMessage());
         }

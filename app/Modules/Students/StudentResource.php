@@ -21,9 +21,15 @@ class StudentResource extends JsonResource
             'email' => $this->user->email,
             'nationality' => $this->nationality,
             'personal_id' => $this->personal_id,
-            'semester' => $this->semester->id,
-            'department_id' => $this->department_id,
-            'department_name' => $this->department->name,
+            'department' => $this->whenLoaded('department', function(){
+                return $this->department->name;
+            }),
+            'semester' => $this->whenLoaded('semester', function(){
+                return $this->semester->id;
+            }),
+            'class' => $this->whenLoaded('semester', function(){
+                return $this->semester->name;
+            }),
             'group' => $this->group
         ];
     }

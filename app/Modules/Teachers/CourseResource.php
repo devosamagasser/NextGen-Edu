@@ -16,17 +16,15 @@ class CourseResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        $department = new DepartmentResource($this->departments->find($this->pivot->department_id));
-        $semester = new SemesterResource($this->semesters->find($this->pivot->semester_id));
-
         return [
-            'id' => $this->courseDetails->where('department_id', $department['id'])
-            ->where('semester_id', $semester['id'])->where('course_id',$this->id)->first()->id,
-            'name' => $this->name,
-            'code' => $this->code,
-            'description' => $this->description,
-            'department' => $department,
-            'semester' => $semester,
+            'id' => $this->id,
+            'name' => $this->course->name,
+            'code' => $this->course->code,
+            'description' => $this->course->description,
+            'students' => $this->students_count,
+            'department' => new DepartmentResource($this->department),
+            'semester' => new SemesterResource($this->semester),
         ];
     }
+    
 }

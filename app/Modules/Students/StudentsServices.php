@@ -36,6 +36,16 @@ class StudentsServices extends Service
         return Student::with('user','department','semester')->findOrFail($id);
     }
 
+    public function getStudentsByCourse($course_id)
+    {
+        $course = CourseDetail::findOrFail($course_id);
+        $students = Student::with('user')
+            ->where('department_id', $course->department_id)
+            ->where('semester_id', $course->semester_id)
+            ->get();
+        return $students;
+    }
+
     /**
      * Store a newly created resource in storage.
      */
@@ -130,8 +140,6 @@ class StudentsServices extends Service
 
     public static function generateGroupe($department_id, $semester_id, $groupMax = 20 )
     {
-
-
         $query = Student::where('semester_id', $semester_id)
             ->where('department_id', $department_id);
         

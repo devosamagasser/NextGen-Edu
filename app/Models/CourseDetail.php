@@ -3,10 +3,11 @@
 namespace App\Models;
 
 use App\Modules\Courses\Course;
-use App\Modules\Departments\Department;
+use App\Modules\Students\Student;
 use App\Modules\Teachers\Teacher;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Modules\Departments\Department;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class CourseDetail extends Model
 {
@@ -24,14 +25,19 @@ class CourseDetail extends Model
        return $this->belongsTo(Department::class);
     }
 
-    public function Course()
+    public function course()
     {
        return $this->belongsTo(Course::class);
     }
-    
-    public function teacher()
+
+    public function teachers()
     {
-       return $this->belongsTo(Teacher::class);
+        return $this->belongsToMany(
+            Teacher::class,
+            'course_teachers',
+            'course_details_id',
+            'teacher_id'
+        );
     }
 
 }

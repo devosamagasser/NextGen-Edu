@@ -2,14 +2,15 @@
 
 namespace App\Modules\Auth;
 
-use App\Facades\ApiResponse;
 use App\Models\User;
-use App\Modules\Users\UserResource;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
+use App\Facades\ApiResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use Illuminate\Support\Facades\Hash;
 use PharIo\Version\Exception;
+use App\Modules\Users\UserResource;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class AuthServices
 {
@@ -22,20 +23,19 @@ class AuthServices
             if (! $user = $this->checkUser($credentials)) {
                 return ApiResponse::message('Your credentials doesn\'t match our records',Response::HTTP_UNAUTHORIZED);
             }
-
+            
             if (! $this->checkDevice($user,$request)) {
                 return ApiResponse::message('not allowed to login from mobile app',Response::HTTP_FORBIDDEN);
             }
-
+            
             $token = $this->generateToken($user,$user->type);
-
             return $this->respondWithToken($user,$token);
 
         } catch (ModelNotFoundException $e) {
-            return ApiResponse::notFound('User not found');
+            throw new ModelNotFoundException('User not found');
 
         }  catch (\Exception $e) {
-            return ApiResponse::serverError();
+            throw new \Exception($e->getMessage());
         }
     }
 
@@ -49,7 +49,7 @@ class AuthServices
             $request->user()->currentAccessToken()->delete();
             return ApiResponse::message('Logout successfully');
         } catch (Exception $e) {
-            return ApiResponse::serverError();
+            throw new \Exception($e->getMessage());  
         }
 
     }
@@ -103,21 +103,36 @@ class AuthServices
      * @param  string $token
      *
      */
-    protected function respondWithToken($user,$token)
+    protected function respondWithToken($user, $token)
     {
-        if ($user->type == 'Student') {
-            $user->load('students.semester','students.department');
-        } elseif ($user->type == 'Teacher') {
-            $user->load('teachers.department');
-        }
+        $this->loadUserRelations($user);
+    
         return ApiResponse::success([
             [
                 'access_token' => $token,
                 'token_type' => 'bearer',
                 'user' => new UserResource($user)
             ]
-        ],'logged in successfully');
+        ], 'logged in successfully');
     }
+    
+    public static function loadUserRelations($user)
+    {
+        switch ($user->type) {
+            case 'Student':
+                $user->load('students');
+                break;
+            case 'Teacher':
+                $user->load('teachers');
+                break;
+            case 'Super admin':
+            case 'Admin':
+                break;
+            default:
+                throw new AuthorizationException("User type not found");            
+        }
+    }
+    
 
 
 }

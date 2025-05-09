@@ -21,6 +21,9 @@ Route::group(['middleware'=>['auth','role:Student|Teacher|Super admin']],functio
 
 Route::group(['middleware'=>['auth','role:Student']],function (){
     Route::delete('/logout',[AuthController::class,'logout']);
+    Route::get('/profile',[UserController::class,'profile']);
+    Route::post('/update',[UserController::class,'update']);
+    
     Route::get('/courses',[StudentsController::class,'myCourses']);
     Route::get('/courses/{id}',[CoursesController::class,'show']);
     Route::prefix('quizzes')->group(function () {

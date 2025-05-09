@@ -17,35 +17,26 @@ class AnnouncementsServices extends Service
     {
         $user = request()->user();
     
-        $query = Announcement::with([
+        return Announcement::with([
+            'courseDetail.teachers',
             'department',
             'semester',
-            'course:id,name',
-            'user', 
+            'course',
+            'user',
         ])->where("post_in", '<=', now())
         ->orderBy('id', 'desc')
-        ->filter();
-
-        if ($user->type === 'Student') {
-            $query->where(function ($q) use ($user) {
-                $q->where('department_id', $user->students->department_id)
-                  ->orWhereNull('department_id');
-            })->where(function ($q) use ($user) {
+        ->when($user->type === 'Student', function ($q) use ($user) {
+            $q->whereHas('courseDetail',function($q) use ($user) {
                 $q->where('semester_id', $user->students->semester_id)
-                  ->orWhereNull('semester_id');
+                  ->where('department_id', $user->students->department_id);
             });
-        }
-    
-        if ($user->type === 'Teacher') {
-            $teacher = Teacher::with(['departments','semesters','courses'])->where('user_id',$user->id)->first();
-            $semesterIds = $teacher->semesters->pluck('id')->toArray();
-            $departmentsIds = $teacher->departments->pluck('id')->toArray();
-            $query->whereIn('semester_id', $semesterIds)
-                  ->whereIn('department_id', $departmentsIds)
-                  ->orWhereNull('department_id');
-        }
-        
-        return $query->paginate();
+        })
+        ->when($user->type === 'Teacher', function ($q) use ($user) {
+            $q->whereHas('courseDetail.teachers', function($q) use ($user) {
+                $q->where('teacher_id', $user->teachers->id);
+            });
+        })
+        ->filter()->paginate();
     }
     
     
@@ -56,8 +47,8 @@ class AnnouncementsServices extends Service
         $query = Announcement::with([
             'department',
             'semester',
-            'course:id,name',
-            'user', 
+            'course',
+            'user',
         ])->where('user_id',$user->id);
     
         return $query->paginate();
@@ -65,7 +56,6 @@ class AnnouncementsServices extends Service
     
     public function announcement(string $id)
     {
-        $user = request()->user();
         $announcement = Announcement::findOrFail($id);    
         $this->checkAuthrization($announcement->user_id);
         return $announcement;
@@ -76,21 +66,14 @@ class AnnouncementsServices extends Service
      */
     public function addNewAnnouncement($request)
     {
-        $CourseDetail = CourseDetail::findOrFail($request->course_id);
         $data = [
             'user_id' => $request->user()->id,
-            'department_id' => $CourseDetail->department_id,
-            'semester_id' => $CourseDetail->semester_id,
-            'course_id' => $CourseDetail->course_id,
-            'course_details_id' => $request->course_id,
+            'course_detail_id' => $request->course_id,
             'title' => $request->title ?? null,
             'body' => $request->body,
+            'post_in' => $request->filled('date') ? $request->date .' '.  $request->time : now(),
         ];
-        if($request->filled('date')){
-            $data['post_in'] = $request->date .' '.  $request->time;
-        }else{
-            $data['post_in'] = now();
-        }
+        
         return Announcement::create($data);
     }
 
@@ -100,22 +83,21 @@ class AnnouncementsServices extends Service
     public function updateAnnouncementInfo($request, string $id)
     {
         $announcement = Announcement::findOrFail($id);
-        $CourseDetail = CourseDetail::findOrFail($request->course_id);
-
+        
         $this->checkAuthrization($announcement->user_id);
         $data = [
-            'department_id' => $CourseDetail->department_id ?? $announcement->department_id,
-            'semester_id' => $CourseDetail->semester_id ?? $announcement->semester_id,
-            'course_id' => $CourseDetail->course_id ?? $announcement->course_id,
-            'course_details_id' => $request->course_id,
+            'course_detail_id' => $request->course_id ?? $announcement->course_detail_id,
             'title' => $request->title ?? $announcement->title,
             'body' => $request->body ?? $announcement->body,
         ];
-
         if($request->filled('date')){
+            if($announcement->post_in < now()){
+                throw new AccessDeniedHttpException('you can not update this announcement time because it is already published');
+            }
             $data['post_in'] = $request->date .' '.  $request->time;
         }
 
+        
         $announcement->fill($data);
         if($announcement->isDirty()){
             $announcement->save();

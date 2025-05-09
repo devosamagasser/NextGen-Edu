@@ -37,17 +37,23 @@ class AssignmentController extends Controller
      */
     public function show(string $id)
     {
-        $quiz = $this->assignmentServices->getAssignmentById($id);
-        return ApiResponse::success(new AssignmentResource($quiz));
+        $assignment = $this->assignmentServices->getAssignmentById($id);
+        return ApiResponse::success(new AssignmentResource($assignment));
     }
+
+    // public function showAnswers(string $id)
+    // {
+    //     $answers = $this->assignmentServices->getAssignmentAnswers($id);
+    //     return ApiResponse::success(new AssignmentResource($answers));
+    // }
 
     /**
      * Update the specified resource in storage.
      */
     public function update(AssignmentUpdateRequest $request, string $id)
     {
-        $quiz = $this->assignmentServices->updateAssignmentInfo($request, $id);
-        return ApiResponse::updated(new AssignmentResource($quiz));
+        $assignment = $this->assignmentServices->updateAssignmentInfo($request, $id);
+        return ApiResponse::updated(new AssignmentResource($assignment));
 
     }
 

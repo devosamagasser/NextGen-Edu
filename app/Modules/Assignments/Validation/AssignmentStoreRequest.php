@@ -30,7 +30,7 @@ class AssignmentStoreRequest extends AbstractApiRequest
             'total_degree' => 'required|integer',
             'date' => 'required|date|after_or_equal:today', 
             'time' => ['required','date_format:H:i:s',new TimeRule()],
-            'file' => 'required|file|mimes:pdf,doc,docx,csv,jpg,png,jfif', // Adjust the file types and size as needed
+            'file' => 'required|file|mimes:pdf,doc,docx,csv,jpg,png,jfif,xlsx', // Adjust the file types and size as needed
         ];
     }
 }

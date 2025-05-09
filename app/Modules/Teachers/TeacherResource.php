@@ -20,8 +20,7 @@ class TeacherResource extends JsonResource
             'email' => $this->user->email,
             'uni_code' => $this->uni_code,
             'description' => $this->description,
-            'department_id' => $this->department_id,
-            'department_name' => $this->department->name,
+            'department' => $this->department->name,
         ];
     }
 }

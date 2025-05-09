@@ -4,12 +4,10 @@ namespace App\Modules\Assignments;
 
 use App\Services\Service;
 use App\Facades\FileHandler;
-use App\Models\CourseDetail;
-use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Config;
 use App\Modules\Assignments\Models\Assignment;
 use App\Modules\Assignments\Models\AssignmentAnswer;
+use Illuminate\Support\Facades\Storage;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
 class AssignmentServices extends Service
@@ -21,31 +19,37 @@ class AssignmentServices extends Service
     public function getAllAssignments()
     {
         $user = request()->user();
-        if ($user->hasRole('Teacher')){
-            $courseDetails = CourseDetail::where('teacher_id',$user->teachers->id);
-            $assignments = Assignment::with('course', 'department', 'semester', 'teacher', 'teacher.user')
-            ->whereIn('course_id',$courseDetails->pluck('course_id'))
-            ->whereIn('department_id',$courseDetails->pluck('department_id'))
-            ->whereIn('semester_id',$courseDetails->pluck('semester_id'))
-            ->orderBy('id','desc')
+
+        $assignments = Assignment::with('courseDetail', 'course', 'department', 'semester', 'teacher.user')
+            ->orderBy('id', 'desc')
             ->filter()
-            ->get();
-        }else if ($user->hasRole('Student')){
-            $assignments = Assignment::with('course', 'department', 'semester', 'teacher', 'teacher.user')
-            ->where('semester_id', $user->students->semester_id)
-            ->where('department_id', $user->students->department_id)
-            ->orderBy('id','desc')
-            ->filter()
-            ->get();
-        }
+            ->when($user->hasRole('Teacher'), function ($query) use ($user) {
+                $query->whereHas('courseDetail.teachers', function ($q) use ($user) {
+                    $q->where('course_teachers.teacher_id', $user->teachers->id);
+                });
+            })
+            ->when($user->hasRole('Student'), function ($query) use ($user) {
+                $query->whereHas('courseDetail', function ($q) use ($user) {
+                    $q->where([
+                        ['department_id', $user->students->department_id],
+                        ['semester_id', $user->students->semester_id],
+                    ]);
+                });
+
+            })->get();
         
+        $this->statusHandler($assignments);
+        
+        return $assignments;
+    }
+
+    private function statusHandler($assignments)
+    {
         $assignments->each(function ($assignment) {
             if (now()->greaterThanOrEqualTo($assignment->deadline) && $assignment->status !== 'finished') {
                 $assignment->update(['status' => 'finished']);
             }
         });
-        
-        return $assignments;
     }
 
     /**
@@ -53,14 +57,25 @@ class AssignmentServices extends Service
      */
     public function getAssignmentById($id)
     {
+        $user = request()->user();
         return Assignment::with([
+            'courseDetail',
             'course',
             'department',
             'semester',
-            'teacher',
-            'teacher.user'
-         ])->findOrFail($id);
+            'teacher.user',
+            'answers' => function ($query) use($user){
+                $query->when($user->type == 'Students', function ($q) use($user) {
+                    $q->where('assignments_answers.student_id', $user->students->id);
+                });
+            },
+        ])->findOrFail($id);
     }
+    
+    // public function getAssignmentAnswers($id)
+    // {
+    //     return Assignment::with('answers.student.user')->findOrFail($id);
+    // }
 
     /**
      * Store a newly created resource in storage.
@@ -74,14 +89,10 @@ class AssignmentServices extends Service
                 'assignments',
                 $request->file->getClientOriginalExtension(),
             );
-            $CourseDetail = CourseDetail::findOrFail($request->course_id);
 
             $assignment = Assignment::create([
                 'teacher_id' => $user->teachers->id,
-                'department_id' => $CourseDetail->department_id,
-                'semester_id' => $CourseDetail->semester_id,
-                'course_id' => $CourseDetail->course_id,  
-                'course_details_id' => $request->course_id,  
+                'course_detail_id' => $request->course_id,  
                 'title' => $request->title,
                 'file' => $file,
                 'description' => $request->description,
@@ -102,20 +113,21 @@ class AssignmentServices extends Service
     {
         return DB::transaction(function () use($request,$id) {
             $user = request()->user();
-
             $assignment = Assignment::where('teacher_id',$user->teachers->id)->findOrFail($id);
-            $CourseDetail = CourseDetail::findOrFail($request->course_id);
 
-            $data = [
-                'department_id' => $CourseDetail->department_id,
-                'semester_id' => $CourseDetail->semester_id,
-                'course_id' => $CourseDetail->course_id,    
-                'course_details_id' => $request->course_id,
+            $data = [ 
+                'course_detail_id' => $request->course_id,
                 'title' => $request->title,
                 'description' => $request->description,
                 'total_degree' => $request->total_degree,
-                'date' => $request->date . ' ' . $request->time,
             ];
+
+            if($request->filled('date') || $request->filled('time')){
+                if($assignment->type !=  'scheduled'){
+                    throw new AccessDeniedHttpException('you can not update this assignment\'s time because it is already published');
+                }
+                $data['deadline'] = $request->date . ' ' . $request->time;
+            }
 
             if($request->hasFile('file'))
                 $data['file'] = FileHandler::updateFile(
@@ -145,50 +157,51 @@ class AssignmentServices extends Service
     public function submitAssignmentAnswer($assignment_id, $file)
     {
         $user = request()->user();
-        $assignments = Assignment::findOrFail($assignment_id);
-        
-        $start = $assignments->deadline;
-        $now = now();
-        
-        if ($now->gt($start)) {
-            throw new AccessDeniedHttpException('Deadine is end.');
-        }
-
-        $assignment = AssignmentAnswer::where('student_id',$user->students->id)
-                        ->where('assignment_id',$assignment_id);
-
-        if($assignment->where('status','corrected')->exists()){
+        $studentId = $user->students->id;
+        $assignment = Assignment::findOrFail($assignment_id);
+    
+        $this->checkAssignmentDeadline($assignment);
+    
+        $answer = AssignmentAnswer::where('student_id', $studentId)
+            ->where('assignment_id', $assignment_id)
+            ->first();
+    
+        if ($answer && $answer->status === 'corrected') {
             throw new AccessDeniedHttpException('The answer is corrected.');
         }
-
-        if($assignment->where('status','submitted')->exists()){
-            $assignment = $assignment->first();
-            $path = FileHandler::updateFile(
-                $file,
-                $assignment->file,
-                'assignments\answers',
-                $file->getClientOriginalExtension(),
-            );
-
-            $assignment->update([
-                'file' => $path,
-            ]);
-        }else{
-            $path = FileHandler::storeFile(
-                $file, 
-                'assignments\answers',
-                $file->getClientOriginalExtension(),
-            );
+    
+        $path = $this->handleFileUpload($file, $answer?->file);
+    
+        if ($answer) {
+            $answer->update(['file' => $path]);
+        } else {
             AssignmentAnswer::create([
-                'student_id' => $user->students->id,
+                'student_id' => $studentId,
                 'assignment_id' => $assignment_id,
                 'file' => $path,
             ]);
         }
-
     
-        return Config::get('filesystems.images_url') . $path;
+        return Storage::disk('public')->url($path);
     }
+    
+    private function checkAssignmentDeadline($assignment)
+    {
+        if (now()->gt($assignment->deadline)) {
+            throw new AccessDeniedHttpException('Deadline has ended.');
+        }
+    }
+    
+    private function handleFileUpload($file, $oldFile = null)
+    {
+        $folder = 'assignments/answers';
+        $extension = $file->getClientOriginalExtension();
+    
+        return $oldFile
+            ? FileHandler::updateFile($file, $oldFile, $folder, $extension)
+            : FileHandler::storeFile($file, $folder, $extension);
+    }
+    
 
 
 

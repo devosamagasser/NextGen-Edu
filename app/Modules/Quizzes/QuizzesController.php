@@ -6,6 +6,7 @@ use App\Facades\ApiResponse;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Modules\Quizzes\Validation\QuizeStoreRequest;
+use App\Modules\Quizzes\Validation\QuizeUpdateRequest;
 
 class QuizzesController extends Controller
 {
@@ -43,9 +44,10 @@ class QuizzesController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(QuizeStoreRequest $request, string $id)
+    public function update(QuizeUpdateRequest $request, string $id)
     {
         $quiz = $this->quizesServices->updateQuizInfo($request, $id);
+
         return ApiResponse::updated(new QuizResource($quiz));
 
     }

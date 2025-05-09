@@ -2,11 +2,10 @@
 
 namespace App\Modules\Courses\Resources;
 
-use App\Modules\Departments\DepartmentResource;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class CourseResource extends JsonResource
+class SingleCourseResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -23,6 +22,7 @@ class CourseResource extends JsonResource
             'name' => $this->name,
             'code' => $this->code,
             'description' => $this->description,
+            
         ];
     }
 

@@ -2,6 +2,7 @@
 
 
 use App\Modules\Auth\AuthController;
+use App\Modules\Users\UserController;
 use Illuminate\Support\Facades\Route;
 use App\Modules\Halls\HallsController;
 use App\Modules\Table\TableController;
@@ -15,8 +16,12 @@ use App\Modules\Departments\DepartmentsController;
 use App\Modules\Announcments\AnnouncementController;
 
 Route::post('/login',[AuthController::class,'login']);
+
 Route::group(['middleware' => 'auth' ], function () {
     Route::group(['middleware'=>'role:Super admin'],function (){
+        Route::get('/profile',[UserController::class,'profile']);
+        Route::post('/update',[UserController::class,'update']);
+
         Route::get('/semesters',[SemestersController::class,'index']);
         Route::apiResource('/admin',AdminsController::class);
         Route::apiResource('/teachers',TeachersController::class);
@@ -46,6 +51,7 @@ Route::group(['middleware' => 'auth' ], function () {
             Route::post('/table/{table}', 'update');
         });
     });
+
     Route::group(['middleware' => 'role:Admin|Teacher' ], function () {
         Route::apiResource('/announcements', AnnouncementController::class);
         Route::get('/my-announcements', [AnnouncementController::class,'showMine']);

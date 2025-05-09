@@ -19,67 +19,45 @@ class QuizzesServices extends Service
     public function getAllQuizzes()
     {
         $user = request()->user();
-        if ($user->hasRole('Teacher')){
-            $courseDetails = CourseDetail::where('teacher_id',$user->teachers->id);
-            $quizez = Quiz::with('course', 'department', 'semester', 'teacher', 'teacher.user')
-            ->whereIn('course_id',$courseDetails->pluck('course_id'))
-            ->whereIn('department_id',$courseDetails->pluck('department_id'))
-            ->whereIn('semester_id',$courseDetails->pluck('semester_id'))
-            ->orderBy('id','desc')
+    
+        $quizzes = Quiz::with('courseDetail', 'course', 'department', 'semester', 'teacher.user')
+            ->orderBy('id', 'desc')
             ->filter()
+            ->when($user->hasRole('Teacher'), function ($query) use ($user) {
+                $query->where('teacher_id', $user->teachers->id);
+            })
+            ->when($user->hasRole('Student'), function ($query) use ($user) {
+                $query->whereHas('courseDetails', function ($q) use ($user) {
+                    $q->where([
+                        ['department_id', $user->students->department_id],
+                        ['semester_id', $user->students->semester_id],
+                    ]);
+                });
+            })
             ->get();
-        }else if ($user->hasRole('Student')){
-            $quizez = Quiz::with('course', 'department', 'semester', 'teacher', 'teacher.user')
-            ->where('semester_id', $user->students->semester_id)
-            ->where('department_id', $user->students->department_id)
-            ->orderBy('id','desc')
-            ->filter()
-            ->get();
-        }
-
-
-        // foreach ($quizez as $quize) {
-        //     $quizStart = Carbon::parse($quize->date . ' ' . $quize->start_time);
-        //     $quizEnd = $quizStart->copy()->addMinutes($quize->duration);
-        //     $now = now();
-        //     if ($now->greaterThanOrEqualTo($quizEnd)) {
-        //         if ($quize->status !== 'finished') {
-        //             $quize->status = 'finished';
-        //             $quize->save();
-        //         }
-        //     } elseif ($now->greaterThanOrEqualTo($quizStart) && $now->lessThan($quizEnd)) {
-        //         if ($quize->status !== 'started') {
-        //             $quize->status = 'started';
-        //             $quize->save();
-        //         }
-        //     } elseif ($now->lessThan($quizStart)) {
-        //         if ($quize->status !== 'scheduled') {
-        //             $quize->status = 'scheduled';
-        //             $quize->save();
-        //         }
-        //     }
-        // }
-        
-        $now = now();
-
-        foreach ($quizez as $quize) {
-            $quizStart = Carbon::parse($quize->date . ' ' . $quize->start_time);
-            $quizEnd = $quizStart->copy()->addMinutes($quize->duration);
-
-            if ($now->greaterThanOrEqualTo($quizEnd) && $quize->status !== 'finished') {
-                $quize->status = 'finished';
-                $quize->save();
-            } elseif ($now->between($quizStart, $quizEnd) && $quize->status !== 'started') {
-                $quize->status = 'started';
-                $quize->save();
-            } elseif ($now->lessThan($quizStart) && $quize->status !== 'scheduled') {
-                $quize->status = 'scheduled';
-                $quize->save();
-            }
-        }
-
-        return $quizez;
+    
+        $this->statusHandler($quizzes);
+    
+        return $quizzes;
     }
+    
+    private function statusHandler($quizzes)
+    {
+        $now = now();
+        $quizzes->each(function ($quiz) use ($now) {
+            $quizStart = Carbon::parse($quiz->date . ' ' . $quiz->start_time);
+            $quizEnd = $quizStart->copy()->addMinutes($quiz->duration);
+    
+            if ($now->greaterThanOrEqualTo($quizEnd)) {
+                $quiz->status = 'finished';
+            } elseif ($now->between($quizStart, $quizEnd)) {
+                $quiz->status = 'started';
+            } else {
+                $quiz->status = 'scheduled';
+            }
+        });
+    }
+    
 
     /**
      * Display the specified resource.
@@ -96,14 +74,10 @@ class QuizzesServices extends Service
     {
         return DB::transaction(function () use($request) {
             $user = request()->user();
-            $CourseDetail = CourseDetail::findOrFail($request->course_id);
 
             $quiz = Quiz::create([
                 'teacher_id' => $user->teachers->id,
-                'department_id' => $CourseDetail->department_id,
-                'semester_id' => $CourseDetail->semester_id,
-                'course_id' => $CourseDetail->course_id, 
-                'course_details_id' => $request->course_id,               
+                'course_detail_id' => $request->course_id,               
                 'title' => $request->title,
                 'description' => $request->description,
                 'total_degree' => $request->total_degree,
@@ -126,20 +100,21 @@ class QuizzesServices extends Service
     {
         return DB::transaction(function () use($request,$id) {
             $user = request()->user();
-            $CourseDetail = CourseDetail::findOrFail($request->course_id);
             $quiz = Quiz::where('teacher_id',$user->teachers->id)->findOrFail($id);
-            $quiz->update([
-                'department_id' => $CourseDetail->department_id,
-                'semester_id' => $CourseDetail->semester_id,
-                'course_id' => $CourseDetail->course_id,
-                'course_details_id' => $request->course_id,
+            $data = [
+                'course_detail_id' => $request->course_id,
                 'title' => $request->title,
                 'description' => $request->description,
                 'total_degree' => $request->total_degree,
-                'date' => $request->date,
-                'start_time' => $request->start_time,
-                'duration' => $request->duration,
-            ]);
+            ];
+            if($request->filled('date') || $request->filled('start_time')){
+                if($quiz->type !=  'scheduled'){
+                    throw new AccessDeniedHttpException('you can not update this quiz\'s time because it is already published');
+                }
+                $data['date'] = $request->date;
+                $data['start_time'] = $request->start_time;
+            }
+            $quiz->update($data);
 
             $quiz->questions()->detach();
             $questions = $this->questionHandler($request,$quiz);
@@ -234,10 +209,10 @@ class QuizzesServices extends Service
                 ];
             }
         }
-
+        
         if ($request->filled('new_questions')) {
-            $course_id = $quiz->course_id;
-
+            $course_id = $quiz->course_detail_id;
+            
             foreach ($request->new_questions as $new_question) {
                 $new_question['course_id'] = $course_id;
                 $question = QuestionsServices::addNewQuestion($new_question);    

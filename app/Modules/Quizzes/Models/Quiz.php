@@ -20,10 +20,7 @@ class Quiz extends Model
 
     protected $fillable = [        
         'teacher_id',
-        'course_id',
-        'department_id',
-        'course_details_id',
-        'semester_id',
+        'course_detail_id',
         'title',
         'description',
         'total_degree',
@@ -40,27 +37,47 @@ class Quiz extends Model
         ->withPivot('degree');
     }
 
-    // public function courseDetail()
-    // {
-    //     return $this->belongsTo(CourseDetail::class)->with(['course','semester','department']);
-    // }
+    public function semester()
+    {
+        return $this->hasOneThrough(
+            Semester::class, 
+            CourseDetail::class, 
+            'id', 
+            'id',
+            'course_detail_id',
+            'semester_id' 
+        );
+    }
 
     public function department()
     {
-        return $this->belongsTo(Department::class);
-    }
-
-    public function semester()
-    {
-        return $this->belongsTo(Semester::class);
+        return $this->hasOneThrough(
+            Department::class, 
+            CourseDetail::class, 
+            'id', 
+            'id', 
+            'course_detail_id',
+            'department_id' 
+        );
     }
 
     public function course()
     {
-        return $this->belongsTo(Course::class);
+        return $this->hasOneThrough(
+            Course::class, 
+            CourseDetail::class, 
+            'id', 
+            'id', 
+            'course_detail_id',
+            'course_id' 
+        );
+    }
+
+    public function courseDetail()
+    {
+        return $this->belongsTo(CourseDetail::class, 'course_detail_id');
     }
     
-
     public function teacher()
     {
         return $this->belongsTo(Teacher::class);
@@ -69,15 +86,14 @@ class Quiz extends Model
     public function scopeFilter($query)
     {
         $query->when(request()->course,function($q, $value){
-            $course = CourseDetail::where('id',$value)->first();
-            return $q->where('course_id',$course->course_id);
+            return $q->where('course_detail_id',$value);
         });
         $query->when(request()->status,function($q, $value){
             return $q->where('status',$value);
         });
         $query->when(request()->from, function($q, $value){
             $fromDate = now()->subDays($value)->toDateString();
-            return $q->where('date', '>=', $fromDate);
+            return $q->where('created_at', '>=', $fromDate);
         });
     }
 }

@@ -12,6 +12,7 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Support\Facades\Storage;
 
 class User extends Authenticatable
 {
@@ -26,7 +27,8 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
-        'type'
+        'type',
+        'avatar',
     ];
 
     /**
@@ -55,7 +57,7 @@ class User extends Authenticatable
 
     public function teachers()
     {
-        return $this->hasOne(Teacher::class)->with(['departments','courses','semesters']);
+        return $this->hasOne(Teacher::class);
     }
 
     public function students()
@@ -71,6 +73,12 @@ class User extends Authenticatable
     public function assignments()
     {
         return $this->hasMany(Assignment::class, 'teacher_id')->with('courseDetail.course');
+    }
+
+
+    public function getAvatarUrlAttribute()
+    {
+        return Storage::disk('public')->url($this->avatar);
     }
 
 }
