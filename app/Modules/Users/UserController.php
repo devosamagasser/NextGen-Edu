@@ -2,16 +2,35 @@
 
 namespace App\Modules\Users;
 
+use App\Models\User;
 use App\Facades\ApiResponse;
 use App\Facades\FileHandler;
 use App\Modules\Auth\AuthServices;
 use App\Modules\Users\UserResource;
 use App\Http\Controllers\Controller;
-use Illuminate\Auth\AuthenticationException;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Auth\AuthenticationException;
 
 class UserController extends Controller
 {
+
+        public function getUser()
+    {
+        try{
+
+            $user = request()->user();
+            $user = User::when($user->type == 'Student', function($query){
+                $query->with('students');
+            })
+            ->when($user->type == 'Teacher', function($query){
+                $query->with('Teacher');
+            })->findOrFail($user->id);
+            return ApiResponse::success(new UserResource($user));
+        }catch (\Exception $e){
+            throw new AuthenticationException;
+        }
+    }
+
     public function profile()
     {
         try{

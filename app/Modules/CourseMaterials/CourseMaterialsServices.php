@@ -5,10 +5,7 @@ namespace App\Modules\CourseMaterials;
 use App\Facades\FileHandler;
 use App\Services\Service;
 use App\Models\CourseDetail;
-use App\Modules\Courses\Course;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Database\UniqueConstraintViolationException;
-use Symfony\Component\HttpFoundation\Exception\UnexpectedValueException;
 
 class CourseMaterialsServices extends Service
 {
@@ -18,21 +15,7 @@ class CourseMaterialsServices extends Service
      */
     public function getCourseMaterialsById(string $id)
     {
-        $user = auth()->user();
-
-        $courseDetails = CourseDetail::findOrFail($id);
-        $materials = CourseMaterial::where('course_id', $courseDetails->course_id)->filter();
-
-        if ($user->hasRole('Teacher')) {
-            return $materials->where('department_id', $courseDetails->department_id)
-                ->where('semester_id', $courseDetails->semester_id)
-                ->get();
-        } elseif ($user->hasRole('Student')) {
-            return $materials->where('department_id', $user->students->department_id)
-                ->where('semester_id', $user->students->semester_id)
-                ->get();
-        }
-
+        return CourseMaterial::where('course_detail_id', $id)->filter()->get();
     }
 
     public function getMaterialById(string $id)
