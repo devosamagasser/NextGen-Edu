@@ -130,6 +130,14 @@ class CoursesServices extends Service
         return true;
     }
 
+    public function updateCourseDetails($request,$courseId)
+    {
+        CourseDetail::where('course_id', $courseId)->delete();
+        $this->storeCourseDetails($request, $courseId);
+        return true;
+    }
+
+
     /**
      * Update the specified resource in storage.
      */
@@ -144,7 +152,7 @@ class CoursesServices extends Service
                     'description' => $request->description,
                 ]);
 
-                $this->storeCourseDetails($request, $id);
+                $this->updateCourseDetails($request, $id);
             });
             return $course;
         }  catch (UniqueConstraintViolationException $e){
