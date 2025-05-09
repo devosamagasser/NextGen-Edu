@@ -16,7 +16,7 @@ Route::post('/login',[AuthController::class,'login']);
 
 
 Route::group(['middleware'=>['auth','role:Student|Teacher|Super admin']],function (){
-    Route::get('/node/user', [UserController::class, 'getUser']);
+    Route::get('/node/user', [UserController::class, 'profile']);
 });
 
 Route::group(['middleware'=>['auth','role:Student']],function (){
