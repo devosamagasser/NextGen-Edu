@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('title')->nullable();
             $table->foreignId('course_detail_id')->nullable()->constrained('course_details')->cascadeOnDelete();
             $table->string('material');
+            $table->enum('type',['lecture','section','other']);
             $table->enum('week', ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14']);
             $table->timestamps();
         });
