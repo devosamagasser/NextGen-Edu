@@ -29,7 +29,6 @@ class CourseMaterialsServices extends Service
     public function addNewMaterial($request, $id)
     {
         return DB::transaction(function () use ($request, $id) {
-            $courseDetails = CourseDetail::findOrfail($id);
             $data = [];
             foreach ($request->file('material') as $file) {
                 $materialPath = FileHandler::storeFile(
@@ -39,10 +38,7 @@ class CourseMaterialsServices extends Service
                 );
                 $data[] = [                
                     'title' => $request->title,
-                    'course_id' => $courseDetails->course_id,
-                    'department_id' => $courseDetails->department_id,
-                    'semester_id' => $courseDetails->semester_id,
-                    'course_details_id' => $id,
+                    'course_detail_id' => $id,
                     'material' => $materialPath,
                     'week' => $request->week,
                     'type' => $request->type
