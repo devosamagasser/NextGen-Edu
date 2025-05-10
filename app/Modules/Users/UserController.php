@@ -16,9 +16,13 @@ class UserController extends Controller
 
     public function profile()
     {
-        $user = request()->user();
-        AuthServices::loadUserRelations($user);
-        return ApiResponse::success(new UserResource($user));
+        try{
+            $user = request()->user();
+            AuthServices::loadUserRelations($user);
+            return ApiResponse::success(new UserResource($user));
+        }catch (\Exception $e){
+            throw new AuthenticationException;
+        }
     }
 
     public function update(UserUpdateRequest $request)

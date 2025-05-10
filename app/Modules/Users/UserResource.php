@@ -19,21 +19,31 @@ class UserResource extends JsonResource
             'name' => $this->name,
             'email' => $this->email,
             'type' => $this->type,
-            'avatar' => $this->avatar_url
+            'avatar' => config('filesystems.images_url').$this->avatar
         ];
+
         $this->whenLoaded('students',function() use(&$data){
             $data['nationality'] = $this->students->nationality;
             $data['uni_code'] = $this->students->uni_code;
             $data['personal_id'] = $this->students->personal_id;
-            $data['level'] = $this->students->semester->id;
-            $data['class'] = $this->students->semester->name;
-            $data['department'] = $this->students->department->name;
+            $data['group'] = $this->students->group;
+            $data['semester'] =[
+                'id' => $this->students->semester->id,
+                'name' => $this->students->semester->name
+            ];
+            $data['department'] = [
+                'id' => $this->students->department->id,
+                'name' => $this->students->department->name
+            ];
             $data['group'] = $this->students->group;
         });
         $this->whenLoaded('teachers',function() use(&$data){
-            $data['department'] =  $this->teachers->department->name;
             $data['uni_code'] =  $this->teachers->uni_code;
             $data['description'] =  $this->teachers->description;
+            $data['department'] = [ 
+                'id' => $this->teachers->department_id,
+                'name' => $this->teachers->department->name
+            ];
         });
         return $data;
     }
