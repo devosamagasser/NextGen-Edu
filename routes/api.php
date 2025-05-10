@@ -15,7 +15,7 @@ use App\Modules\CourseMaterials\CourseMaterialsController;
 Route::post('/login',[AuthController::class,'login']);
 
 
-Route::group(['middleware'=>['auth','role:Student|Teacher|Super admin']],function (){
+Route::group(['middleware'=>['auth']],function (){
     Route::get('/node/user', [UserController::class, 'profile']);
 });
 
