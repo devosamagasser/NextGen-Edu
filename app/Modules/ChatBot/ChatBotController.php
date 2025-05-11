@@ -19,20 +19,22 @@ class ChatBotController extends Controller
         $userMessage = $request->input('message');
 
         // كود استدعاء OpenRouter API
-        $response = Http::timeout(60)->withHeaders([
-            'Authorization' => 'Bearer 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',
+        $response = Http::timeout(120)->withHeaders([
+            "Content-Type: application/json",
+            'Authorization' => 'Bearer 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',
         ])->post('https://openrouter.ai/api/v1/chat/completions', [
-            'model' => 'deepseek/deepseek-chat-v3-0324:free', 
+            'model' => 'meta-llama/llama-4-maverick:free', 
             'messages' => [
                 ['role' => 'user', 'content' => $userMessage],
             ],
         ]);
 
+
         $data = $response->json();
 
         // احصل على رد الـ AI
-        // $reply = $data['choices'][0]['message']['content'] ?? 'عذرًا، حدث خطأ ما.';
-        $reply = $data;
+        $reply = $data['choices'][0]['message']['content'] ?? 'عذرًا، حدث خطأ ما.';
+        // $reply = $data;
 
         return response()->json([
             'reply' => $reply,
