@@ -12,6 +12,7 @@ class VerifyCsrfToken extends Middleware
      * @var array<int, string>
      */
     protected $except = [
-        //
+        'chat/send', // استثناء مسار إرسال الرسالة
+        'chat', // استثناء مسار الدردشة
     ];
 }
