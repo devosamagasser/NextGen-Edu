@@ -41,7 +41,7 @@ chatForm.addEventListener('submit', async e => {
   typeMessage('جاري المعالجة...', 'left');
 
   try {
-    const res = await fetch('http://127.0.0.1:8001/chat/send', {
+    const res = await fetch('https://nextgenedu-database.azurewebsites.net/chat/send', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
