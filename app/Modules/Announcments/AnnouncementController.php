@@ -28,8 +28,8 @@ class AnnouncementController extends Controller
      */
     public function store(AnnouncementStoreRequest $request)
     {
-        $announcement = $this->announcemetsServices->addNewAnnouncement($request);
-        return ApiResponse::success(new AnnounecmentResource($announcement));
+        $this->announcemetsServices->addNewAnnouncement($request);
+        return ApiResponse::message('Created successfully');
     }
 
     public function showMine()
@@ -50,7 +50,7 @@ class AnnouncementController extends Controller
     public function update(AnnouncementUpdateRequest $request, string $id)
     {
         $announcement = $this->announcemetsServices->updateAnnouncementInfo($request, $id);
-        return ($announcement) ? ApiResponse::updated(new AnnounecmentResource($announcement)) : ApiResponse::message('No cahnge');
+        return ($announcement) ? ApiResponse::message('Created successfully') : ApiResponse::message('No cahnge');
     }
 
     /**

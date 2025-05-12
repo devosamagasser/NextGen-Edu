@@ -41,7 +41,7 @@ chatForm.addEventListener('submit', async e => {
   typeMessage('جاري المعالجة...', 'left');
 
   try {
-    const res = await fetch('https://nextgenedu-database.azurewebsites.net/chat/send', {
+    const res = await fetch('http://127.0.0.1:8001/chat/send', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -56,8 +56,16 @@ chatForm.addEventListener('submit', async e => {
     // امسح “جاري المعالجة...”
     chatMessages.lastChild.remove();
 
-    if (data.reply) typeMessage(data.reply, 'left');
-    else typeMessage('لم يصل رد من الخادم.', 'left');
+    if (data.reply) {
+      let replyText = data.reply.trim();
+      if (replyText === '0') {
+        replyText = 'لم أفهم سؤالك، الرجاء المحاولة بشكل أوضح.';
+      }
+      typeMessage(replyText, 'left');
+    } else {
+      typeMessage('لم يصل رد من الخادم.', 'left');
+    }
+
   } catch (err) {
     chatMessages.lastChild.remove();
     typeMessage('حدث خطأ في الاتصال.', 'left');

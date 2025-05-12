@@ -111,3 +111,17 @@ button.btn:active {
   background-color: rgba(0,0,0,0.1);
   border-radius: 10px;
 }
+
+.chat-quick-buttons {
+  justify-content: center;
+  gap: 5px;
+}
+
+.chat-quick-buttons button {
+  font-size: 0.60rem;
+  padding: 4px 7px;
+  border-radius: 20px;
+  flex: 1 1 auto;
+  max-width: fit-content;
+  text-align: center;
+}

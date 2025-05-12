@@ -27,7 +27,7 @@ class QuizzesServices extends Service
                 $query->where('teacher_id', $user->teachers->id);
             })
             ->when($user->hasRole('Student'), function ($query) use ($user) {
-                $query->whereHas('courseDetails', function ($q) use ($user) {
+                $query->whereHas('courseDetail', function ($q) use ($user) {
                     $q->where([
                         ['department_id', $user->students->department_id],
                         ['semester_id', $user->students->semester_id],
