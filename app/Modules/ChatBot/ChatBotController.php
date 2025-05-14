@@ -37,8 +37,8 @@ class ChatBotController extends Controller
         $userId = $request->input('id');
         
         $student = Student::where('user_id', $userId)->first();
-        if(!$student){
-            return ApiResponse::success($student, null, 404);
+        if (!$student) {
+            return response()->json(['reply' => 'يجب عليك التسجيل اولا لأستطيع مساعدتك', 'code' => 0]);
         }
         $semester_id = $student->semester_id;
         $department_id = $student->department_id;
