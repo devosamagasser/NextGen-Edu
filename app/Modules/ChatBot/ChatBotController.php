@@ -2,6 +2,7 @@
 
 namespace App\Modules\ChatBot;
 
+use App\Facades\ApiResponse;
 use Illuminate\Http\Request;
 use App\Modules\Courses\Course;
 use App\Modules\Students\Student;
@@ -36,6 +37,9 @@ class ChatBotController extends Controller
         $userId = $request->input('id');
         
         $student = Student::where('user_id', $userId)->first();
+        if(!$student){
+            return ApiResponse::success($student, null, 404);
+        }
         $semester_id = $student->semester_id;
         $department_id = $student->department_id;
         $courses =  Course::with('semesters','departments','courseDetails')
