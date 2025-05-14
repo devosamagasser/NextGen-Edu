@@ -2,73 +2,90 @@
 
 namespace App\Modules\ChatBot;
 
-use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Modules\Courses\Course;
+use App\Modules\Students\Student;
+use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Http;
 
 class ChatBotController extends Controller
 {
 
-    public $tokens = [
-        'grok' => [
-            'url' => 'https://api.groq.com/openai/v1/chat/completions',
-            'token' => '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'
-        ],
-        'deepSeek' => [
-            'url' => 'https://api.deepseek.com/openai/v1/chat/completions', // ✅ عدلت URL
-            'token' => 'sk-ea2e0570e8cd4b8d91c1f3fe40e97c69'
-        ],
-    ];
-
-    public function index()
+    public function __construct(public ChatBotService $chatBotService)
     {
-        return view('chat');
+    }
+
+    public function index($token = null )
+    {
+        $user = null;
+
+        if ($token) {
+            $tokenModel = \Laravel\Sanctum\PersonalAccessToken::findToken($token);
+
+            if ($tokenModel) {
+                $user = $tokenModel->tokenable;
+            }
+        }
+
+        return view('chat', ['user' => $user]);
     }
 
     public function send(Request $request)
     {
         $userMessage = $request->input('message');
+        $userId = $request->input('id');
+        
+        $student = Student::where('user_id', $userId)->first();
+        $semester_id = $student->semester_id;
+        $department_id = $student->department_id;
+        $courses =  Course::with('semesters','departments','courseDetails')
+            ->whereHas('courseDetails',function($q)use($semester_id, $department_id){
+                $q->where('semester_id', $semester_id);
+                $q->where('department_id', $department_id);
+            })->get();
 
-        $prompt = "حلل الرسالة التالية: ($userMessage)
-                    إذا كانت تتعلق ب الجدول . أجب بـ 1
-                    إذا كانت تسأل عن مادة معينة، أجب بـ 2 واسم المادة.
-                    إذا كانت تسأل عن مكان المحاضرة ، أجب بـ 3 واسم المادة.
-                    إذا كانت تسأل عن مكان السكشن، أجب بـ 4 واسم المادة.
-                    إذا كانت تسأل عن مكان المعمل، أجب بـ 5 واسم المادة.
-                    إذا كانت تسأل عن مكان قاعة، أجب بـ 6 واسم او كود القاعة.
-                    إذا لم تكن أي من هذه، أجب بـ 0.
-                    اديني الطلب بالشكل المطلوب من غير أي شرح، مش عايزك ترد عليا غير بالشكل المطلوب فقط بدون أي كلام إضافي.";
+        $courseNames = $courses->pluck('name')->toArray(); // أو 'title' حسب اسم الحقل
+        $courseList = implode(", ", $courseNames);
 
-        // ✅ استخدم موديل صح مع Groq
-        $response = $this->chatModel('grok', 'llama-3.3-70b-versatile', $prompt);
+    
+        if(!$student) {
+            return response()->json(['reply' => 'يجب عليك التسجيل اولا لأستطيع مساعدتك','code' => 0]);
+        }
+        $prompt = "
+        أنت الآن مساعد ذكي للطلاب في كلية، ووظيفتك أن ترد على أسئلتهم باستخدام النظام التالي فقط. لا تشرح، لا تحلل، لا تبرر، فقط أجب بالرد المناسب كما هو موضح أدناه:
+
+        المواد المسجلة للطالب هذا الترم هي:
+        {$courseList}
+
+        النظام:
+        - إذا كان الطالب يسأل عن المواد الدراسية المسجلة له هذا الترم → أجب بـ: 7
+        - إذا كان يسأل عن الجدول → أجب بـ: 1
+        - إذا سأل عن مادة معينة وكانت من ضمن المواد المسجلة أعلاه → أجب بـ: 2 [اسم المادة]
+        - إذا سأل عن مكان المحاضرة لمادة وكانت من ضمن المواد أعلاه → أجب بـ: 3 [اسم المادة]
+        - إذا سأل عن مكان السكشن لمادة وكانت من ضمن المواد أعلاه → أجب بـ: 4 [اسم المادة]
+        - إذا سأل عن مكان المعمل لمادة وكانت من ضمن المواد أعلاه → أجب بـ: 5 [اسم المادة]
+        - إذا سأل عن مكان قاعة معينة → أجب بـ: 6 [اسم القاعة أو الكود]
+        - إذا لم ينطبق أي مما سبق → أجب على الطالب بشكل طبيعي كمساعد ذكي، بدون ذكر هذه القواعد أو النظام.
+
+        الرسالة: ({$userMessage})
+
+        رد فقط بالإجابة المناسبة حسب النظام أعلاه.
+        ";
+
+
+
+        $response = $this->chatBotService->sendPrompet('grok', 'llama-3.3-70b-versatile', $prompt);
 
         $data = $response->json();
 
         // احصل على رد الـ AI
         $reply = $data['choices'][0]['message']['content'] ?? 'عذرًا، حدث خطأ ما.';
+        if($reply !== 'عذرًا، حدث خطأ ما.')
+            $reply =  $this->chatBotService->chatResponse($reply, $student);
+        else
+            $reply = ['reply' => 'عذرًا، لم أفهم طلبك.' , 'code' => 0];
 
-        return response()->json([
-            'reply' => trim($reply),
-        ]);
+        return response()->json($reply);
     }
 
-    public function chatModel($provider, $model, $prompt, $timeout = 120)
-    {
-        if (!isset($this->tokens[$provider])) {
-            return response()->json(['error' => 'Invalid provider.']);
-        }
-
-        return Http::timeout($timeout)->withHeaders([
-            "Content-Type" => "application/json",
-            'Authorization' => 'Bearer ' . $this->tokens[$provider]['token'],
-        ])->post($this->tokens[$provider]['url'], [
-            'model' => $model,
-            'messages' => [
-                [
-                    'role' => 'user',
-                    'content' => $prompt
-                ],
-            ],
-        ]);
-    }
 }
