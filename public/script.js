@@ -77,6 +77,7 @@ chatForm.addEventListener('submit', async e => {
           break;
 
         default:
+          console.log(data.reply)
           let replyText = typeof data.reply === 'string' ? data.reply.trim() : 'لم أفهم سؤالك، الرجاء المحاولة بشكل أوضح.';
           typeMessage(replyText, 'left');
       }
