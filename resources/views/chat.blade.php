@@ -12,7 +12,7 @@
   <!-- Icons -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
   <!-- Custom Styles -->
-  <link rel="stylesheet" href="https://nextgenedu-database.azurewebsites.net/style.css">
+  <link rel="stylesheet" href="http://127.0.0.1:8001/style.css">
 </head>
 <body>
   <div class="chat-container">
@@ -20,7 +20,9 @@
 
     <div class="chat-footer">
 
-      <div class="chat-quick-buttons" id="quickButtons">
+    <div class="chat-quick-buttons-wrapper d-flex align-items-center justify-content-between">
+      
+      <div class="chat-quick-buttons flex-grow-1" id="quickButtons">
         <button class="btn text-dark btn-outline-primary btn-sm" onclick="quickSend('عايز اعرف المواد اللي عندي الترم ده')">مواد الترم</button>
         <button class="btn text-dark btn-outline-primary btn-sm" onclick="quickSend('عايز الجدول الدراسي')">الجدول</button>
         <button class="btn text-dark btn-outline-primary btn-sm" onclick="quickSend('عايز اعرف عن مادة الرياضيات')">مادة</button>
@@ -29,6 +31,9 @@
         <button class="btn text-dark btn-outline-primary btn-sm" onclick="quickSend('فين مكان سكشن الفيزياء؟')">مكان سكشن</button>
         <button class="btn text-dark btn-outline-primary btn-sm" onclick="quickSend('فين معمل البرمجة؟')">معمل</button>
       </div>
+
+    </div>
+
 
       <form id="chatForm">
         <button type="submit" class="btn btn-primary"><i class="bi bi-send"></i></button>
@@ -46,7 +51,7 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <!-- Custom JS -->
 
-<script src="https://nextgenedu-database.azurewebsites.net/script.js"></script>
+<script src="http://127.0.0.1:8001/script.js"></script>
 <script>
     function quickSend(text) {
       const chatInput = document.getElementById('chatInput');
@@ -71,7 +76,7 @@
         this.innerHTML = '<i class="bi bi-lightning"></i>' ;
       }
     });
+</script>
 
-  </script>
 </body>
 </html>

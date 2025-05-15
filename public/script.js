@@ -38,7 +38,6 @@ chatForm.addEventListener('submit', async e => {
   appendMessage(text, 'right');
   chatInput.value = '';
 
-  // رسالة مؤقتة
   const loadingMessage = document.createElement('div');
   loadingMessage.className = 'message left';
   loadingMessage.innerHTML = `  <div class="bubble d-flex align-items-center">
@@ -59,7 +58,7 @@ chatForm.addEventListener('submit', async e => {
       },
       body: JSON.stringify({ 
         message: text,
-        id: userId // ✅ إضافة مهمة
+        id: userId 
       })
     });
 
@@ -70,11 +69,11 @@ chatForm.addEventListener('submit', async e => {
       const code = data.code ?? 0;
 
       switch (code) {
-        case 1: // الجدول الدراسي
+        case 1: 
           renderSchedule(data.reply);
           break;
 
-        case 7: // المواد الدراسية
+        case 7: 
           renderCourses(data.reply);
           break;
 

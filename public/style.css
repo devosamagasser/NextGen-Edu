@@ -82,38 +82,47 @@
       font-size: 1rem;
     }
 
-    .chat-quick-buttons {
-      display: flex;
-      flex-wrap: nowrap;
-      overflow-x: auto;
-      gap: 0.5rem;
-      padding-bottom: 2rem;
-      justify-content: center;
-      margin-top: 1rem;
-    }
+.chat-quick-buttons-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding-bottom: 1rem;
+  margin-top: 1rem;
+}
 
-    .chat-quick-buttons button {
-      white-space: nowrap;
-      flex-shrink: 0;
-      font-size: 0.85rem;
-      padding: 6px 16px;
-      border-radius: 9999px;
-      border: 1px solid #ccc;
-      transition: background-color 0.2s;
-    }
+.chat-quick-buttons {
+  display: flex;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  gap: 0.5rem;
+  scroll-behavior: smooth;
+  padding: 0.5rem 0;
+  white-space: nowrap;
+}
 
-    .chat-quick-buttons button:hover {
-      background-color: #f0f0f0;
-    }
+.chat-quick-buttons button {
+  white-space: nowrap;
+  flex-shrink: 0;
+  font-size: 0.85rem;
+  padding: 6px 16px;
+  border-radius: 9999px;
+  border: 1px solid #ccc;
+  transition: background-color 0.2s;
+}
 
-    .chat-quick-buttons::-webkit-scrollbar {
-      height: 6px;
-    }
+.chat-quick-buttons button:hover {
+  background-color: #f0f0f0;
+}
 
-    .chat-quick-buttons::-webkit-scrollbar-thumb {
-      background: #ccc;
-      border-radius: 10px;
-    }
+.chat-quick-buttons::-webkit-scrollbar {
+  height: 6px;
+}
+
+.chat-quick-buttons::-webkit-scrollbar-thumb {
+  background: #ccc;
+  border-radius: 10px;
+}
+
 
     #quickButtons {
       display: none;
