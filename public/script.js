@@ -41,7 +41,9 @@ chatForm.addEventListener('submit', async e => {
   // رسالة مؤقتة
   const loadingMessage = document.createElement('div');
   loadingMessage.className = 'message left';
-  loadingMessage.innerHTML = `<div class="bubble">جاري المعالجة...</div>`;
+  loadingMessage.innerHTML = `  <div class="bubble d-flex align-items-center">
+    <div class="spinner-border text-secondary me-2" role="status" style="width: 1.2rem; height: 1.2rem;"></div>
+  </div>`;
   chatMessages.appendChild(loadingMessage);
   chatMessages.scrollTop = chatMessages.scrollHeight;
 
@@ -143,7 +145,7 @@ function renderSchedule(scheduleData) {
   wrapper.className = 'bubble';
 
   const responsiveWrapper = document.createElement('div');
-  responsiveWrapper.className = 'table-responsive';
+  responsiveWrapper.className = 'table-responsive ';
   responsiveWrapper.style.overflowX = 'auto';
   responsiveWrapper.style.direction = 'rtl';
 
