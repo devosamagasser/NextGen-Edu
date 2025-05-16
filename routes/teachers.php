@@ -19,7 +19,10 @@ Route::group(['middleware'=>['auth','role:Teacher']],function (){
     Route::get('/departments',[TeachersController::class,'myDepartments']);
     Route::get('/semesters',[TeachersController::class,'mySemesters']);
     Route::apiResource('quizzes',QuizzesController::class);
+
     Route::apiResource('assignments',AssignmentController::class);
+    Route::put('assignments/answer/{id}',[AssignmentController::class, 'assignDegree']);
+
     
     Route::apiResource('/announcements', AnnouncementController::class);
     Route::get('/my-announcements', [AnnouncementController::class,'showMine']);

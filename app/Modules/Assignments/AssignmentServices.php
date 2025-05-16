@@ -3,11 +3,13 @@
 namespace App\Modules\Assignments;
 
 use App\Services\Service;
+use App\Facades\ApiResponse;
 use App\Facades\FileHandler;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use App\Modules\Assignments\Models\Assignment;
 use App\Modules\Assignments\Models\AssignmentAnswer;
-use Illuminate\Support\Facades\Storage;
+use Illuminate\Http\Exceptions\HttpResponseException;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
 class AssignmentServices extends Service
@@ -185,6 +187,22 @@ class AssignmentServices extends Service
         return Storage::disk('public')->url($path);
     }
     
+
+    public function assignDegree($id, $degree)
+    {
+        $answer = AssignmentAnswer::with('assignment')->findOrFail($id);
+        if ($answer->assignment->total_degree < $degree) {
+            throw new HttpResponseException(
+                ApiResponse::validationError(['degree' => 'Degree must be less than or equal to the maximum degree of the assignment.'])
+            );
+        }
+        $answer->update([
+            'degree' => $degree,
+            'status' => 'corrected'
+        ]);
+        return true;
+    }
+
     private function checkAssignmentDeadline($assignment)
     {
         if (now()->gt($assignment->deadline)) {
@@ -202,6 +220,7 @@ class AssignmentServices extends Service
             : FileHandler::storeFile($file, $folder, $extension);
     }
     
+
 
 
 

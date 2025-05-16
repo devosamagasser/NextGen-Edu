@@ -3,10 +3,11 @@
 namespace App\Modules\Assignments;
 
 use App\Facades\ApiResponse;
-use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Modules\Assignments\Validation\SubmitAnswerRequest;
 use App\Modules\Assignments\Validation\AssignmentStoreRequest;
 use App\Modules\Assignments\Validation\AssignmentUpdateRequest;
+use App\Modules\Assignments\Validation\AssignAnswerDegreeRequest;
 
 class AssignmentController extends Controller
 {
@@ -67,16 +68,19 @@ class AssignmentController extends Controller
     }
 
     
-    public function submit(Request $request, string $id)
+    public function submit(SubmitAnswerRequest $request, string $id)
     {
-        $request->validate([
-            'file' => 'required|mimes:pdf,doc,docx,jpg,png,jfif|max:2048',
-        ]);
     
         $path = $this->assignmentServices->submitAssignmentAnswer($id, $request->file);
         return ApiResponse::success([
             'answer'=> $path
         ],'submitted successfully');
+    }
+    
+    public function assignDegree(AssignAnswerDegreeRequest $request, string $id)
+    {
+        $this->assignmentServices->assignDegree($id, $request->degree);
+        return ApiResponse::message('successfully');
     }
     
     

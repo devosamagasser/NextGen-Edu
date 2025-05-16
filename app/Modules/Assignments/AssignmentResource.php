@@ -26,7 +26,7 @@ class AssignmentResource extends JsonResource
             'file' => $this->file_url,
 
             // ✅ For Student
-            'student' => $this->when($request->user()->type == 'Student', function () {
+            'answer_status' => $this->when($request->user()->type == 'Student' && $this->relationLoaded('answers'), function () {
                 $answer = $this->answers->first();
                 return $answer ? [
                     'status' => $answer->status,
@@ -37,10 +37,12 @@ class AssignmentResource extends JsonResource
             }),
 
             // ✅ For Teacher
-            'students' => $this->when($request->user()->type == 'Teacher', function () {
+            'answers' => $this->when($request->user()->type == 'Teacher'&& $this->relationLoaded('answers'), function () {
                 return $this->answers->map(function ($answer) {
                     return [
+                        'id' => $answer->id,
                         'student' => $answer->student->user->name,
+                        'code' => $answer->student->uni_code,
                         'status' => $answer->status,
                         'degree' => $answer->degree,
                         'file' => $answer->file_url,

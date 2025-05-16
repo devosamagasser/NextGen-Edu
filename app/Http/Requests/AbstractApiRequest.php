@@ -36,7 +36,7 @@ Abstract class AbstractApiRequest extends FormRequest
     {
         $errors = (new ValidationException($validator))->errors();
 
-        if (! empty($errors)) {
+        if (!empty($errors)) {
             $formedErrors = [];
             foreach ($errors as $filed => $message) {
                 $formedErrors[$filed] = $message[0];
