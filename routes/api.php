@@ -4,10 +4,12 @@
 use App\Modules\Auth\AuthController;
 use App\Modules\Users\UserController;
 use Illuminate\Support\Facades\Route;
+use App\Modules\Halls\HallsController;
 use App\Modules\Table\TableController;
 use App\Modules\Courses\CoursesController;
 use App\Modules\Quizzes\QuizzesController;
 use App\Modules\Students\StudentsController;
+use App\Modules\Buildings\BuildingsController;
 use App\Modules\Assignments\AssignmentController;
 use App\Modules\Announcments\AnnouncementController;
 use App\Modules\CourseMaterials\CourseMaterialsController;
@@ -41,4 +43,8 @@ Route::group(['middleware'=>['auth','role:Student']],function (){
     });
     Route::get('/course-materials/{id}', [CourseMaterialsController::class,'index']);
     Route::get('/course-materials/{id}/show', [CourseMaterialsController::class,'show']);
+});
+Route::group(['middleware'=>['auth','role:Student|Teacher']],function (){
+        Route::get('/buildings',[BuildingsController::class, 'index']);
+        Route::get('/halls',[HallsController::class, 'all']);
 });

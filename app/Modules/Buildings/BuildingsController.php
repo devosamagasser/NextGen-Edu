@@ -19,7 +19,7 @@ class BuildingsController extends Controller
     public function index()
     {
         $buildings =  $this->buildingsServices->getAllBuildings();
-        return ApiResponse::success($buildings);
+        return ApiResponse::success(BuildingsResource::collection($buildings));
     }
 
     /**
@@ -28,7 +28,7 @@ class BuildingsController extends Controller
     public function store(BuildingStoreRequest $request)
     {
         $building = $this->buildingsServices->addNewBuilding($request);
-        return ApiResponse::created($building);
+        return ApiResponse::message('created successfully', 201);
     }
 
     /**
@@ -37,7 +37,7 @@ class BuildingsController extends Controller
     public function show(string $id)
     {
         $building = $this->buildingsServices->getBuildingById($id);
-        return ApiResponse::sucess($building);
+        return ApiResponse::success(new BuildingsResource($building));
     }
 
     /**
@@ -46,7 +46,7 @@ class BuildingsController extends Controller
     public function update(BuildingUpdateRequest $request, string $id)
     {
         $building = $this->buildingsServices->updateBuildingInfo($request, $id);
-        return ApiResponse::updated($building);
+        return ApiResponse::message('updated successfully');
     }
 
     /**

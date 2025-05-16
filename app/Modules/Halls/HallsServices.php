@@ -16,12 +16,16 @@ class HallsServices extends Service
     /**
      * Display a listing of the resource.
      */
-    public function getAllHalls($building)
+    public function getAllHallsByBuilding($building)
     {
         Building::findOrFail($building);
         return Hall::with('building')->where('building_id',$building)->get();
     }
-
+    
+    public function getAllHalls()
+    {
+        return Hall::with('building')->get();
+    }
     /**
      * Display the specified resource.
      */

@@ -124,7 +124,7 @@ class AssignmentServices extends Service
 
             if($request->filled('date') || $request->filled('time')){
                 if($assignment->status !=  'scheduled'){
-                    throw new AccessDeniedHttpException('you can not update this assignment\'s time because it is already published');
+                    throw new AccessDeniedHttpException('you can not update this assignment\'s time because it is already finished');
                 }
                 $data['deadline'] = $request->date . ' ' . $request->time;
             }

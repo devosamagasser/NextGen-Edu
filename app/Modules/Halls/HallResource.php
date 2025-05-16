@@ -21,10 +21,13 @@ class HallResource extends JsonResource
             'status' => $this->status,
             'floor' => $this->floor,
             'audience' => $this->audience,
-            'building_name' => $this->building->name,
-            'building_id' => $this->building->id,
             "latitude" => $this->building->latitude ,
             "longitude" => $this->building->longitude,
+            'building' => [
+                'id' => $this->building->id,
+                'name' => $this->building->name,
+                'code' => $this->building->code
+            ]
         ];
     }
 }

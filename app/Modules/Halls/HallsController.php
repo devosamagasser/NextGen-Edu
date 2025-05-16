@@ -18,10 +18,15 @@ class HallsController extends Controller
      */
     public function index($building)
     {
-        $halls = $this->hallsServices->getAllHalls($building);
+        $halls = $this->hallsServices->getAllHallsByBuilding($building);
         return ApiResponse::success(HallResource::collection($halls));
     }
-
+    
+    public function all()
+    {
+        $halls = $this->hallsServices->getAllHalls();
+        return ApiResponse::success(HallResource::collection($halls));
+    }
     /**
      * Store a newly created resource in storage.
      */
