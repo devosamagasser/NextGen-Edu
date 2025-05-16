@@ -32,6 +32,7 @@ Route::group(['middleware'=>['auth','role:Student']],function (){
         Route::get('/', [QuizzesController::class, 'index']);
         Route::get('{id}/start', [QuizzesController::class, 'startStudentQuiz']);
         Route::post('{id}/submit', [QuizzesController::class, 'submitAnswers']);
+        Route::get('/answers/{id}', [QuizzesController::class, 'quizWithStudentAnswers']);
     });
     Route::get('/announcements', [AnnouncementController::class, 'index']);
     Route::get('/table', [TableController::class,'index']);

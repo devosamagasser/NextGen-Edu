@@ -41,6 +41,18 @@ class QuizzesController extends Controller
         return ApiResponse::success(new QuizResource($quiz));
     }
 
+    public function quizWithStudentAnswers(string $id, $student = null)
+    {
+        $quiz = $this->quizesServices->getQuizWithStudentAnswers($id, $student);
+        return ApiResponse::success($quiz);
+    }
+
+    public function quizStudentsAnswers(string $id)
+    {
+        $answers = $this->quizesServices->getQuizStudentsAnswers($id);
+        return ApiResponse::success($answers);
+    }
+
     /**
      * Update the specified resource in storage.
      */

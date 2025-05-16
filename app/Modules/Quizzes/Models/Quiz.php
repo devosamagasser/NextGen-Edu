@@ -3,10 +3,8 @@
 namespace App\Modules\Quizzes\Models;
 
 
-use App\Models\User;
 use App\Models\Semester;
 use App\Models\CourseDetail;
-use Illuminate\Support\Carbon;
 use App\Modules\Courses\Course;
 use App\Modules\Teachers\Teacher;
 use App\Modules\Departments\Department;
@@ -85,15 +83,10 @@ class Quiz extends Model
 
     public function scopeFilter($query)
     {
-        $query->when(request()->course,function($q, $value){
+        $query->when(request()->course, function($q, $value){
             return $q->where('course_detail_id',$value);
-        });
-        $query->when(request()->status,function($q, $value){
-            return $q->where('status',$value);
-        });
-        $query->when(request()->from, function($q, $value){
-            $fromDate = now()->subDays($value)->toDateString();
-            return $q->where('created_at', '>=', $fromDate);
+        })->when(request()->status, function($q){
+            $q->where('status',request()->status);
         });
     }
 }

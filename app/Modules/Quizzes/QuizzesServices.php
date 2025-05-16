@@ -7,8 +7,10 @@ use App\Services\Service;
 use App\Models\CourseDetail;
 use Illuminate\Support\Facades\DB;
 use App\Modules\Quizzes\Models\Quiz;
+use App\Modules\Questions\Models\Answer;
 use App\Modules\Quizzes\Models\QuizAnswer;
 use App\Modules\Questions\QuestionsServices;
+use App\Modules\Questions\Reaources\AnswerResource;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
 class QuizzesServices extends Service
@@ -37,7 +39,7 @@ class QuizzesServices extends Service
             ->get();
     
         $this->statusHandler($quizzes);
-    
+
         return $quizzes;
     }
     
@@ -55,6 +57,8 @@ class QuizzesServices extends Service
             } else {
                 $quiz->status = 'scheduled';
             }
+
+            $quiz->save();
         });
     }
     
@@ -93,9 +97,6 @@ class QuizzesServices extends Service
     }
     
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function updateQuizInfo($request,string $id)
     {
         return DB::transaction(function () use($request,$id) {
@@ -158,45 +159,140 @@ class QuizzesServices extends Service
         if ($alreadyStarted) {
             throw new AccessDeniedHttpException('You have already started this quiz.');
         }
-        
         return $quiz;
     }
-    
+
 
     public function submitQuizAnswers($quiz_id, $questions)
     {
         $user = request()->user();
-        $quiz = Quiz::with('questions')->findOrFail($quiz_id);
+        $studentId = $user->students->id;
+
+        $quiz = Quiz::with('questions.answers')->findOrFail($quiz_id);
+
+        $this->deadlineCheck($quiz);
         
-        $start = Carbon::parse($quiz->date . ' ' . $quiz->start_time);
-        $end = $start->copy()->addMinutes($quiz->duration);
-        $now = now();
-        
-        if ($now->lt($start) || $now->gt($end)) {
-            throw new AccessDeniedHttpException('Quiz is not available at this time.');
+        $this->submitedBeforeCheck($quiz_id, $studentId);
+
+        // الأسئلة المعتمدة في الكويز
+        $validQuestionIds = $quiz->questions->pluck('id')->toArray();
+
+        DB::beginTransaction();
+        try {
+            foreach ($questions as $data) {
+                $questionId = $data['question'];
+                $answerId = $data['answer'];
+
+                // التحقق إن السؤال يتبع للكويز
+                if (!in_array($questionId, $validQuestionIds)) {
+                    throw new \Exception("Invalid question ID: $questionId");
+                }
+
+                // التحقق من صحة الإجابة
+                $answer = Answer::where('id', $answerId)
+                    ->where('question_id', $questionId)
+                    ->first();
+
+                if (!$answer) {
+                    throw new \Exception("Invalid answer ID: $answerId for question: $questionId");
+                }
+
+                // حساب الدرجة
+                $isCorrect = $answer->is_correct;
+                $degree = $isCorrect ? $quiz->questions->firstWhere('id', $questionId)->pivot->degree : 0;
+
+                QuizAnswer::create([
+                    'quiz_id' => $quiz_id,
+                    'question_id' => $questionId,
+                    'answer_id' => $answerId,
+                    'student_id' => $studentId,
+                    'degree' => $degree,
+                ]);
+            }
+
+            DB::commit();
+            return true;
+        } catch (\Throwable $e) {
+            DB::rollBack();
+            throw new \Exception("Failed to submit quiz answers: " . $e->getMessage());
         }
-        
-        // تحقق إذا تم التسليم مسبقًا
-        $alreadySubmitted = QuizAnswer::where('quiz_id', $quiz_id)
-            ->where('student_id', $user->id)
-            ->exists();
-            
-            if ($alreadySubmitted) {
-            throw new AccessDeniedHttpException('You have already submitted this quiz.');
-        }
-    
-        foreach ($questions as $data) {
-            QuizAnswer::create([
-                'quiz_id' => $quiz_id,
-                'question_id' => $data['question'],
-                'answer_id' => $data['answer'],
-                'student_id' => $user->students->id,
-            ]);
-        }
-    
-        return true;
     }
-    
+
+
+    public function getQuizWithStudentAnswers($id, $studentId = null)
+    {
+        if (is_null($studentId)) {
+            $user = request()->user();
+            $studentId = $user->students->id;
+        }
+
+        $quiz = Quiz::with('questions.answers')->findOrFail($id);
+
+        $studentAnswers = QuizAnswer::with('question')
+            ->where('quiz_id', $id)
+            ->where('student_id', $studentId)
+            ->get(); 
+
+        $totalDegree = $studentAnswers->sum('degree');
+        
+        $data = [
+            'id' => $quiz->id,
+            'title' => $quiz->title,
+            'description' => $quiz->description,
+            'max_degree' => $quiz->total_degree,
+            'student_degree' => $totalDegree,
+            'date' => $quiz->date, 
+            'start_time' => $quiz->start_time, 
+            'duration' => $quiz->duration,
+            'questions' => []
+        ];
+
+        foreach ($quiz->questions as $question) {
+            $data['questions'][] = [
+                'id' => $question->id,
+                'question' => $question->question,
+                'answers' => AnswerResource::collection($question->answers),
+                'student_answer' => optional($studentAnswers->where('question_id', $question->id)->first())->answer_id,
+            ];
+        }
+
+        return $data;
+    }
+
+
+    public function getQuizStudentsAnswers($id)
+    {
+        $quiz = Quiz::with('questions.answers')->findOrFail($id);
+
+        $students = QuizAnswer::with(['student', 'question', 'question.answers'])
+            ->where('quiz_id', $id)
+            ->get()
+            ->groupBy('student_id');
+
+        $result = [
+            'id' => $quiz->id,
+            'title' => $quiz->title,
+            'description' => $quiz->description,
+            'max_degree' => $quiz->total_degree,
+            'date' => $quiz->date, 
+            'start_time' => $quiz->start_time, 
+            'duration' => $quiz->duration,
+            'students' => []
+        ];
+
+        foreach ($students as $studentId => $answers) {
+            $student = $answers->first()->student;
+
+            $result['students'][] = [
+                'student_id' => $student->id,
+                'student_name' => $student->user->name ?? '', // لو عندك علاقة مع جدول users
+                'degree' => $answers->sum('degree'),
+            ];
+        }
+
+        return $result;
+    }
+
 
     private function questionHandler($request,$quiz)
     {
@@ -223,6 +319,30 @@ class QuizzesServices extends Service
             }
         }
         return $questions;
+    }
+
+    private function deadlineCheck($quiz)
+    {
+        $start = Carbon::parse($quiz->date . ' ' . $quiz->start_time);
+        $end = $start->copy()->addMinutes($quiz->duration);
+        $now = now();
+
+        // التحقق من توقيت الاختبار
+        if ($now->lt($start) || $now->gt($end)) {
+            throw new AccessDeniedHttpException('Quiz is not available at this time.');
+        }
+    }
+
+    private function submitedBeforeCheck($quiz_id, $studentId)
+    {
+        // التحقق من التقديم المسبق
+        $alreadySubmitted = QuizAnswer::where('quiz_id', $quiz_id)
+            ->where('student_id', $studentId)
+            ->exists();
+
+        if ($alreadySubmitted) {
+            throw new AccessDeniedHttpException('You have already submitted this quiz.');
+        }
     }
 
 }

@@ -19,6 +19,9 @@ Route::group(['middleware'=>['auth','role:Teacher']],function (){
     Route::get('/departments',[TeachersController::class,'myDepartments']);
     Route::get('/semesters',[TeachersController::class,'mySemesters']);
     Route::apiResource('quizzes',QuizzesController::class);
+    Route::get('quizzes/answers/{id}/{student}', [QuizzesController::class, 'quizWithStudentAnswers']);
+    Route::get('quizzes/answers/{id}', [QuizzesController::class, 'quizStudentsAnswers']);
+
 
     Route::apiResource('assignments',AssignmentController::class);
     Route::put('assignments/answer/{id}',[AssignmentController::class, 'assignDegree']);
