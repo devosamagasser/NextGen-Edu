@@ -61,8 +61,8 @@ class Session extends Model
     {
         $user = auth()->user();
         if ($user->hasRole('Teacher')) {
-            $query->whereIn('department_id', $user->teachers->departments->pluck('id'))
-               ->whereIn('semester_id', $user->teachers->semesters->pluck('id'));
+            $query->whereIn('department_id', $user->teachers->courseDetails->pluck('department_id'))
+               ->whereIn('semester_id', $user->teachers->courseDetails->pluck('id'));
         }
     }
 
