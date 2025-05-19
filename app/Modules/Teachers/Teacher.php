@@ -33,7 +33,7 @@ class Teacher extends Model
             'course_teachers',
             'teacher_id',
             'course_details_id'
-        )->with(['course', 'semester', 'department']);
+        );
     }
 
     public function courses()

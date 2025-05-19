@@ -77,9 +77,9 @@ class AssignmentController extends Controller
         ],'submitted successfully');
     }
     
-    public function assignDegree(AssignAnswerDegreeRequest $request, string $id)
+    public function assignDegree(AssignAnswerDegreeRequest $request, string $assignment, $student)
     {
-        $this->assignmentServices->assignDegree($id, $request->degree);
+        $this->assignmentServices->assignDegree($assignment, $student, $request->degree);
         return ApiResponse::message('successfully');
     }
     

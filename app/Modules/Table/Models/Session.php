@@ -59,10 +59,12 @@ class Session extends Model
 
     public function scopeTeacher($query)
     {
-        $user = auth()->user();
+        $user = request()->user();
         if ($user->hasRole('Teacher')) {
-            $query->whereIn('department_id', $user->teachers->courseDetails->pluck('department_id'))
-               ->whereIn('semester_id', $user->teachers->courseDetails->pluck('semester_id'));
+            $departments = $user->teachers->courseDetails->pluck('department_id')->unique();
+            $semesters = $user->teachers->courseDetails->pluck('semester_id')->unique();
+            $query->whereIn('department_id', $departments)
+               ->whereIn('semester_id', $semesters);
         }
     }
 

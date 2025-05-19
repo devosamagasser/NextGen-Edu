@@ -188,9 +188,12 @@ class AssignmentServices extends Service
     }
     
 
-    public function assignDegree($id, $degree)
+    public function assignDegree($assignment, $student, $degree)
     {
-        $answer = AssignmentAnswer::with('assignment')->findOrFail($id);
+        $answer = AssignmentAnswer::with('assignment')
+        ->where('assignment_id',$assignment)
+        ->where('student_id',$student)
+        ->firstOrFail();
         if ($answer->assignment->total_degree < $degree) {
             throw new HttpResponseException(
                 ApiResponse::validationError(['degree' => 'Degree must be less than or equal to the maximum degree of the assignment.'])

@@ -24,7 +24,7 @@ Route::group(['middleware'=>['auth','role:Teacher']],function (){
 
 
     Route::apiResource('assignments',AssignmentController::class);
-    Route::put('assignments/answer/{id}',[AssignmentController::class, 'assignDegree']);
+    Route::put('assignments/{assignment}/answer/{student}',[AssignmentController::class, 'assignDegree']);
 
     
     Route::apiResource('/announcements', AnnouncementController::class);
