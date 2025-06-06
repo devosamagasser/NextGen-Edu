@@ -65,7 +65,7 @@ class Session extends Model
             $semesters = $user->teachers->courseDetails->pluck('semester_id')->unique();
             $query->whereIn('department_id', $departments)
                ->whereIn('semester_id', $semesters);
-        }
+        }   
     }
 
     public function scopeFilter(Builder $builder, $filterBy)
