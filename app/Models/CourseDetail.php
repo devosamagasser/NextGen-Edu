@@ -2,11 +2,14 @@
 
 namespace App\Models;
 
+use App\Modules\Announcments\Announcement;
+use App\Modules\Assignments\Models\Assignment;
 use App\Modules\Courses\Course;
-use App\Modules\Students\Student;
 use App\Modules\Teachers\Teacher;
 use App\Modules\Departments\Department;
 use Illuminate\Database\Eloquent\Model;
+use App\Modules\CourseMaterials\CourseMaterial;
+use App\Modules\Quizzes\Models\Quiz;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class CourseDetail extends Model
@@ -38,6 +41,26 @@ class CourseDetail extends Model
             'course_details_id',
             'teacher_id'
         );
+    }
+
+    public function materials()
+    {
+        return $this->hasMany(CourseMaterial::class, 'course_detail_id');
+    }
+
+    public function quizzes()
+    {
+        return $this->hasMany(Quiz::class, 'course_detail_id');
+    }
+
+    public function assignments()
+    {
+        return $this->hasMany(Assignment::class, 'course_detail_id');
+    }
+
+    public function announcements()
+    {
+        return $this->hasMany(Announcement::class, 'course_detail_id');
     }
 
 }

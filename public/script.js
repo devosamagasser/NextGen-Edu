@@ -31,6 +31,7 @@ function appendMessage(text, side = 'right') {
 }
 
 
+
 chatForm.addEventListener('submit', async e => {
   e.preventDefault();
   const text = chatInput.value.trim();
@@ -40,59 +41,54 @@ chatForm.addEventListener('submit', async e => {
 
   const loadingMessage = document.createElement('div');
   loadingMessage.className = 'message left';
-  loadingMessage.innerHTML = `  <div class="bubble d-flex align-items-center">
+  loadingMessage.innerHTML = `<div class="bubble d-flex align-items-center">
     <div class="spinner-border text-secondary me-2" role="status" style="width: 1.2rem; height: 1.2rem;"></div>
   </div>`;
   chatMessages.appendChild(loadingMessage);
   chatMessages.scrollTop = chatMessages.scrollHeight;
 
   try {
-    const res = await fetch('https://nextgenedu-database.azurewebsites.net/chat/send', {
+    const res = await fetch('https://nextgenedu-database.azurewebsites/chat/send', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'Accept':       'application/json',
         'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-        // لو عايز تبعت توكن:
-        // 'Authorization': 'Bearer ' + token
       },
-      body: JSON.stringify({ 
-        message: text,
-        id: userId 
-      })
+      body: JSON.stringify({ message: text, id: userId })
     });
 
     const data = await res.json();
 
     if (data.reply) {
       chatMessages.removeChild(loadingMessage);
-      const code = data.code ?? 0;
+      const code = parseInt(data.code ?? 0);
 
       switch (code) {
-        case 1: 
-          renderSchedule(data.reply);
-          break;
-
-        case 7: 
-          renderCourses(data.reply);
-          break;
-
+        case 1: renderSchedule(data.reply); break;
+        case 2: renderCourseDetails(data.reply); break;
+        case 7: renderCourses(data.reply); break;
         default:
-          console.log(data.reply)
-          let replyText = typeof data.reply === 'string' ? data.reply.trim() : 'لم أفهم سؤالك، الرجاء المحاولة بشكل أوضح.';
-          typeMessage(replyText, 'left');
+          defalutMessage(data)
       }
     } else {
       chatMessages.removeChild(loadingMessage);
       typeMessage('لم يصل رد من الخادم.', 'left');
     }
 
-
   } catch (err) {
     chatMessages.removeChild(loadingMessage);
     typeMessage('حدث خطأ في الاتصال.', 'left');
     console.error(err);
   }
+
+}); 
+
+
+function defalutMessage(data) {
+    let replyText = typeof data.reply === 'string' ? data.reply.trim() : 'لم أفهم سؤالك، الرجاء المحاولة بشكل أوضح.';
+    typeMessage(replyText, 'left');
+}
 
 function renderCourses(courses) {
   if (!Array.isArray(courses) || courses.length === 0) {
@@ -176,7 +172,7 @@ function renderSchedule(scheduleData) {
         <td>${session.type ?? '-'}</td>
         <td>${day}</td>
         <td>${session.from}</td>
-        <td>${session.hall?.hall_name ?? '-'}</td>
+        <td>${(session.hall?.hall_name)?? '-'}</td>
         <td>${session.hall?.building ?? '-'}</td>
       `;
       tbody.appendChild(tr);
@@ -194,6 +190,101 @@ function renderSchedule(scheduleData) {
   chatMessages.scrollTop = chatMessages.scrollHeight;
 }
 
+function renderCourseDetails(courseDetail) {
+  const wrapper = document.createElement('div');
+  wrapper.className = 'bubble p-0'; // إزالة المسافات الداخلية لأن البطاقة تحتوي كل شيء
 
+  const card = document.createElement('div');
+  card.className = 'card w-100';
 
-});
+  // 🟠 العنوان
+  const header = document.createElement('div');
+  header.className = 'card-header bg-primary text-white';
+  header.innerHTML = `
+    <h5 class="mb-0">${courseDetail.course.name} (${courseDetail.course.code})</h5>
+    <small>${courseDetail.course.description || ''}</small>
+  `;
+  card.appendChild(header);
+
+  const cardBody = document.createElement('div');
+  cardBody.className = 'card-body';
+
+  // 🟡 المدرسين
+  if (courseDetail.teachers.length) {
+    const section = document.createElement('div');
+    section.innerHTML = `<h6><i class="bi bi-person-lines-fill me-1 text-info"></i> المدرسين:</h6>`;
+    const list = document.createElement('ul');
+    courseDetail.teachers.forEach(t => {
+      const li = document.createElement('li');
+      li.innerHTML = `<i class="bi bi-person-badge me-1 text-secondary"></i> ${t.user?.name}`;
+      list.appendChild(li);
+    });
+    section.appendChild(list);
+    cardBody.appendChild(section);
+  }
+
+  // 🟢 المحاضرات
+  if (courseDetail.materials.length) {
+    const section = document.createElement('div');
+    section.innerHTML = `<h6 class="mt-3"><i class="bi bi-journal-text me-1 text-success"></i> المحاضرات:</h6>`;
+    const list = document.createElement('ul');
+    courseDetail.materials.forEach(m => {
+      const li = document.createElement('li');
+      li.innerHTML = `<i class="bi bi-file-earmark-pdf me-1 text-danger"></i> <a href="/storage/${m.material}" target="_blank">الأسبوع ${m.week} - ${m.title}</a>`;
+      list.appendChild(li);
+    });
+    section.appendChild(list);
+    cardBody.appendChild(section);
+  }
+
+  // 🔵 الاختبارات
+  if (courseDetail.quizzes.length) {
+    const section = document.createElement('div');
+    section.innerHTML = `<h6 class="mt-3"><i class="bi bi-pencil-square me-1 text-primary"></i> الاختبارات:</h6>`;
+    const list = document.createElement('ul');
+    courseDetail.quizzes.forEach(q => {
+      const li = document.createElement('li');
+      li.innerHTML = `<i class="bi bi-calendar-event me-1 text-muted"></i> ${q.title} - التاريخ: ${q.date} - الساعة: ${q.start_time}`;
+      list.appendChild(li);
+    });
+    section.appendChild(list);
+    cardBody.appendChild(section);
+  }
+
+  // 🟣 التكليفات
+  if (courseDetail.assignments.length) {
+    const section = document.createElement('div');
+    section.innerHTML = `<h6 class="mt-3"><i class="bi bi-clipboard-check me-1 text-warning"></i> التكليفات:</h6>`;
+    const list = document.createElement('ul');
+    courseDetail.assignments.forEach(a => {
+      const li = document.createElement('li');
+      li.innerHTML = `<i class="bi bi-arrow-down-circle me-1 text-secondary"></i> <a href="/storage/${a.file}" target="_blank">${a.title}</a> - التسليم قبل: ${new Date(a.deadline).toLocaleString()}`;
+      list.appendChild(li);
+    });
+    section.appendChild(list);
+    cardBody.appendChild(section);
+  }
+
+  // 🔴 الإعلانات
+  if (courseDetail.announcements.length) {
+    const section = document.createElement('div');
+    section.innerHTML = `<h6 class="mt-3"><i class="bi bi-megaphone-fill me-1 text-danger"></i> الإعلانات:</h6>`;
+    const list = document.createElement('ul');
+    courseDetail.announcements.forEach(a => {
+      const li = document.createElement('li');
+      li.innerHTML = `<strong>${a.title}</strong>: ${a.body} <br><small class="text-muted">(${new Date(a.post_in).toLocaleString()})</small>`;
+      list.appendChild(li);
+    });
+    section.appendChild(list);
+    cardBody.appendChild(section);
+  }
+
+  card.appendChild(cardBody);
+  wrapper.appendChild(card);
+
+  const msg = document.createElement('div');
+  msg.className = 'message left';
+  msg.appendChild(wrapper);
+  chatMessages.appendChild(msg);
+  chatMessages.scrollTop = chatMessages.scrollHeight;
+}

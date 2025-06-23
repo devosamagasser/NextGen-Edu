@@ -4,11 +4,11 @@ use App\Modules\Users\UserController;
 use Illuminate\Support\Facades\Route;
 use App\Modules\Table\TableController;
 use App\Modules\Quizzes\QuizzesController;
+use App\Modules\Students\StudentsController;
 use App\Modules\Teachers\TeachersController;
 use App\Modules\Assignments\AssignmentController;
 use App\Modules\Announcments\AnnouncementController;
 use App\Modules\CourseMaterials\CourseMaterialsController;
-use App\Modules\Students\StudentsController;
 
 Route::group(['middleware'=>['auth','role:Teacher']],function (){
     Route::get('/profile',[UserController::class,'profile']);
@@ -22,10 +22,8 @@ Route::group(['middleware'=>['auth','role:Teacher']],function (){
     Route::get('quizzes/answers/{id}/{student}', [QuizzesController::class, 'quizWithStudentAnswers']);
     Route::get('quizzes/answers/{id}', [QuizzesController::class, 'quizStudentsAnswers']);
 
-
     Route::apiResource('assignments',AssignmentController::class);
     Route::put('assignments/{assignment}/answer/{student}',[AssignmentController::class, 'assignDegree']);
-
     
     Route::apiResource('/announcements', AnnouncementController::class);
     Route::get('/my-announcements', [AnnouncementController::class,'showMine']);
@@ -38,4 +36,5 @@ Route::group(['middleware'=>['auth','role:Teacher']],function (){
         Route::put('/{id}', [CourseMaterialsController::class,'update']);
         Route::delete('/{id}', [CourseMaterialsController::class,'destroy']);
     });
+
 });

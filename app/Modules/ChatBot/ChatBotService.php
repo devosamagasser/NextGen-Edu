@@ -4,6 +4,7 @@ namespace App\Modules\ChatBot;
 
 use App\Modules\Courses\Course;
 use App\Http\Controllers\Controller;
+use App\Models\CourseDetail;
 use App\Modules\Table\TableServices;
 use Illuminate\Support\Facades\Http;
 use App\Modules\Table\Models\Session;
@@ -14,7 +15,7 @@ class ChatBotService extends Controller
     public $tokens = [
         'grok' => [
             'url' => 'https://api.groq.com/openai/v1/chat/completions',
-            'token' => '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'
+            'token' => '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'
         ],
         'deepSeek' => [
             'url' => 'https://api.deepseek.com/openai/v1/chat/completions',
@@ -50,6 +51,7 @@ class ChatBotService extends Controller
 
         $responseData = [
             1 => fn($student) => $this->getTable($student),
+            2 => fn($student) => $this->getCourseDetails($parts[1] ?? '', $student),
             7 => fn($student) => $this->getMycourses($student),
         ];
 
@@ -95,5 +97,29 @@ class ChatBotService extends Controller
             'code' => 1
         ];
 
+    }
+
+
+    public function getCourseDetails($courseName, $student)
+    {
+        $semester_id = $student->semester_id;
+        $department_id = $student->department_id;
+
+        $course = CourseDetail::with('course','announcements','teachers.user','materials','quizzes','assignments')
+            ->where('semester_id', $semester_id)
+            ->where('department_id', $department_id)
+            ->whereHas('course', function ($q) use ($courseName) {
+                $q->where('name', 'like', '%' . $courseName . '%');
+            })
+            ->first();
+
+        if (!$course) {
+            return ['reply' => 'المادة غير مسجلة لهذا الترم.', 'code' => 0];
+        }
+
+        return [
+            'reply' => $course,
+            'code' => 2
+        ];
     }
 }

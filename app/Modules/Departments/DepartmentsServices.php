@@ -3,6 +3,9 @@
 namespace App\Modules\Departments;
 
 use App\Services\Service;
+use App\Imports\DepartmentImport;
+use Maatwebsite\Excel\Facades\Excel;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class DepartmentsServices extends Service
 {
@@ -52,5 +55,16 @@ class DepartmentsServices extends Service
     public function deleteDepartment(string $id)
     {
         return Department::findOrFail($id)->delete();
+    }
+
+    public function import($request)
+    {
+       try {
+            Excel::import(new DepartmentImport(), $request->file);
+        } catch (ModelNotFoundException $e) {
+            throw new ModelNotFoundException($e->getMessage());
+        }catch (\Exception $e) {
+            throw new \Exception("Failed to import department: " . $e->getMessage());
+        }
     }
 }

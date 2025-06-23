@@ -2,13 +2,16 @@
 
 namespace App\Modules\Teachers;
 
-use App\Models\Semester;
-use App\Models\User;
-use App\Services\Service;
-use Carbon\Carbon;
 use Exception;
+use Carbon\Carbon;
+use App\Models\User;
+use App\Models\Semester;
+use App\Services\Service;
+use App\Imports\TeachersImport;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Maatwebsite\Excel\Facades\Excel;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class TeachersServices extends Service
 {
@@ -106,7 +109,16 @@ class TeachersServices extends Service
         return User::findOrFail($teacher->user_id)->delete();
     }
 
-    private function generateCode()
+    public function import($request)
+    {
+       try {
+            Excel::import(new TeachersImport(), $request->file);
+        } catch (ModelNotFoundException $e) {
+            throw new ModelNotFoundException($e->getMessage());
+        }
+    }
+
+    public static function generateCode()
     {
         $uniCode = "3081" . Carbon::now()->year . "000000";
         $serial = (Teacher::select('uni_code')->latest()->first()?->uni_code ?? $uniCode) + 1;

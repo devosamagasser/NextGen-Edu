@@ -2,22 +2,24 @@
 
 namespace App\Imports;
 
-use App\Models\User;
-use App\Modules\Departments\Department;
-use App\Modules\Students\Student;
-use App\Modules\Students\StudentsServices;
 use Exception;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
+use App\Models\User;
+use App\Modules\Students\Student;
+use App\Modules\Teachers\Teacher;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
-use Maatwebsite\Excel\Concerns\PersistRelations;
+use App\Modules\Departments\Department;
 use Maatwebsite\Excel\Concerns\ToModel;
+use Maatwebsite\Excel\Validators\Failure;
+use App\Modules\Students\StudentsServices;
+use App\Modules\Teachers\TeachersServices;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
 use Maatwebsite\Excel\Concerns\WithValidation;
-use Maatwebsite\Excel\Validators\Failure;
+use Maatwebsite\Excel\Concerns\PersistRelations;
 use Maatwebsite\Excel\Validators\ValidationException;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
-class StudentsImport implements ToModel,WithHeadingRow,PersistRelations,WithValidation
+class TeachersImport implements ToModel,WithHeadingRow,PersistRelations,WithValidation
 {
 
     private $row = 0;
@@ -33,31 +35,28 @@ class StudentsImport implements ToModel,WithHeadingRow,PersistRelations,WithVali
             return DB::transaction(function () use ($row) {
                 $department = Department::where('name', 'like', "%{$row['department']}%")->firstOrFail();
 
-                $code = StudentsServices::generateCode();
+                $code = TeachersServices::generateCode();
                 $email = $code . '@zu.edu.eg';
 
                 $user = User::create([
                     'name' => $row['name'],
                     'email' => $email,
                     'password' => Hash::make($email),
-                    'type' => "Student"
-                ])->assignRole('Student');
+                    'type' => "Teacher"
+                ])->assignRole('Teacher');
 
-                Student::create([
+                Teacher::create([
                     'user_id' => $user->id,
-                    'nationality' => $row['nationality'],
                     'uni_code' => $code,
-                    'personal_id' => $row['id'],
                     'department_id' => $department->id,
-                    'semester_id' => $row['semester'],
-                    'group' => $row['group'] ?? StudentsServices::generateGroupe( $department->id, $row['semester']),
+                    'description' => $row['description'] ?? null,
                 ]);
             });
 
         } catch (ModelNotFoundException $e) {
-            throw new ModelNotFoundException("Department or Semester not found for row: " . $this->row);
+            throw new ModelNotFoundException("Department not found for row: " . $this->row);
         } catch (Exception $e) {
-            throw new Exception("Failed to import student: ".$e->getMessage());
+            throw new Exception("Failed to import teacher: ".$e->getMessage());
         }
     }
 
@@ -67,12 +66,9 @@ class StudentsImport implements ToModel,WithHeadingRow,PersistRelations,WithVali
     public function rules(): array
     {
         return [
-            'name' => 'string',
-            'nationality' => 'string|in:National,International',
-            'id' => 'integer|unique:students,personal_id',
-            'department' => 'string',
-            'semester' => 'integer',
-            'group' => 'nullable|integer|max:30',
+            'name' => 'required|string',
+            'department' => 'required|string',
+            'description' => 'nullable|string',
         ];
     }
 

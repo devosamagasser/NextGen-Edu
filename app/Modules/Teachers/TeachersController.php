@@ -3,10 +3,12 @@
 namespace App\Modules\Teachers;
 
 use App\Facades\ApiResponse;
+use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Modules\Departments\DepartmentResource;
 use App\Modules\Courses\Resources\SemesterResource;
 use App\Modules\Teachers\Validation\TeacherStoreRequest;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use App\Modules\Teachers\Validation\TeacherUpdateRequest;
 
 class TeachersController extends Controller
@@ -60,6 +62,15 @@ class TeachersController extends Controller
         return ApiResponse::deleted($teacher);
     }
 
+    public function import(Request $request)
+    {
+        try {
+            $this->teachersServices->import($request);
+            return ApiResponse::success('successfully imported');
+        } catch (ModelNotFoundException $e) {
+           return ApiResponse::notFound($e->getMessage());
+        }
+    }
 
     public function myCourses()
     {

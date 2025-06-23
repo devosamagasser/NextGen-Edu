@@ -3,7 +3,9 @@
 namespace App\Modules\Departments;
 
 use App\Facades\ApiResponse;
+use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use App\Modules\Departments\Validation\DepartmentStoreRequest;
 use App\Modules\Departments\Validation\DepartmentUpdateRequest;
 
@@ -59,6 +61,12 @@ class DepartmentsController extends Controller
     {
         $this->departmentServices->deleteDepartment($id);
         return ApiResponse::deleted();
+    }
+
+    public function import(Request $request)
+    {
+        $this->departmentServices->import($request);
+        return ApiResponse::success('successfully imported');
     }
 
 }

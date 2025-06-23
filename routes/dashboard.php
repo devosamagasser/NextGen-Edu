@@ -25,7 +25,11 @@ Route::group(['middleware' => 'auth' ], function () {
         Route::get('/semesters',[SemestersController::class,'index']);
         Route::apiResource('/admin',AdminsController::class);
         Route::apiResource('/teachers',TeachersController::class);
+        
         Route::apiResource('/department',DepartmentsController::class);
+        Route::post('/department/import', [DepartmentsController::class,'import']);
+
+
         Route::apiResource('/building',BuildingsController::class);
         Route::prefix('building')->group(function(){
             Route::get('/{id}/halls', [HallsController::class,'index']);
@@ -36,6 +40,7 @@ Route::group(['middleware' => 'auth' ], function () {
     });
 
     Route::group(['middleware' => 'role:Admin|Super admin' ], function () {
+
         Route::controller(StudentsController::class)->group(function () {
             Route::get('/students/export', 'export');
             Route::post('/students/import', 'import');
