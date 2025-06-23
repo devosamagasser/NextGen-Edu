@@ -49,3 +49,4 @@ Route::group(['middleware'=>['auth','role:Student|Teacher']],function (){
         Route::get('/buildings',[BuildingsController::class, 'index']);
         Route::get('/halls',[HallsController::class, 'all']);
 });
+

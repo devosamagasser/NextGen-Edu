@@ -20,12 +20,14 @@ class TableServices extends Service
             'course',
             'semester',
             'department',
-            'hall.building'
+            'hall.building',
+            'postponed'
         )
         ->filter(request()->query())
         ->student()
         ->teacher()
         ->get();
+
 
         return $this->tableFormat($sessions);
 

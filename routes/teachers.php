@@ -28,6 +28,7 @@ Route::group(['middleware'=>['auth','role:Teacher']],function (){
     Route::apiResource('/announcements', AnnouncementController::class);
     Route::get('/my-announcements', [AnnouncementController::class,'showMine']);
     Route::get('/table', [TableController::class,'index']);
+    Route::put('/table/session/{session_id}', [TableController::class, 'postponeSessionByTeacher']);
 
     Route::group(['prefix'=>'course-materials'],function (){
         Route::get('/{id}', [CourseMaterialsController::class,'index']);

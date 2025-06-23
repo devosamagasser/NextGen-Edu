@@ -36,6 +36,15 @@ class TableResource extends JsonResource
             'from' => $this->from,
             'to' => $this->to,
             'status' => $this->status,
+            'postponed' => $this->postponed ? [
+                'date' => $this->postponed->date,
+                'day' => $this->postponed->day,
+                'from' => $this->postponed->from,
+                'to' => $this->postponed->to,
+                'hall_id' => $this->postponed->hall_id,
+                'attendance' => $this->postponed->attendance,
+                'reason' => $this->postponed->reason,
+            ] : null,
         ];
     }
 

@@ -3,10 +3,14 @@
 namespace App\Modules\Table;
 
 use App\Facades\ApiResponse;
-use App\Modules\Table\Resources\TableResource;
 use App\Http\Controllers\Controller;
-use App\Modules\Table\Validation\TableManuallyStoreRequest;
+use App\Modules\Table\Models\Session;
+use App\Modules\Table\Resources\TableResource;
 use App\Modules\Table\Validation\TableUpdateRequest;
+use App\Modules\Table\Validation\TableManuallyStoreRequest;
+use App\Modules\Table\Validation\TableTeacherUpdateRequest;
+use App\Modules\Table\Validation\TablePostponeSessionRequest;
+use App\Modules\Table\Models\PostponedSession;
 
 class TableController extends Controller
 {
@@ -61,5 +65,29 @@ class TableController extends Controller
     {
         $this->tableServices->deleteTable($department_id, $semester_id);
         return ApiResponse::deleted(); 
+    }
+
+    public function postponeSessionByTeacher(TablePostponeSessionRequest $request, $session_id)
+    {
+        $session = Session::findOrFail($session_id);
+        $session->status = 'postponed';
+        $session->save();
+
+        $data = $request->validated();
+        $postponed = PostponedSession::create([
+            'session_id' => $session->id,
+            'date' => $data['date'],
+            'day' => $data['day'],
+            'from' => $data['from'],
+            'to' => $data['to'],
+            'hall_id' => $data['hall_id'],
+            'attendance' => $data['attendance'] ?? $session->attendance,
+        ]);
+
+        return response()->json([
+            'message' => 'Session postponed successfully',
+            'original_session' => $session,
+            'postponed_session' => $postponed,
+        ]);
     }
 }

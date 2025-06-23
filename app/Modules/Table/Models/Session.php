@@ -88,5 +88,8 @@ class Session extends Model
             ->select('sessions.*');
     }
     
-
+    public function postponed()
+    {
+        return $this->hasOne(\App\Modules\Table\Models\PostponedSession::class, 'session_id');
+    }
 }
