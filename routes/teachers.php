@@ -22,7 +22,8 @@ Route::group(['middleware'=>['auth','role:Teacher']],function (){
     Route::get('quizzes/answers/{id}/{student}', [QuizzesController::class, 'quizWithStudentAnswers']);
     Route::get('quizzes/answers/{id}', [QuizzesController::class, 'quizStudentsAnswers']);
 
-    Route::apiResource('assignments',AssignmentController::class);
+    Route::apiResource('assignments',AssignmentController::class)->except(['update']);
+    Route::post('assignments/{id}',[AssignmentController::class , 'update']);
     Route::put('assignments/{assignment}/answer/{student}',[AssignmentController::class, 'assignDegree']);
     
     Route::apiResource('/announcements', AnnouncementController::class);
