@@ -48,7 +48,7 @@ chatForm.addEventListener('submit', async e => {
   chatMessages.scrollTop = chatMessages.scrollHeight;
 
   try {
-    const res = await fetch('https://nextgenedu-database.azurewebsites/chat/send', {
+    const res = await fetch('https://nextgenedu-database.azurewebsites.net/chat/send', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

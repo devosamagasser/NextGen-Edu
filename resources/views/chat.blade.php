@@ -12,7 +12,7 @@
   <!-- Icons -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
   <!-- Custom Styles -->
-  <link rel="stylesheet" href="https://nextgenedu-database.azurewebsites/style.css">
+  <link rel="stylesheet" href=https://nextgenedu-database.azurewebsites.net/style.css">
 </head>
 <body>
   <div class="chat-container">
@@ -51,7 +51,7 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <!-- Custom JS -->
 
-<script src="https://nextgenedu-database.azurewebsites/script.js"></script>
+<script src="https://nextgenedu-database.azurewebsites.net/script.js"></script>
 <script>
     function quickSend(text) {
       const chatInput = document.getElementById('chatInput');
