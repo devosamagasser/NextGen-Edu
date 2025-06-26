@@ -59,7 +59,7 @@
       chatInput.focus();
     }
 
-    const userName = @json($user?->name);
+    const userName = @json($user?->user->name);
     if (!userName) {
       typeMessage(`لا استطيع مساعدتك بدون التسجيل`);
     } else {
