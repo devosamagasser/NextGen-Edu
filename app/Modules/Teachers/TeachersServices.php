@@ -120,9 +120,13 @@ class TeachersServices extends Service
 
     public static function generateCode()
     {
-        $uniCode = "3081" . Carbon::now()->year . "000000";
-        $serial = (Teacher::select('uni_code')->latest()->first()?->uni_code ?? $uniCode) + 1;
-        return str_pad($serial, 6, '0', STR_PAD_LEFT);
+
+        $uniCode = "2081".Carbon::now()->year."000000";
+        $serial = (Teacher::select('uni_code')->latest()->first()->uni_code ?? $uniCode) + 1;
+        while (Teacher::where('uni_code', $serial)->exists()) {
+            $serial++;
+        }
+        return str_pad($serial , 6, '0', STR_PAD_LEFT);
     }
 
     public function myCourses()

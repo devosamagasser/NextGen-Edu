@@ -24,7 +24,7 @@ Route::group(['middleware'=>['auth','role:Teacher']],function (){
 
     Route::apiResource('assignments',AssignmentController::class)->except(['update']);
     Route::post('assignments/{id}',[AssignmentController::class , 'update']);
-    Route::put('assignments/{assignment}/answer/{student}',[AssignmentController::class, 'assignDegree']);
+    Route::put('assignments/answer/{assignmentId}',[AssignmentController::class, 'assignDegree']);
     
     Route::apiResource('/announcements', AnnouncementController::class);
     Route::get('/my-announcements', [AnnouncementController::class,'showMine']);
@@ -35,7 +35,7 @@ Route::group(['middleware'=>['auth','role:Teacher']],function (){
         Route::get('/{id}', [CourseMaterialsController::class,'index']);
         Route::post('/{id}', [CourseMaterialsController::class,'store']);
         Route::get('/{id}/show', [CourseMaterialsController::class,'show']);
-        Route::put('/{id}', [CourseMaterialsController::class,'update']);
+        Route::post('/{id}', [CourseMaterialsController::class,'update']);
         Route::delete('/{id}', [CourseMaterialsController::class,'destroy']);
     });
 

@@ -25,6 +25,7 @@ Route::group(['middleware' => 'auth' ], function () {
         Route::get('/semesters',[SemestersController::class,'index']);
         Route::apiResource('/admin',AdminsController::class);
         Route::apiResource('/teachers',TeachersController::class);
+        Route::post('/teachers/import', [TeachersController::class, 'import']);
         
         Route::apiResource('/department',DepartmentsController::class);
         Route::post('/department/import', [DepartmentsController::class,'import']);

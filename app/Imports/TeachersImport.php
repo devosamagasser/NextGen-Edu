@@ -30,9 +30,14 @@ class TeachersImport implements ToModel,WithHeadingRow,PersistRelations,WithVali
      */
     public function model(array $row)
     {
+        // Skip rows where name or department is missing or empty
+        if (empty($row['name']) || empty($row['department'])) {
+            return null;
+        }
         $this->row++;
         try {
             return DB::transaction(function () use ($row) {
+                // Consider using exact match for department for better reliability
                 $department = Department::where('name', 'like', "%{$row['department']}%")->firstOrFail();
 
                 $code = TeachersServices::generateCode();
@@ -43,14 +48,16 @@ class TeachersImport implements ToModel,WithHeadingRow,PersistRelations,WithVali
                     'email' => $email,
                     'password' => Hash::make($email),
                     'type' => "Teacher"
-                ])->assignRole('Teacher');
+                ]);
+                $user->assignRole('Teacher');
 
-                Teacher::create([
+                $teacher = Teacher::create([
                     'user_id' => $user->id,
                     'uni_code' => $code,
                     'department_id' => $department->id,
                     'description' => $row['description'] ?? null,
                 ]);
+                return $teacher;
             });
 
         } catch (ModelNotFoundException $e) {
@@ -66,13 +73,14 @@ class TeachersImport implements ToModel,WithHeadingRow,PersistRelations,WithVali
     public function rules(): array
     {
         return [
-            'name' => 'required|string',
-            'department' => 'required|string',
+            'name' => 'nullable|string',
+            'department' => 'nullable|string',
             'description' => 'nullable|string',
         ];
     }
 
     public function fail($key,$error,$row){
+        $failures = [];
         $failures[] = new Failure($this->row,$key,$error,$row);
         Throw new ValidationException(\Illuminate\Validation\ValidationException::withMessages($error),$failures);
     }
