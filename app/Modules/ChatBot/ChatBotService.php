@@ -15,7 +15,7 @@ class ChatBotService extends Controller
     public $tokens = [
         'grok' => [
             'url' => 'https://api.groq.com/openai/v1/chat/completions',
-            'token' => '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'
+            'token' => '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'
         ],
         'deepSeek' => [
             'url' => 'https://api.deepseek.com/openai/v1/chat/completions',
