@@ -12,7 +12,7 @@
   <!-- Icons -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
   <!-- Custom Styles -->
-  <link rel="stylesheet" href=https://nextgenedu-database.azurewebsites.net/style.css">
+  <link rel="stylesheet" href="https://nextgenedu-database.azurewebsites.net/style.css">
 </head>
 <body>
   <div class="chat-container">
