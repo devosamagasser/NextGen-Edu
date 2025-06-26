@@ -16,16 +16,12 @@ class ChatBotController extends Controller
     {
     }
 
-    public function index($token = null )
+    public function index($code = null )
     {
         $user = null;
 
-        if ($token) {
-            $tokenModel = \Laravel\Sanctum\PersonalAccessToken::findToken($token);
-
-            if ($tokenModel) {
-                $user = $tokenModel->tokenable;
-            }
+        if ($code) {
+            $user = Student::where('uni_code',$code)->first();
         }
 
         return view('chat', ['user' => $user]);
@@ -33,10 +29,11 @@ class ChatBotController extends Controller
 
     public function send(Request $request)
     {
+        dd($request->all());
         $userMessage = $request->input('message');
         $userId = $request->input('id');
         
-        $student = Student::where('user_id', $userId)->first();
+        $student = Student::find($userId);
         if (!$student) {
             return response()->json(['reply' => 'يجب عليك التسجيل اولا لأستطيع مساعدتك', 'code' => 0]);
         }
