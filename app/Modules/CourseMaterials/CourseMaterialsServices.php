@@ -56,16 +56,18 @@ class CourseMaterialsServices extends Service
     {
         return DB::transaction(function () use ($request, $id) {
             $courseMaterial = CourseMaterial::findOrFail($id);
-            if($request->hasFile('material'))
-            $materialPath = FileHandler::updateFile(
-                $request->file('material'),
-                $courseMaterial->material,
-                'course_materials',
-                $request->file('material')->getClientOriginalExtension() 
-            );
+            $materialPath = $courseMaterial->material; // Default to existing path
+            if ($request->hasFile('material')) {
+                $materialPath = FileHandler::updateFile(
+                    $request->file('material'),
+                    $courseMaterial->material,
+                    'course_materials',
+                    $request->file('material')->getClientOriginalExtension()
+                );
+            }
             return $courseMaterial->update([
                 'title' => $request->title ?? $courseMaterial->title,
-                'material' => $materialPath ?? $courseMaterial->material,
+                'material' => $materialPath,
                 'week' => $request->week ?? $courseMaterial->week,
                 'type' => $request->type ?? $courseMaterial->type,
             ]);

@@ -35,7 +35,7 @@ Route::group(['middleware'=>['auth','role:Teacher']],function (){
         Route::get('/{id}', [CourseMaterialsController::class,'index']);
         Route::post('/{id}', [CourseMaterialsController::class,'store']);
         Route::get('/{id}/show', [CourseMaterialsController::class,'show']);
-        Route::post('/{id}', [CourseMaterialsController::class,'update']);
+        Route::post('/{id}/update', [CourseMaterialsController::class,'update']);
         Route::delete('/{id}', [CourseMaterialsController::class,'destroy']);
     });
 
