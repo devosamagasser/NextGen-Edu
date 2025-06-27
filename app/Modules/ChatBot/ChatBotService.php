@@ -12,9 +12,7 @@ use App\Modules\Table\Models\Session;
 class ChatBotService extends Controller
 {
 
-    public $tokens = [
 
-    ];
 
 
     public function sendPrompet($provider, $model, $prompt, $timeout = 120)
