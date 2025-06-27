@@ -12,7 +12,16 @@ use App\Modules\Table\Models\Session;
 class ChatBotService extends Controller
 {
 
-
+    public $tokens = [
+        'grok' => [
+            'url' => 'https://api.groq.com/openai/v1/chat/completions',
+            'token' => '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'
+        ],
+        'deepSeek' => [
+            'url' => 'https://api.deepseek.com/openai/v1/chat/completions',
+            'token' => 'sk-ea2e0570e8cd4b8d91c1f3fe40e97c69'
+        ],
+    ];
 
 
     public function sendPrompet($provider, $model, $prompt, $timeout = 120)
