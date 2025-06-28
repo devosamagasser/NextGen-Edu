@@ -26,8 +26,8 @@ class AssignmentResource extends JsonResource
             'file' => $this->file_url,
 
             // ✅ For Student
-            'answer_status' => $this->when($request->user()->type == 'Student' && $this->relationLoaded('answers'), function () {
-                $answer = $this->answers->first();
+            'answer_status' => $this->when($request->user()->type == 'Student' && $this->relationLoaded('answers'), function () use ($request) {
+                $answer = $this->answers->where('student_id', $request->user()->students->id)->first();
                 return $answer ? [
                     'status' => $answer->status,
                     'degree' => $answer->degree,
