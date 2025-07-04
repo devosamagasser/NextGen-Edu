@@ -1,0 +1,125 @@
+[33m4e58d88[m[33m ([m[1;36mHEAD -> [m[1;32mmain[m[33m)[m ediiiteee sss
+[33mded790d[m ediiit
+[33m38f7bcd[m ediiit
+[33me14d140[m embedded routes
+[33mdd96241[m[33m ([m[1;31morigin/main[m[33m)[m embedded routes
+[33mc365e95[m embedded routes
+[33m43eea7c[m embedded routes
+[33m9de70a3[m embedded routes
+[33m8cb5936[m embedded routes
+[33ma21fd6c[m embedded routes
+[33m8b48446[m embedded routes
+[33m38d057e[m update table
+[33m8ae399b[m update table
+[33m70a80ea[m update table
+[33m9c2f857[m update pdate table
+[33m4fda8d5[m events
+[33mefe6aed[m fix
+[33m1b64f42[m fix
+[33m862a853[m fix: removed
+[33mcd0735a[m fix: removed exposed API key
+[33mc6129c2[m fix: removed exposed API key
+[33me0af363[m some updates v1.0.3
+[33mbca304b[m some updates v1.0.3
+[33m8962233[m some updates v1.0.3
+[33mda5f390[m some updates v1.0.3
+[33m57789eb[m some updates v1.0.3
+[33m973b5f6[m some updates v1.0.2
+[33m4caffb5[m some updates
+[33mae9196f[m chat bot v2.0.0
+[33m64f7301[m chat bot v2.0.0
+[33m51097c6[m chat bot v2.0.0
+[33m6be3d3f[m API MODEL AI
+[33m9455ae0[m table edit v3
+[33ma9883ca[m table edit v2
+[33m6ead190[m table edit
+[33m6ef3aad[m quizzes v5
+[33mf92dc04[m Assign degree for assignment answer v1
+[33m98c8710[m Map v1
+[33m97c046c[m assignments edit v1
+[33ma881678[m chat bot v1.0.9
+[33m15a74a1[m chat bot v1.0.9
+[33m09b3af6[m chat bot v1.0.8
+[33mbea2331[m chat bot v1.0.8
+[33m6031edf[m chat bot v1.0.7
+[33m7a31a6d[m chat bot v1.0.6
+[33m6f24972[m chat bot v1.0.5
+[33m7a4006d[m chat bot v1.0.5
+[33m4354ead[m chat bot v1.0.4
+[33m2e5ade6[m chat bot v1.0.3
+[33m4381dfb[m chat bot v1.0.2
+[33ma3871a4[m chat bot v1.0.1
+[33m2510e4f[m chat bot
+[33m3be6607[m maintainance v7
+[33m6af2ac6[m maintainance v6
+[33m7d73199[m maintainance v6
+[33m3baeb15[m maintainance v5
+[33m2325999[m maintainance v4
+[33ma28a380[m maintainance v3
+[33m1314beb[m maintainance v2
+[33mfd568fc[m maintainance v1
+[33m5c2ea90[m database performance and new routes(user profile and update, assignments answers details) v2
+[33m8769409[m database performance and new routes(user profile and update, assignments answers details)
+[33m8309b44[m filters and node end point v9
+[33m7205d1d[m filters and node end point v8
+[33m51655a1[m filters and node end point v7
+[33m3ca95c4[m filters and node end point v6
+[33mb84ff2e[m filters and node end point v5
+[33m0436a2b[m filters and node end point v4
+[33ma725c86[m filters and node end point v3
+[33mc3c285f[m filters and node end point v2
+[33m43aad55[m filters and node end point v1
+[33m102c26c[m maerials edit v3
+[33m1f8d004[m maerials edit v3
+[33mcfc36d9[m maerials edit v2
+[33mbbf4c94[m maerials edit v2
+[33m200fcfd[m maerials edit
+[33md28c171[m semester and department edit v1.0.1 and time zoon problem
+[33m27b7bc2[m materials edit v1
+[33m62dddaa[m semester and department edit v1
+[33md264ce0[m assignment edit v1
+[33m801d540[m table v1.0.4
+[33m6aa4441[m table v1.0.3
+[33m714cee7[m table v1.0.2
+[33mda3bde0[m table v1.0.1
+[33m74560b6[m table v1.0.0
+[33m87ac812[m Course data v1.0.6
+[33mfdb1ae6[m Course data v1.0.5
+[33mbeff7e3[m Course data v1.0.4
+[33meccfa95[m Course data v1.0.3
+[33md6ed5d6[m Course data v1.0.2
+[33mcd9310e[m Course data
+[33ma265b2e[m students courses and quizez and signments update v1.0.2
+[33mf838aae[m students courses and quizez and signments update v1.0.1
+[33mcd6b576[m students courses and quizez and signments update
+[33m4b1343e[m teachers departments and semesters v1.0.2
+[33m09b40c8[m teachers departments and semesters v1.0.1
+[33m7d0493e[m teachers departments and semesters
+[33m6edd397[m v1.0.2
+[33m651fdb8[m v1.0.1
+[33m77ee959[m teacher relation with quiz and ass
+[33m21b207d[m store quiz request teacher valudation edit
+[33m7202341[m assignments
+[33m38b0dfa[m assignments
+[33m2d2dd6a[m quiez for students
+[33m687f68f[m quize
+[33m44c20dc[m quize
+[33ma947570[m quize
+[33me84b85e[m Announcements & Node response v1.0.2
+[33me05a364[m Announcements & Node response v1.0.1
+[33m0f5c48d[m Announcements & Node response
+[33md4c891a[m Announcements & Node response
+[33m0f334fc[m Announcements & Node response
+[33m4d7a00f[m Merge branch 'main' of https://github.com/devosamagasser/NextGen-Edu
+[33m4a94f06[m Announcements & Node response
+[33mbfd55a4[m Update README.md
+[33meb0c9a9[m Add or update the Azure App Service build and deployment workflow config
+[33mad960bc[m Create DigiCertGlobalRootG2.crt.pem
+[33m6a6bf0d[m Delete .github/workflows directory
+[33m4963e3d[m Remove the Azure App Service build and deployment workflow config
+[33me461285[m Add or update the Azure App Service build and deployment workflow config
+[33mc64868a[m n
+[33m7159375[m Create default
+[33me4e9a90[m Add or update the Azure App Service build and deployment workflow config
+[33m7c00d07[m latest version
+[33mfc36fd7[m first commit
