@@ -81,12 +81,13 @@ class ChatBotController extends Controller
         $data = $response->json();
 
         // احصل على رد الـ AI
-        $reply = $data['choices'][0]['message']['content'] ?? 'عذرًا، حدث خطأ ما.';
+        // $reply = $data['choices'][0]['message']['content'] ?? 'عذرًا، حدث خطأ ما.';
+        $reply = $data ;
         
-        if($reply !== 'عذرًا، حدث خطأ ما.')
-            $reply =  $this->chatBotService->chatResponse($reply, $student);
-        else
-            $reply = ['reply' => $reply , 'code' => 0];
+        // if($reply !== 'عذرًا، حدث خطأ ما.')
+        //     $reply =  $this->chatBotService->chatResponse($reply, $student);
+        // else
+        //     $reply = ['reply' => $reply , 'code' => 0];
 
         return response()->json($reply);
     }
