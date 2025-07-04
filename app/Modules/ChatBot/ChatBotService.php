@@ -18,7 +18,7 @@ class ChatBotService extends Controller
     {
         $this->tokens['grok'] = [
                 'token' => env('GROK_API_KEY'),
-                'url' => 'https://api.grok.com/v1/chat/completions',
+                'url' => 'https://api.groq.com/v1/chat/completions',
             ];
     }
 
