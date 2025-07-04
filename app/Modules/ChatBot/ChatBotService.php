@@ -14,6 +14,14 @@ class ChatBotService extends Controller
 
     public $tokens;
 
+    public function __construct()
+    {
+        $this->tokens['grok'] = [
+                'token' => env('GROK_API_KEY'),
+                'url' => 'https://api.grok.com/v1/chat/completions',
+            ];
+    }
+
 
     public function sendPrompet($provider, $model, $prompt, $timeout = 120)
     {
