@@ -21,15 +21,15 @@ class SendNotificationListener
      */
     public function handle($event)
     {
-        // return Http::withHeaders([
-        //     "Content-Type" => "application/json",
-        //     'Authorization' => 'kfxuzk1pQESIimcee9rivOXGttoHiC8IlXaBFxhc3Y',
-        // ])->post('https://ngu-question-hub.azurewebsites.net/notification/announ', [
-        //     'body' => Str::limit($event->announcement->body, 100),
-        //     'senderName' => request()->user()->name,
-        //     'ids' => $this->getReceivers($event),
-        //     'type' => 'announ',
-        // ]);
+        return Http::withHeaders([
+            "Content-Type" => "application/json",
+            'Authorization' => 'kfxuzk1pQESIimcee9rivOXGttoHiC8IlXaBFxhc3Y',
+        ])->post('https://ngu-question-hub.azurewebsites.net/notification/announ', [
+            'body' => Str::limit($event->announcement->body, 100),
+            'senderName' => request()->user()->name,
+            'ids' => $this->getReceivers($event),
+            'type' => 'announ',
+        ]);
     }
 
 
