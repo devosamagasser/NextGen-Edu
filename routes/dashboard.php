@@ -16,9 +16,7 @@ use App\Modules\Departments\DepartmentsController;
 use App\Modules\Announcments\AnnouncementController;
 use OpenApi\Annotations\Get;
 
-Route::group(['middleware' => 'role:Super admin|Teacher' ], function () {
-    Route::post('/login',[AuthController::class,'login']);
-});
+Route::post('/login',[AuthController::class,'login']);
 
 Route::group(['middleware' => 'auth' ], function () {
     Route::group(['middleware'=>'role:Super admin'],function (){
