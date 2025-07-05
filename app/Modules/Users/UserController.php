@@ -32,12 +32,12 @@ class UserController extends Controller
             if(str_starts_with($code, '3')($code,'3')){
                 $user = User::where(function($query) use ($code) {
                     $query->teachers()->where('code', $code);
-                });
+                })->firstOrFail();
 
             } else{
                 $user = User::where(function($query) use ($code) {
                     $query->students()->where('code', $code);
-                });
+                })->firstOrFail();
             }
             $user = $user->firstOrFail();
             AuthServices::loadUserRelations($user);
