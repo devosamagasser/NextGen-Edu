@@ -33,24 +33,23 @@ class ChatBotController extends Controller
         $userId = $request->input('id');
         
         $student = Student::find($userId);
+
         if (!$student) {
             return response()->json(['reply' => 'يجب عليك التسجيل اولا لأستطيع مساعدتك', 'code' => 0]);
         }
+
         $semester_id = $student->semester_id;
         $department_id = $student->department_id;
+
         $courses =  Course::with('semesters','departments','courseDetails')
             ->whereHas('courseDetails',function($q)use($semester_id, $department_id){
                 $q->where('semester_id', $semester_id);
                 $q->where('department_id', $department_id);
             })->get();
-
         $courseNames = $courses->pluck('name')->toArray(); // أو 'title' حسب اسم الحقل
         $courseList = implode(", ", $courseNames);
 
     
-        if(!$student) {
-            return response()->json(['reply' => 'يجب عليك التسجيل اولا لأستطيع مساعدتك','code' => 0]);
-        }
         $prompt = "
         أنت الآن مساعد ذكي للطلاب في كلية، ووظيفتك أن ترد على أسئلتهم باستخدام النظام التالي فقط. لا تشرح، لا تحلل، لا تبرر، فقط أجب بالرد المناسب كما هو موضح أدناه:
 
@@ -74,14 +73,13 @@ class ChatBotController extends Controller
         رد فقط بالإجابة المناسبة حسب النظام أعلاه.
         ";
 
-
-
         $response = $this->chatBotService->sendPrompet('grok', 'llama-3.3-70b-versatile', $prompt);
 
         $data = $response->json();
 
-        // احصل على رد الـ AI
-        $reply = $data['choices'][0]['message']['content'] ?? 'عذرًا، حدث خطأ ما.';        
+        $reply = $data['choices'][0]['message']['content'] ?? 'عذرًا، حدث خطأ ما.';    
+
+    
         if($reply !== 'عذرًا، حدث خطأ ما.')
             $reply =  $this->chatBotService->chatResponse($reply, $student);
         else

@@ -44,27 +44,19 @@ class ChatBotService extends Controller
     }
 
 
+    // "1"
+    // "2 [اسم المادة]"
+    // "3 [اسم المادة]"
+    // "4 [اسم المادة]"
+    // "5 [اسم المادة]"
+    // "6 [اسم القاعة]"
+    // "7"
+    // "8"
+    // "9"
+
     public function chatResponse($reply, $student)
     {
-        $parts = explode(' ', $reply);
-        $message = trim($reply);
-
-        // Detect intent
-        if (preg_match('/(محاضرة|سكشن|معمل) (.+)/u', $message, $matches)) {
-            $type = $matches[1];
-            $subject = $matches[2];
-            return $this->getLocationOfSubject($subject, $type, $student);
-        }
-        if (preg_match('/قاعة (.+)/u', $message, $matches)) {
-            $hallName = $matches[1];
-            return $this->getHallLocation($hallName);
-        }
-        if (preg_match('/ملخص اليوم/u', $message)) {
-            return $this->getTodaySummary($student);
-        }
-        if (preg_match('/ملخص الأسبوع/u', $message)) {
-            return $this->getWeekSummary($student);
-        }
+        $parts = explode(' ', $reply,2);
 
         $responseData = [
             1 => fn($student) => $this->getTable($student),
