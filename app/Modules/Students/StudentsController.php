@@ -93,7 +93,7 @@ class StudentsController extends Controller
     public function attendance($hall_id, $student_id)
     {
         $this->studentsServices->attendance($hall_id, $student_id);
-        return ApiResponse::message('Attendance recorded successfully');
+        return ApiResponse::message('Attendance recorded successfully for student with ID: ' . $student_id);
     }
 
 }
