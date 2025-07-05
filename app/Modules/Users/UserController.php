@@ -28,21 +28,20 @@ class UserController extends Controller
 
     public function profileByCode($code)
     {
-        try{
-            if(str_starts_with($code, '3')($code,'3')){
-                $user = User::where(function($query) use ($code) {
-                    $query->teachers()->where('code', $code);
-                })->firstOrFail();
-
-            } else{
-                $user = User::where(function($query) use ($code) {
-                    $query->students()->where('code', $code);
-                })->firstOrFail();
+        try {
+            if (str_starts_with($code, '3')) {
+                $user = User::whereHas('teachers', function ($query) use ($code) {
+                    $query->where('code', $code);
+                });
+            } else {
+                $user = User::whereHas('students', function ($query) use ($code) {
+                    $query->where('code', $code);
+                });
             }
             $user = $user->firstOrFail();
             AuthServices::loadUserRelations($user);
             return ApiResponse::success(new UserResource($user));
-        }catch (\Exception $e){
+        } catch (\Exception $e) {
             throw new AuthenticationException;
         }
     }
