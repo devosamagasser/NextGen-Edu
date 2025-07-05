@@ -14,7 +14,6 @@ use App\Modules\Assignments\AssignmentController;
 use App\Modules\Announcments\AnnouncementController;
 use App\Modules\CourseMaterials\CourseMaterialsController;
 
-Route::post('/login',[AuthController::class,'login']);
 
 Route::get('/hall/enter/{hall_id}', [HallsController::class, 'enter']);
 Route::get('/hall/exit/{hall_id}', [HallsController::class, 'exit']);
@@ -28,6 +27,7 @@ Route::group(['middleware'=>'auth'],function (){
 });
 
 Route::group(['middleware'=>['auth','role:Student']],function (){
+    Route::post('/login',[AuthController::class,'login']);
     Route::delete('/logout',[AuthController::class,'logout']);
     Route::get('/profile',[UserController::class,'profile']);
     Route::post('/update',[UserController::class,'update']);
