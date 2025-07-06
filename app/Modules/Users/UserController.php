@@ -9,6 +9,7 @@ use App\Modules\Auth\AuthServices;
 use App\Modules\Users\UserResource;
 use App\Http\Controllers\Controller;
 use App\Modules\Students\Student;
+use Exception;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Auth\AuthenticationException;
 
@@ -42,7 +43,7 @@ class UserController extends Controller
             AuthServices::loadUserRelations($user);
             return ApiResponse::success(new UserResource($user));
         } catch (\Exception $e) {
-            throw new AuthenticationException;
+            throw new Exception;
         }
     }
 
