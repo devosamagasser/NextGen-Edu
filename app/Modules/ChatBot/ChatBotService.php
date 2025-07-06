@@ -2,9 +2,10 @@
 
 namespace App\Modules\ChatBot;
 
+use App\Modules\Halls\Hall;
+use App\Models\CourseDetail;
 use App\Modules\Courses\Course;
 use App\Http\Controllers\Controller;
-use App\Models\CourseDetail;
 use App\Modules\Table\TableServices;
 use Illuminate\Support\Facades\Http;
 use App\Modules\Table\Models\Session;
@@ -30,8 +31,8 @@ class ChatBotService extends Controller
         }
 
         return Http::timeout($timeout)->withHeaders([
-            "Content-Type" => "application/json",
             'Authorization' => 'Bearer ' . $this->tokens[$provider]['token'],
+            "Content-Type" => "application/json",
         ])->post($this->tokens[$provider]['url'], [
             'model' => $model,
             'messages' => [
@@ -56,7 +57,7 @@ class ChatBotService extends Controller
 
     public function chatResponse($reply, $student)
     {
-        $parts = explode(' ', $reply,2);
+        $parts = explode(' ', $reply,2); 
 
         $responseData = [
             1 => fn($student) => $this->getTable($student),
@@ -69,6 +70,7 @@ class ChatBotService extends Controller
             8 => fn($student) => $this->getTodaySummary($student),
             9 => fn($student) => $this->getWeekSummary($student),
         ];
+
 
         $code = $parts[0] ?? '0';
 
@@ -160,11 +162,11 @@ class ChatBotService extends Controller
     // New: Get location of a hall
     public function getHallLocation($hallName)
     {
-        $hall = \App\Modules\Halls\Hall::with('building')->where('name', 'like', "%$hallName%") ->first();
+        $hall = Hall::with('building')->where('name', 'like', "%$hallName%") ->first();
         if (!$hall) {
             return ['reply' => 'لم يتم العثور على القاعة.', 'code' => 0];
         }
-        $location = $hall->name . ' - ' . $hall->building->name;
+        $location = $hall->name . ' - ' . $hall->building->name . ' - ال طابق رقم' . $hall->floor;
         return ['reply' => "مكان القاعة: $location", 'code' => 11];
     }
 

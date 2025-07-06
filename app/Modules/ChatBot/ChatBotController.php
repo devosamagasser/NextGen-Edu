@@ -7,7 +7,6 @@ use Illuminate\Http\Request;
 use App\Modules\Courses\Course;
 use App\Modules\Students\Student;
 use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Http;
 
 class ChatBotController extends Controller
 {
@@ -31,16 +30,13 @@ class ChatBotController extends Controller
     {
         $userMessage = $request->input('message');
         $userId = $request->input('id');
-        
         $student = Student::find($userId);
 
         if (!$student) {
             return response()->json(['reply' => 'يجب عليك التسجيل اولا لأستطيع مساعدتك', 'code' => 0]);
         }
-
         $semester_id = $student->semester_id;
         $department_id = $student->department_id;
-
         $courses =  Course::with('semesters','departments','courseDetails')
             ->whereHas('courseDetails',function($q)use($semester_id, $department_id){
                 $q->where('semester_id', $semester_id);
