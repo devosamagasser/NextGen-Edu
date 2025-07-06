@@ -32,11 +32,11 @@ class UserController extends Controller
         try {
             if (str_starts_with($code, '3')) {
                 $user = User::whereHas('teachers', function ($query) use ($code) {
-                    $query->where('code', $code);
+                    $query->where('uni_code', $code);
                 });
             } else {
                 $user = User::whereHas('students', function ($query) use ($code) {
-                    $query->where('code', $code);
+                    $query->where('uni_code', $code);
                 });
             }
             $user = $user->firstOrFail();
