@@ -54,7 +54,7 @@ class StudentsServices extends Service
     public function addNewStudent($request)
     {
         $student = null ;
-        DB::transaction(function () use($request, &$student){
+        return DB::transaction(function () use($request, &$student){
             $code = $this->generateCode();
             $group = $this->generateGroupe($request->department_id, $request->semester_id);
             $email = $code.'@zu.edu.eg';
@@ -76,12 +76,11 @@ class StudentsServices extends Service
                 'group' => $group
             ]);
 
-            Http::withHeaders([
+           return Http::withHeaders([
                 "Content-Type" => "application/json",
                 'Authorization' => 'kfxuzk1pQESIimcee9rivOXGttoHiC8IlXaBFxhc3Y',
             ])->post('https://ngu-question-hub.azurewebsites.net/chat/add', [
                 'userCode' => $code,
-                'isAdmin' => false,
             ]);
         });
         return $student;

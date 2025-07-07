@@ -32,7 +32,8 @@ class StudentsController extends Controller
     public function store(StudentStoreRequest $request)
     {
         $student = $this->studentsServices->addNewStudent($request);
-        return ApiResponse::created(new StudentResource($student));
+        return ApiResponse::created($student);
+        // return ApiResponse::created(new StudentResource($student));
     }
 
     /**
