@@ -51,13 +51,13 @@ class StudentsServices extends Service
     /**
      * Store a newly created resource in storage.
      */
-    public function addNewStudent($request)
+  public function addNewStudent($request)
     {
-        $student = null ;
-        return DB::transaction(function () use($request, &$student){
-            $code = $this->generateCode();
-            $group = $this->generateGroupe($request->department_id, $request->semester_id);
-            $email = $code.'@zu.edu.eg';
+        $code = $this->generateCode();
+        $group = $this->generateGroupe($request->department_id, $request->semester_id);
+        $email = $code . '@zu.edu.eg';
+        $student = DB::transaction(function () use ($request, $code, $group, $email) {
+
             $user = User::create([
                 'name' => $request->name,
                 'email' => $email,
@@ -66,7 +66,7 @@ class StudentsServices extends Service
             ]);
             $user->assignRole('Student');
 
-            $student = Student::create([
+            return Student::create([
                 'user_id' => $user->id,
                 'uni_code' => $code,
                 'department_id' => $request->department_id,
@@ -75,16 +75,19 @@ class StudentsServices extends Service
                 'personal_id' => $request->personal_id,
                 'group' => $group
             ]);
-
-           return Http::withHeaders([
-                "Content-Type" => "application/json",
-                'Authorization' => '765|LcXERXtUwbmVHkOQ2ntDvzPhxz8LjMmVWOMPbUWZc0a149dc',
-            ])->post('https://ngu-question-hub.azurewebsites.net/chat/add', [
-                'userCode' => $code,
-            ]);
         });
+
+        // إرسال الكود بعد نجاح الحفظ
+        Http::withHeaders([
+            "Content-Type" => "application/json",
+            'Authorization' => 'Bearer 765|LcXERXtUwbmVHkOQ2ntDvzPhxz8LjMmVWOMPbUWZc0a149dc',
+        ])->post('https://ngu-question-hub.azurewebsites.net/chat/add', [
+            'userCode' => $student->uni_code,
+        ]);
+
         return $student;
     }
+
 
     /**
      * Update the specified resource in storage.
