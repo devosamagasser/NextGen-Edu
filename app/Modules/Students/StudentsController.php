@@ -51,18 +51,20 @@ class StudentsController extends Controller
     public function update(StudentUpdateRequest $request, string $id)
     {
         $student = $this->studentsServices->updateStudentInfo($request, $id);
-            return Http::withHeaders([
-                "Content-Type" => "application/json",
-                'Authorization' => 'Bearer kfxuzk1pQESIimcee9rivOXGttoHiC8IlXaBFxhc3Y',
-            ])->post('https://ngu-question-hub.azurewebsites.net/users/update', [
-                'user' => [
-                    'id' => $student->user->id,
-                    'name' => $student->user->name,
-                    'email' => $student->user->email,
-                    'type' => $student->user->type,
-                    'avatar' => $student->user->avatar_url
-                ]
-            ]);
+
+        $response = Http::withHeaders([
+            'Content-Type' => 'application/json',
+            'Authorization' => 'Bearer kfxuzk1pQESIimcee9rivOXGttoHiC8IlXaBFxhc3Y',
+        ])->put('https://ngu-question-hub.azurewebsites.net/users/update', [
+            'user' => [
+                'id' => $student->user->id,
+                'name' => $student->user->name,
+                'email' => $student->user->email,
+                'type' => $student->user->type,
+                'avatar' => $student->user->avatar_url
+            ]
+        ]);
+
         return ApiResponse::updated(new StudentResource($student));
     }
 

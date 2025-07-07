@@ -11,7 +11,7 @@ class StudentUpdateRequest extends AbstractApiRequest
      */
     public function authorize(): bool
     {
-        return auth()->user()->hasRole('Admin');
+        return auth()->user()->hasRole('Super admin');
     }
 
     /**
