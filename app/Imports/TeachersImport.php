@@ -37,9 +37,6 @@ class TeachersImport implements ToModel,WithHeadingRow,PersistRelations,WithVali
         $this->row++;
         try {
             return DB::transaction(function () use ($row) {
-                // Consider using exact match for department for better reliability
-                $department = Department::where('name', 'like', "%{$row['department']}%")->firstOrFail();
-
                 $code = TeachersServices::generateCode();
                 $email = $code . '@zu.edu.eg';
 
@@ -54,7 +51,7 @@ class TeachersImport implements ToModel,WithHeadingRow,PersistRelations,WithVali
                 $teacher = Teacher::create([
                     'user_id' => $user->id,
                     'uni_code' => $code,
-                    'department_id' => $department->id,
+                    'department_id' => $row['department'],
                     'description' => $row['description'] ?? null,
                 ]);
                 return $teacher;
