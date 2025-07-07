@@ -56,10 +56,9 @@ class StudentsImport implements ToModel,WithHeadingRow,PersistRelations,WithVali
                 
                 Http::withHeaders([
                     "Content-Type" => "application/json",
-                    'Authorization' => 'kfxuzk1pQESIimcee9rivOXGttoHiC8IlXaBFxhc3Y',
+                    'Authorization' => 'Bearer 765|LcXERXtUwbmVHkOQ2ntDvzPhxz8LjMmVWOMPbUWZc0a149dc',
                 ])->post('https://ngu-question-hub.azurewebsites.net/chat/add', [
                     'userCode' => $code,
-                    'isAdmin' => false,
                 ]);
             });
 

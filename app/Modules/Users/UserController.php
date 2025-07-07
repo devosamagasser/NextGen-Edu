@@ -67,7 +67,7 @@ class UserController extends Controller
 
         return Http::withHeaders([
             "Content-Type" => "application/json",
-            'Authorization' => 'kfxuzk1pQESIimcee9rivOXGttoHiC8IlXaBFxhc3Y',
+            'Authorization' => 'Bearer kfxuzk1pQESIimcee9rivOXGttoHiC8IlXaBFxhc3Y',
         ])->post('https://ngu-question-hub.azurewebsites.net/users/update', [
             'id' => $user->id,
             'name' => $user->name,

@@ -53,7 +53,7 @@ class StudentsController extends Controller
         $student = $this->studentsServices->updateStudentInfo($request, $id);
             return Http::withHeaders([
                 "Content-Type" => "application/json",
-                'Authorization' => 'kfxuzk1pQESIimcee9rivOXGttoHiC8IlXaBFxhc3Y',
+                'Authorization' => 'Bearer kfxuzk1pQESIimcee9rivOXGttoHiC8IlXaBFxhc3Y',
             ])->post('https://ngu-question-hub.azurewebsites.net/users/update', [
                 'id' => $student->user->id,
                 'name' => $student->user->name,
@@ -72,7 +72,7 @@ class StudentsController extends Controller
         $this->studentsServices->deleteStudent($id);
         return Http::withHeaders([
             "Content-Type" => "application/json",
-            'Authorization' => 'kfxuzk1pQESIimcee9rivOXGttoHiC8IlXaBFxhc3Y',
+            'Authorization' => 'Bearer kfxuzk1pQESIimcee9rivOXGttoHiC8IlXaBFxhc3Y',
         ])->post('https://ngu-question-hub.azurewebsites.net/users/delete', [
             'userId' => $id,
         ]);
