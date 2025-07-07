@@ -51,6 +51,9 @@ class TeachersController extends Controller
     public function update(TeacherUpdateRequest $request, string $id)
     {
         $teacher = $this->teachersServices->updateTeacherInfo($request, $id);
+        if (!$teacher) {
+            return ApiResponse::message('no cange');
+        }
         Http::withHeaders([
             'Content-Type' => 'application/json',
             'Authorization' => 'Bearer kfxuzk1pQESIimcee9rivOXGttoHiC8IlXaBFxhc3Y',

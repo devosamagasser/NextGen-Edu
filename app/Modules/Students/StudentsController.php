@@ -51,16 +51,17 @@ class StudentsController extends Controller
     public function update(StudentUpdateRequest $request, string $id)
     {
         $student = $this->studentsServices->updateStudentInfo($request, $id);
-
-        Http::withHeaders([
-            'Content-Type' => 'application/json',
-            'Authorization' => 'Bearer kfxuzk1pQESIimcee9rivOXGttoHiC8IlXaBFxhc3Y',
-        ])->put('https://ngu-question-hub.azurewebsites.net/users/update', [
-            'user' => [
-                'id' => $student->user->id,
-                'name' => $student->user->name,
-                'email' => $student->user->email,
-                'type' => $student->user->type,
+        if ($student) {
+            return ApiResponse::notFound('Student not found');
+            Http::withHeaders([
+                'Content-Type' => 'application/json',
+                'Authorization' => 'Bearer kfxuzk1pQESIimcee9rivOXGttoHiC8IlXaBFxhc3Y',
+                ])->put('https://ngu-question-hub.azurewebsites.net/users/update', [
+                    'user' => [
+                        'id' => $student->user->id,
+                        'name' => $student->user->name,
+                        'email' => $student->user->email,
+                        'type' => $student->user->type,
                 'avatar' => $student->user->avatar_url,
                 'nationality' => $student->nationality,
                 'uni_code' => $student->uni_code,
@@ -75,10 +76,12 @@ class StudentsController extends Controller
                     'name' => $student->department->name
                 ],
                 'group' => $student->group,
-            ]
-        ]);
+                ]
+            ]);
+            return ApiResponse::updated(new StudentResource($student));
+        }
+        return ApiResponse::message('no change');
 
-        return ApiResponse::updated(new StudentResource($student));
     }
 
     /**
