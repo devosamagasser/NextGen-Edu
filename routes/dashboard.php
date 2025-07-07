@@ -17,7 +17,9 @@ use App\Modules\Announcments\AnnouncementController;
 use OpenApi\Annotations\Get;
 
 Route::post('/login',[AuthController::class,'login']);
-
+Route::controller(StudentsController::class)->group(function () {
+    Route::get('/students/export', 'export');
+});
 Route::group(['middleware' => 'auth' ], function () {
     Route::group(['middleware'=>'role:Super admin'],function (){
         Route::get('/profile',[UserController::class,'profile']);
