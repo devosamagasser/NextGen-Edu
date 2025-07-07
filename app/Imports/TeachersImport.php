@@ -71,7 +71,7 @@ class TeachersImport implements ToModel,WithHeadingRow,PersistRelations,WithVali
     {
         return [
             'name' => 'nullable|string',
-            'department' => 'nullable|string',
+            'department' => 'nullable|integer|exists:departments,id',
             'description' => 'nullable|string',
         ];
     }
