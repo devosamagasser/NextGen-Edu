@@ -55,11 +55,13 @@ class StudentsController extends Controller
                 "Content-Type" => "application/json",
                 'Authorization' => 'Bearer kfxuzk1pQESIimcee9rivOXGttoHiC8IlXaBFxhc3Y',
             ])->post('https://ngu-question-hub.azurewebsites.net/users/update', [
-                'id' => $student->user->id,
-                'name' => $student->user->name,
-                'email' => $student->user->email,
-                'type' => $student->user->type,
-                'avatar' => $student->user->avatar_url,
+                'user' => [
+                    'id' => $student->user->id,
+                    'name' => $student->user->name,
+                    'email' => $student->user->email,
+                    'type' => $student->user->type,
+                    'avatar' => $student->user->avatar_url
+                ]
             ]);
         return ApiResponse::updated(new StudentResource($student));
     }

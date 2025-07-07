@@ -30,44 +30,46 @@ class StudentsImport implements ToModel,WithHeadingRow,PersistRelations,WithVali
     public function model(array $row)
     {
         $this->row++;
+
         try {
-            return DB::transaction(function () use ($row) {
-                $department = Department::where('name', 'like', "%{$row['department']}%")->firstOrFail();
+            $code = StudentsServices::generateCode();
+            $email = $code . '@zu.edu.eg';
 
-                $code = StudentsServices::generateCode();
-                $email = $code . '@zu.edu.eg';
-
+            // 1. حفظ البيانات داخل transaction
+            $student = DB::transaction(function () use ($row, $code, $email) {
                 $user = User::create([
                     'name' => $row['name'],
                     'email' => $email,
                     'password' => Hash::make($email),
-                    'type' => "Student"
-                ])->assignRole('Student');
+                    'type' => 'Student'
+                ]);
+                $user->assignRole('Student');
 
-                Student::create([
+                return Student::create([
                     'user_id' => $user->id,
                     'nationality' => $row['nationality'],
                     'uni_code' => $code,
                     'personal_id' => $row['id'],
-                    'department_id' => $department->id,
+                    'department_id' => $row['department'],
                     'semester_id' => $row['semester'],
-                    'group' => $row['group'] ?? StudentsServices::generateGroupe( $department->id, $row['semester']),
-                ]);
-                
-                Http::withHeaders([
-                    "Content-Type" => "application/json",
-                    'Authorization' => 'Bearer 765|LcXERXtUwbmVHkOQ2ntDvzPhxz8LjMmVWOMPbUWZc0a149dc',
-                ])->post('https://ngu-question-hub.azurewebsites.net/chat/add', [
-                    'userCode' => $code,
+                    'group' => $row['group'] ?? StudentsServices::generateGroupe($row['department'], $row['semester']),
                 ]);
             });
 
-        } catch (ModelNotFoundException $e) {
-            throw new ModelNotFoundException("Department or Semester not found for row: " . $this->row);
+            Http::withHeaders([
+                "Content-Type" => "application/json",
+                'Authorization' => 'Bearer 765|LcXERXtUwbmVHkOQ2ntDvzPhxz8LjMmVWOMPbUWZc0a149dc',
+            ])->post('https://ngu-question-hub.azurewebsites.net/chat/add', [
+                'userCode' => $student->uni_code,
+            ]);
+
+            return $student;
+
         } catch (Exception $e) {
-            throw new Exception("Failed to import student: ".$e->getMessage());
+            throw new Exception("Row {$this->row}: Failed to import student – " . $e->getMessage());
         }
     }
+
 
     /**
      * Validation rules.
@@ -78,7 +80,7 @@ class StudentsImport implements ToModel,WithHeadingRow,PersistRelations,WithVali
             'name' => 'string',
             'nationality' => 'string|in:National,International',
             'id' => 'integer|unique:students,personal_id',
-            'department' => 'string',
+            'department' => 'integer|exists:departments,id',
             'semester' => 'integer',
             'group' => 'nullable|integer|max:30',
         ];
