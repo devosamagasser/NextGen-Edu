@@ -78,7 +78,7 @@ class StudentsServices extends Service
 
            return Http::withHeaders([
                 "Content-Type" => "application/json",
-                'Authorization' => 'kfxuzk1pQESIimcee9rivOXGttoHiC8IlXaBFxhc3Y',
+                'Authorization' => '765|LcXERXtUwbmVHkOQ2ntDvzPhxz8LjMmVWOMPbUWZc0a149dc',
             ])->post('https://ngu-question-hub.azurewebsites.net/chat/add', [
                 'userCode' => $code,
             ]);
