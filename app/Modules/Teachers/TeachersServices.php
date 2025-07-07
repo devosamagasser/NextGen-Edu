@@ -10,6 +10,7 @@ use App\Services\Service;
 use App\Imports\TeachersImport;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Http;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
@@ -105,7 +106,15 @@ class TeachersServices extends Service
     public function deleteTeacher(string $id)
     {
         $teacher = Teacher::findOrFail($id);
-        return User::findOrFail($teacher->user_id)->delete();
+        User::findOrFail($teacher->user_id)->delete();
+        Http::withHeaders([
+            'Content-Type' => 'application/json',
+            'Authorization' => 'Bearer kfxuzk1pQESIimcee9rivOXGttoHiC8IlXaBFxhc3Y',
+        ])->send('DELETE', 'https://ngu-question-hub.azurewebsites.net/users/delete', [
+            'json' => [
+                'userId' => $teacher,
+            ],
+        ]);
     }
 
     public function import($request)

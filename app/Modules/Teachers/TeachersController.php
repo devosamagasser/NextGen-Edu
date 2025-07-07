@@ -51,16 +51,24 @@ class TeachersController extends Controller
     public function update(TeacherUpdateRequest $request, string $id)
     {
         $teacher = $this->teachersServices->updateTeacherInfo($request, $id);
-            return Http::withHeaders([
-                "Content-Type" => "application/json",
-                'Authorization' => 'kfxuzk1pQESIimcee9rivOXGttoHiC8IlXaBFxhc3Y',
-            ])->post('https://ngu-question-hub.azurewebsites.net/users/update', [
+        Http::withHeaders([
+            'Content-Type' => 'application/json',
+            'Authorization' => 'Bearer kfxuzk1pQESIimcee9rivOXGttoHiC8IlXaBFxhc3Y',
+        ])->put('https://ngu-question-hub.azurewebsites.net/users/update', [
+            'user' => [
                 'id' => $teacher->user->id,
                 'name' => $teacher->user->name,
                 'email' => $teacher->user->email,
                 'type' => $teacher->user->type,
                 'avatar' => $teacher->user->avatar_url,
-            ]);
+                'uni_code' =>  $teacher->uni_code,
+                'description' =>  $teacher->description,
+                'department' => [ 
+                    'id' => $teacher->department_id,
+                    'name' => $teacher->department->name
+                ]
+            ]
+        ]);
         return ApiResponse::updated($teacher);
     }
 
@@ -70,12 +78,6 @@ class TeachersController extends Controller
     public function destroy(string $id)
     {
         $teacher = $this->teachersServices->deleteTeacher($id);
-        return Http::withHeaders([
-            "Content-Type" => "application/json",
-            'Authorization' => 'Bearer kfxuzk1pQESIimcee9rivOXGttoHiC8IlXaBFxhc3Y',
-        ])->post('https://ngu-question-hub.azurewebsites.net/users/delete', [
-            'userId' => $id,
-        ]);
         return ApiResponse::deleted($teacher);
     }
 

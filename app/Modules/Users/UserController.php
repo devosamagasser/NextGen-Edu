@@ -65,17 +65,55 @@ class UserController extends Controller
         }
         $user->update($data);
 
-        return Http::withHeaders([
-            "Content-Type" => "application/json",
-            'Authorization' => 'Bearer kfxuzk1pQESIimcee9rivOXGttoHiC8IlXaBFxhc3Y',
-        ])->post('https://ngu-question-hub.azurewebsites.net/users/update', [
-            'id' => $user->id,
-            'name' => $user->name,
-            'email' => $user->email,
-            'type' => $user->type,
-            'avatar' => $user->avatar_url,
-        ]);
+        if($user->type == 'Student'){
+            Http::withHeaders([
+                'Content-Type' => 'application/json',
+                'Authorization' => 'Bearer kfxuzk1pQESIimcee9rivOXGttoHiC8IlXaBFxhc3Y',
+            ])->put('https://ngu-question-hub.azurewebsites.net/users/update', [
+                'user' =>  [           
+                    'id' => $user->id,
+                    'name' => $user->name,
+                    'email' => $user->email,
+                    'type' => $user->type,
+                    'avatar' => $user->avatar_url,
+                    'nationality' => $user->students->nationality,
+                    'uni_code' => $user->students->uni_code,
+                    'personal_id' => $user->students->personal_id,
+                    'group' => $user->students->group,
+                    'semester' =>[
+                        'id' => $user->students->semester->id,
+                        'name' => $user->students->semester->name
+                    ],
+                    'department' => [
+                        'id' => $user->students->department->id,
+                        'name' => $user->students->department->name
+                    ],
+                    'group' => $user->students->group,
+                ]
+            ]);
 
+        }
+        elseif($user->type == 'Teacher'){
+            Http::withHeaders([
+                'Content-Type' => 'application/json',
+                'Authorization' => 'Bearer kfxuzk1pQESIimcee9rivOXGttoHiC8IlXaBFxhc3Y',
+            ])->put('https://ngu-question-hub.azurewebsites.net/users/update', [
+                'user' => [
+                    'id' => $user->id,
+                    'name' => $user->name,
+                    'email' => $user->email,
+                    'type' => $user->type,
+                    'avatar' => $user->avatar_url,
+                    'uni_code' =>  $user->teachers->uni_code,
+                    'description' =>  $user->teachers->description,
+                    'department' => [ 
+                        'id' => $user->teachers->department_id,
+                        'name' => $user->teachers->department->name
+                    ]
+                ]
+            ]);
+        }
+        
         return ApiResponse::message('User updated successfully');
     }
 }

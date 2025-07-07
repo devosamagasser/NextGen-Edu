@@ -52,7 +52,7 @@ class StudentsController extends Controller
     {
         $student = $this->studentsServices->updateStudentInfo($request, $id);
 
-        $response = Http::withHeaders([
+        Http::withHeaders([
             'Content-Type' => 'application/json',
             'Authorization' => 'Bearer kfxuzk1pQESIimcee9rivOXGttoHiC8IlXaBFxhc3Y',
         ])->put('https://ngu-question-hub.azurewebsites.net/users/update', [
@@ -61,7 +61,20 @@ class StudentsController extends Controller
                 'name' => $student->user->name,
                 'email' => $student->user->email,
                 'type' => $student->user->type,
-                'avatar' => $student->user->avatar_url
+                'avatar' => $student->user->avatar_url,
+                'nationality' => $student->nationality,
+                'uni_code' => $student->uni_code,
+                'personal_id' => $student->personal_id,
+                'group' => $student->group,
+                'semester' =>[
+                    'id' => $student->semester->id,
+                    'name' => $student->semester->name
+                ],
+                'department' => [
+                    'id' => $student->department->id,
+                    'name' => $student->department->name
+                ],
+                'group' => $student->group,
             ]
         ]);
 
