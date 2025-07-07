@@ -52,7 +52,6 @@ class StudentsController extends Controller
     {
         $student = $this->studentsServices->updateStudentInfo($request, $id);
         if ($student) {
-            return ApiResponse::notFound('Student not found');
             Http::withHeaders([
                 'Content-Type' => 'application/json',
                 'Authorization' => 'Bearer kfxuzk1pQESIimcee9rivOXGttoHiC8IlXaBFxhc3Y',
