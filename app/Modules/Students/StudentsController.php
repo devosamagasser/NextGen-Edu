@@ -5,6 +5,7 @@ namespace App\Modules\Students;
 use App\Facades\ApiResponse;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Http;
 use App\Modules\Students\CourseResource;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use App\Modules\Students\Validations\StudentStoreRequest;
@@ -49,6 +50,16 @@ class StudentsController extends Controller
     public function update(StudentUpdateRequest $request, string $id)
     {
         $student = $this->studentsServices->updateStudentInfo($request, $id);
+            return Http::withHeaders([
+                "Content-Type" => "application/json",
+                'Authorization' => 'kfxuzk1pQESIimcee9rivOXGttoHiC8IlXaBFxhc3Y',
+            ])->post('https://ngu-question-hub.azurewebsites.net/users/update', [
+                'id' => $student->user->id,
+                'name' => $student->user->name,
+                'email' => $student->user->email,
+                'type' => $student->user->type,
+                'avatar' => $student->user->avatar_url,
+            ]);
         return ApiResponse::updated(new StudentResource($student));
     }
 
@@ -58,6 +69,12 @@ class StudentsController extends Controller
     public function destroy(string $id)
     {
         $this->studentsServices->deleteStudent($id);
+        return Http::withHeaders([
+            "Content-Type" => "application/json",
+            'Authorization' => 'kfxuzk1pQESIimcee9rivOXGttoHiC8IlXaBFxhc3Y',
+        ])->post('https://ngu-question-hub.azurewebsites.net/users/delete', [
+            'userId' => $id,
+        ]);
         return ApiResponse::deleted();
     }
 

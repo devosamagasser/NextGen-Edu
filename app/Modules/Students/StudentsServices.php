@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Support\Facades\Http;
 
 class StudentsServices extends Service
 {
@@ -73,6 +74,14 @@ class StudentsServices extends Service
                 'nationality' => $request->nationality,
                 'personal_id' => $request->personal_id,
                 'group' => $group
+            ]);
+
+           return Http::withHeaders([
+                "Content-Type" => "application/json",
+                'Authorization' => 'kfxuzk1pQESIimcee9rivOXGttoHiC8IlXaBFxhc3Y',
+            ])->post('https://ngu-question-hub.azurewebsites.net/chat/add', [
+                'userCode' => $code,
+                'isAdmin' => false,
             ]);
         });
         return $student;

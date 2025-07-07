@@ -2,20 +2,21 @@
 
 namespace App\Imports;
 
-use App\Models\User;
-use App\Modules\Departments\Department;
-use App\Modules\Students\Student;
-use App\Modules\Students\StudentsServices;
 use Exception;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
+use App\Models\User;
+use App\Modules\Students\Student;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
-use Maatwebsite\Excel\Concerns\PersistRelations;
+use Illuminate\Support\Facades\Http;
+use App\Modules\Departments\Department;
 use Maatwebsite\Excel\Concerns\ToModel;
+use Maatwebsite\Excel\Validators\Failure;
+use App\Modules\Students\StudentsServices;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
 use Maatwebsite\Excel\Concerns\WithValidation;
-use Maatwebsite\Excel\Validators\Failure;
+use Maatwebsite\Excel\Concerns\PersistRelations;
 use Maatwebsite\Excel\Validators\ValidationException;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class StudentsImport implements ToModel,WithHeadingRow,PersistRelations,WithValidation
 {
@@ -51,6 +52,14 @@ class StudentsImport implements ToModel,WithHeadingRow,PersistRelations,WithVali
                     'department_id' => $department->id,
                     'semester_id' => $row['semester'],
                     'group' => $row['group'] ?? StudentsServices::generateGroupe( $department->id, $row['semester']),
+                ]);
+                
+                Http::withHeaders([
+                    "Content-Type" => "application/json",
+                    'Authorization' => 'kfxuzk1pQESIimcee9rivOXGttoHiC8IlXaBFxhc3Y',
+                ])->post('https://ngu-question-hub.azurewebsites.net/chat/add', [
+                    'userCode' => $code,
+                    'isAdmin' => false,
                 ]);
             });
 

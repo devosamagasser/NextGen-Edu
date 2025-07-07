@@ -21,6 +21,7 @@ class TeacherResource extends JsonResource
             'uni_code' => $this->uni_code,
             'description' => $this->description,
             'department' => $this->department->name,
+            'avatar' => $this->user->avatar_url,
         ];
     }
 }

@@ -5,6 +5,7 @@ namespace App\Modules\Teachers;
 use App\Facades\ApiResponse;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Http;
 use App\Modules\Departments\DepartmentResource;
 use App\Modules\Courses\Resources\SemesterResource;
 use App\Modules\Teachers\Validation\TeacherStoreRequest;
@@ -50,6 +51,16 @@ class TeachersController extends Controller
     public function update(TeacherUpdateRequest $request, string $id)
     {
         $teacher = $this->teachersServices->updateTeacherInfo($request, $id);
+            return Http::withHeaders([
+                "Content-Type" => "application/json",
+                'Authorization' => 'kfxuzk1pQESIimcee9rivOXGttoHiC8IlXaBFxhc3Y',
+            ])->post('https://ngu-question-hub.azurewebsites.net/users/update', [
+                'id' => $teacher->user->id,
+                'name' => $teacher->user->name,
+                'email' => $teacher->user->email,
+                'type' => $teacher->user->type,
+                'avatar' => $teacher->user->avatar_url,
+            ]);
         return ApiResponse::updated($teacher);
     }
 
@@ -59,6 +70,12 @@ class TeachersController extends Controller
     public function destroy(string $id)
     {
         $teacher = $this->teachersServices->deleteTeacher($id);
+        return Http::withHeaders([
+            "Content-Type" => "application/json",
+            'Authorization' => 'kfxuzk1pQESIimcee9rivOXGttoHiC8IlXaBFxhc3Y',
+        ])->post('https://ngu-question-hub.azurewebsites.net/users/delete', [
+            'userId' => $id,
+        ]);
         return ApiResponse::deleted($teacher);
     }
 

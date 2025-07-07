@@ -2,15 +2,16 @@
 
 namespace App\Modules\Users;
 
+use Exception;
 use App\Models\User;
 use App\Facades\ApiResponse;
 use App\Facades\FileHandler;
+use App\Modules\Students\Student;
 use App\Modules\Auth\AuthServices;
 use App\Modules\Users\UserResource;
 use App\Http\Controllers\Controller;
-use App\Modules\Students\Student;
-use Exception;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Auth\AuthenticationException;
 
 class UserController extends Controller
@@ -63,6 +64,17 @@ class UserController extends Controller
             $data['password'] = Hash::make($request->password);
         }
         $user->update($data);
+
+        return Http::withHeaders([
+            "Content-Type" => "application/json",
+            'Authorization' => 'kfxuzk1pQESIimcee9rivOXGttoHiC8IlXaBFxhc3Y',
+        ])->post('https://ngu-question-hub.azurewebsites.net/users/update', [
+            'id' => $user->id,
+            'name' => $user->name,
+            'email' => $user->email,
+            'type' => $user->type,
+            'avatar' => $user->avatar_url,
+        ]);
 
         return ApiResponse::message('User updated successfully');
     }

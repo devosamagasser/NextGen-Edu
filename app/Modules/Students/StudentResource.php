@@ -21,6 +21,8 @@ class StudentResource extends JsonResource
             'email' => $this->user->email,
             'nationality' => $this->nationality,
             'personal_id' => $this->personal_id,
+            'group' => $this->group,
+            'avatar' => $this->user->avatar_url,
             'department' => $this->whenLoaded('department', function(){
                 return $this->department->name;
             }),
@@ -30,7 +32,6 @@ class StudentResource extends JsonResource
             'class' => $this->whenLoaded('semester', function(){
                 return $this->semester->name;
             }),
-            'group' => $this->group
         ];
     }
 }
