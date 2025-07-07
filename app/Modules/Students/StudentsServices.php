@@ -121,7 +121,7 @@ class StudentsServices extends Service
      */
     public function deleteStudent(string $id)
     {
-        $user = Student::with('user')->firstOrFail($id)->user_id;
+        $user = Student::with('user')->findOrFail($id)->user_id;
         User::findOrFail($user)->delete();
         Http::withHeaders([
             "Content-Type" => "application/json",
