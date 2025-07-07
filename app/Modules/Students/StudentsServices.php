@@ -123,12 +123,19 @@ class StudentsServices extends Service
     {
         $user = Student::with('user')->findOrFail($id)->user_id;
         User::findOrFail($user)->delete();
-        Http::withHeaders([
-            "Content-Type" => "application/json",
+
+        $response = Http::withHeaders([
+            'Content-Type' => 'application/json',
             'Authorization' => 'Bearer kfxuzk1pQESIimcee9rivOXGttoHiC8IlXaBFxhc3Y',
-        ])->post('https://ngu-question-hub.azurewebsites.net/users/delete', [
-            'userId' => $user,
+        ])->send('DELETE', 'https://ngu-question-hub.azurewebsites.net/users/delete', [
+            'json' => [
+                'userId' => $user,
+            ],
         ]);
+
+        logger($response->status());
+        logger($response->body());
+
     }
 
     public function export()
