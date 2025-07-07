@@ -72,12 +72,6 @@ class StudentsController extends Controller
     public function destroy(string $id)
     {
         $this->studentsServices->deleteStudent($id);
-        return Http::withHeaders([
-            "Content-Type" => "application/json",
-            'Authorization' => 'Bearer kfxuzk1pQESIimcee9rivOXGttoHiC8IlXaBFxhc3Y',
-        ])->post('https://ngu-question-hub.azurewebsites.net/users/delete', [
-            'userId' => $id,
-        ]);
         return ApiResponse::deleted();
     }
 

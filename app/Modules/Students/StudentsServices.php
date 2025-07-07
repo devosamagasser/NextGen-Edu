@@ -122,7 +122,13 @@ class StudentsServices extends Service
     public function deleteStudent(string $id)
     {
         $user = Student::with('user')->firstOrFail($id)->user_id;
-        return User::findOrFail($user)->delete();
+        User::findOrFail($user)->delete();
+        Http::withHeaders([
+            "Content-Type" => "application/json",
+            'Authorization' => 'Bearer kfxuzk1pQESIimcee9rivOXGttoHiC8IlXaBFxhc3Y',
+        ])->post('https://ngu-question-hub.azurewebsites.net/users/delete', [
+            'userId' => $user,
+        ]);
     }
 
     public function export()
