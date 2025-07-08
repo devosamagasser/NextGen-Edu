@@ -61,21 +61,8 @@ class Teacher extends Model
     public function scopeFilter(Builder $builder, $filterBy)
     {
         $builder->when($filterBy['department'] ?? null, function ($builder, $value) {
-            $builder->whereHas('courseDetails', function ($query) use ($value) {
-                $query->where('department_id', $value);
-            });
+                $builder->where('department_id', $value);
         });
 
-        $builder->when($filterBy['semester'] ?? null, function ($builder, $value) {
-            $builder->whereHas('courseDetails', function ($query) use ($value) {
-                $query->where('semester_id', $value);
-            });
-        });
-
-        $builder->when($filterBy['course'] ?? null, function ($builder, $value) {
-            $builder->whereHas('courseDetails', function ($query) use ($value) {
-                $query->where('course_id', $value);
-            });
-        });
     }
 }

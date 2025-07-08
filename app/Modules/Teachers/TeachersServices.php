@@ -23,7 +23,7 @@ class TeachersServices extends Service
     {
         return Teacher::with('user', 'department')
             ->filter(request()->query())
-            ->simplePaginate(15);
+            ->get();
     }
 
     /**
