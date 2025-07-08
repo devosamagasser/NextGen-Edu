@@ -189,7 +189,7 @@ class StudentsServices extends Service
     public function attendance($hall_id, $student_id)
     {
         $hall = Hall::findOrFail($hall_id);
-        $student = Student::where('code',$student_id)->firstOrFail();
+        $student = Student::where('uni_code',$student_id)->firstOrFail();
 
         // $attendance = Attendance::where('hall_id', $hall_id)
         //     ->where('student_id', $student_id)
