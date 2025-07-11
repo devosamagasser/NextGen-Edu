@@ -38,7 +38,6 @@ Route::group(['middleware' => 'auth' ], function () {
         Route::apiResource('/department',DepartmentsController::class);
         Route::post('/department/import', [DepartmentsController::class,'import']);
 
-
         Route::apiResource('/building',BuildingsController::class);
         Route::prefix('building')->group(function(){
             Route::get('/{id}/halls', [HallsController::class,'index']);
