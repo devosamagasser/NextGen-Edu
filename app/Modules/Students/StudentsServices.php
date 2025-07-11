@@ -27,7 +27,7 @@ class StudentsServices extends Service
     {
         return Student::with('user','department','semester')
                 ->filter(request()->query())
-                ->simplePaginate(10);
+                ->get();
     }
 
     /**
