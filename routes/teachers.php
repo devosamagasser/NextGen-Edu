@@ -1,5 +1,6 @@
 <?php
 
+use App\Modules\Auth\AuthController;
 use App\Modules\Users\UserController;
 use Illuminate\Support\Facades\Route;
 use App\Modules\Table\TableController;
@@ -11,6 +12,7 @@ use App\Modules\Announcments\AnnouncementController;
 use App\Modules\CourseMaterials\CourseMaterialsController;
 
 Route::group(['middleware'=>['auth','role:Teacher']],function (){
+    Route::delete('/logout',[AuthController::class,'logout']);
     Route::get('/profile',[UserController::class,'profile']);
     Route::post('/update',[UserController::class,'update']);
     
