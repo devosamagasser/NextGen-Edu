@@ -4,8 +4,12 @@ namespace App\Modules\Admins;
 
 use App\Models\User;
 use App\Services\Service;
+use App\Modules\Courses\Course;
 use Illuminate\Support\Facades\DB;
+use App\Modules\Buildings\Building;
 use Illuminate\Support\Facades\Hash;
+use App\Modules\Departments\Department;
+use App\Modules\Halls\Hall;
 
 class AdminsServices extends Service
 {
@@ -69,4 +73,23 @@ class AdminsServices extends Service
         return true;
     }
 
+    public function getStatistics()
+    {
+        $departmentsCount = Department::count();
+        $coursesCount = Course::count();
+        $buildingsCount = Building::count();
+        $hallsCount = Hall::count();
+        $studentsCount = User::role('Student')->count();
+        $teachersCount = User::role('Teacher')->count();
+
+
+        return [
+            'students' => $studentsCount,
+            'teachers' => $teachersCount,
+            'departments' => $departmentsCount,
+            'courses' => $coursesCount,
+            'buildings' => $buildingsCount,
+            'halls' => $hallsCount,
+        ];
+    }
 }

@@ -57,4 +57,11 @@ class AdminsController extends Controller
         $this->adminServices->deleteAdmin($id);
         return ApiResponse::deleted();
     }
+
+
+    public function statistics()
+    {
+        $statistics = $this->adminServices->getStatistics();
+        return ApiResponse::success($statistics); 
+    }
 }
