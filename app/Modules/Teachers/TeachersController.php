@@ -84,6 +84,11 @@ class TeachersController extends Controller
         return ApiResponse::deleted($teacher);
     }
 
+    public function export()
+    {
+        return $this->teachersServices->export();
+    }
+
     public function import(Request $request)
     {
         try {

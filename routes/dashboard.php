@@ -33,6 +33,7 @@ Route::group(['middleware' => 'auth' ], function () {
         Route::apiResource('/admin',AdminsController::class);
         Route::apiResource('/teachers',TeachersController::class);
         Route::post('/teachers/import', [TeachersController::class, 'import']);
+        Route::get('/teachers/export', [TeachersController::class, 'export']);
         
         Route::apiResource('/department',DepartmentsController::class);
         Route::post('/department/import', [DepartmentsController::class,'import']);

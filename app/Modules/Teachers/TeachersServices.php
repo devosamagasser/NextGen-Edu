@@ -7,6 +7,7 @@ use Carbon\Carbon;
 use App\Models\User;
 use App\Models\Semester;
 use App\Services\Service;
+use App\Exports\TeachersExport;
 use App\Imports\TeachersImport;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -115,6 +116,11 @@ class TeachersServices extends Service
                 'userId' => $teacher,
             ],
         ]);
+    }
+
+    public function export()
+    {
+        return Excel::download(new TeachersExport, 'teacher.xlsx');
     }
 
     public function import($request)
