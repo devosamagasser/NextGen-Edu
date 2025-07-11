@@ -96,7 +96,7 @@ class StudentsServices extends Service
     {
         $student = Student::with('user')->findOrFail($id);
         $data = [];
-        if($request->user()->hasRole('Superadmin'))
+        if($request->user()->hasRole('Super admin'))
             $data = $this->updatedDataFormated($request);
 
         if($request->filled('name')){
