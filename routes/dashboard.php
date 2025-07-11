@@ -24,6 +24,7 @@ Route::controller(StudentsController::class)->group(function () {
 
 Route::group(['middleware' => 'auth' ], function () {
     Route::group(['middleware'=>'role:Super admin'],function (){
+        Route::delete('/logout',[AuthController::class,'logout']);
         Route::get('/profile',[UserController::class,'profile']);
         Route::post('/update',[UserController::class,'update']);
 
