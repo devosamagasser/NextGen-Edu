@@ -8,7 +8,7 @@
     </tr>
     </thead>
     <tbody>
-    @foreach($students as $student)
+    @foreach($teachers as $student)
         <tr>
             <td>{{ $teacher->user->name }}</td>
             <td>{{ $teacher->uni_code }}</td>
