@@ -11,11 +11,12 @@ use App\Models\CourseDetail;
 use App\Exports\StudentsExport;
 use App\Imports\StudentsImport;
 use App\Modules\Courses\Course;
+use App\Modules\Teachers\Teacher;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Http;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
-use Illuminate\Support\Facades\Http;
 
 class StudentsServices extends Service
 {
@@ -189,8 +190,9 @@ class StudentsServices extends Service
     public function attendance($hall_id, $student_id)
     {
         $hall = Hall::findOrFail($hall_id);
-        $student = Student::where('uni_code',$student_id)->firstOrFail();
-
+        $student = Student::where('uni_code',$student_id)->first();
+        if(!$student)
+        $student = Teacher::where('uni_code',$student_id)->first();
         // $attendance = Attendance::where('hall_id', $hall_id)
         //     ->where('student_id', $student_id)
         //     ->first();
